@@ -6,9 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class BitirmeprojeApplication {
 
-	public static void main(String[] args) {
-		System.out.println("Hello World");
-		SpringApplication.run(BitirmeprojeApplication.class, args);
-	}
+	public static void main(String[] args) {SpringApplication.run(BitirmeprojeApplication.class, args);}
 
 }

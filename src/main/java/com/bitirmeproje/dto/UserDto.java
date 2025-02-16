@@ -1,70 +1,44 @@
-package com.bitirmeproje.model;
-
-import jakarta.persistence.*;
+package com.bitirmeproje.dto;
 
 import java.time.LocalDate;
-import java.util.List;
 
-@Entity
-@Table(name = "kullanicilar")
-public class User {
+public class UserDto {
 
-    @Id
-    @Column(name = "kullanici_id")
     private int kullaniciId;
 
-    @Column(name = "kullanici_eposta")
-    private String ePosta;
-
-    @Column(name = "kullanici_sifre")
-    private String sifre;
-
-    @Column(name = "kullanici_takma_ad")
     private String kullaniciTakmaAd;
 
-    @Column(name = "kullanici_profil_resmi")
-    private String kullaniciProfilResmi;
+    private String ePosta;
 
-    @Column(name = "kullanici_bio")
     private String kullaniciBio;
 
-    @Column(name = "kullanici_telefon_no")
+    private String kullaniciProfilResmi;
+
     private String kullaniciTelefonNo;
 
-    @Column(name = "kullanici_dogum_tarihi")
     private LocalDate kullaniciDogumTarihi;
 
-    @Column(name = "kullanici_uye_olma_tarihi", updatable = false)
     private LocalDate kullaniciUyeOlmaTarihi;
-
-    public User() {}
-
-    public <T> User(String email, String s, List<T> ts) {
-    }
-
 
     public int getKullaniciId() {
         return kullaniciId;
     }
 
+    public UserDto(){}
+
+    public UserDto(int kullaniciId, String kullaniciTakmaAd, String ePosta, String kullaniciBio, String kullaniciProfilResmi, String kullaniciTelefonNo, LocalDate kullaniciDogumTarihi, LocalDate kullaniciUyeOlmaTarihi) {
+        this.kullaniciId = kullaniciId;
+        this.kullaniciTakmaAd = kullaniciTakmaAd;
+        this.ePosta = ePosta;
+        this.kullaniciBio = kullaniciBio;
+        this.kullaniciProfilResmi = kullaniciProfilResmi;
+        this.kullaniciTelefonNo = kullaniciTelefonNo;
+        this.kullaniciDogumTarihi = kullaniciDogumTarihi;
+        this.kullaniciUyeOlmaTarihi = kullaniciUyeOlmaTarihi;
+    }
+
     public void setKullaniciId(int kullaniciId) {
         this.kullaniciId = kullaniciId;
-    }
-
-    public String getePosta() {
-        return ePosta;
-    }
-
-    public void setePosta(String ePosta) {
-        this.ePosta = ePosta;
-    }
-
-    public String getSifre() {
-        return sifre;
-    }
-
-    public void setSifre(String sifre) {
-        this.sifre = sifre;
     }
 
     public String getKullaniciTakmaAd() {
@@ -75,12 +49,12 @@ public class User {
         this.kullaniciTakmaAd = kullaniciTakmaAd;
     }
 
-    public String getKullaniciProfilResmi() {
-        return kullaniciProfilResmi;
+    public String getePosta() {
+        return ePosta;
     }
 
-    public void setKullaniciProfilResmi(String kullaniciProfilResmi) {
-        this.kullaniciProfilResmi = kullaniciProfilResmi;
+    public void setePosta(String ePosta) {
+        this.ePosta = ePosta;
     }
 
     public String getKullaniciBio() {
@@ -89,6 +63,14 @@ public class User {
 
     public void setKullaniciBio(String kullaniciBio) {
         this.kullaniciBio = kullaniciBio;
+    }
+
+    public String getKullaniciProfilResmi() {
+        return kullaniciProfilResmi;
+    }
+
+    public void setKullaniciProfilResmi(String kullaniciProfilResmi) {
+        this.kullaniciProfilResmi = kullaniciProfilResmi;
     }
 
     public String getKullaniciTelefonNo() {
@@ -113,12 +95,5 @@ public class User {
 
     public void setKullaniciUyeOlmaTarihi(LocalDate kullaniciUyeOlmaTarihi) {
         this.kullaniciUyeOlmaTarihi = kullaniciUyeOlmaTarihi;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        if (this.kullaniciUyeOlmaTarihi == null) {
-            this.kullaniciUyeOlmaTarihi = LocalDate.now();
-        }
     }
 }

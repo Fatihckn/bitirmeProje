@@ -29,3 +29,5 @@ public class LoginDto {
         this.sifre = sifre;
     }
 }
+
+// public record LoginDto(ePosta, sifre){}

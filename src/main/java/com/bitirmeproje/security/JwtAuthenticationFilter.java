@@ -1,19 +1,23 @@
 package com.bitirmeproje.security;
 
-import com.bitirmeproje.model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -25,46 +29,57 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+
+        // "Bearer " ile başlayan token var mı?
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            System.out.println("Bearer " + authHeader);
             String token = authHeader.substring(7);
 
-            // Token'dan email'i çek
-            String email = jwtUtil.extractEmail(token);
-            System.out.println("email: " + email);
+            try {
+                // Token'ı parse edelim
+                Claims claims = Jwts.parser()
+                        .setSigningKey(jwtUtil.getSigningKey())  // getSigningKey() -> public
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody();
 
-            // Token geçerli mi kontrol et
-            if (email != null && jwtUtil.validateToken(token, email)) {
-                System.out.println("valid");
+                String email = claims.getSubject();
+                String role  = claims.get("role", String.class);
 
-                // Kullanıcıyı temsil eden UserDetails nesnesi oluştur
-                UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                        email, "", Collections.emptyList()
-                );
+                if (email == null || role == null) {
+                    throw new BadCredentialsException("Token formatı geçersiz: email veya role yok!");
+                }
 
-                // Authentication nesnesi oluştur ve SecurityContext'e set et
+                // Süre dolmuş mu?
+                Date expiration = claims.getExpiration();
+                if (expiration.before(new Date())) {
+                    throw new BadCredentialsException("Token süresi dolmuş!");
+                }
+
+                // Geçerliyse SecurityContext'e yükleyelim
+                List<SimpleGrantedAuthority> authorities =
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
+
+                User principal = new User(email, "", authorities);
+
                 UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(principal, null, authorities);
 
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // SecurityContext'e Authentication ekleyerek kullanıcının giriş yaptığını bildir
+                // SecurityContext'e set
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
 
-            else {
-                // Token geçersizse 401 döndür
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                return; // Filtreyi durdur
+            } catch (JwtException e) {
+                // parseClaimsJws'tan dönen hatalar (imza hatası, expiration, vb.)
+                throw new BadCredentialsException("Geçersiz token: " + e.getMessage(), e);
             }
         }
-        // Bearer yoksa veya yoksa login/register endpointine gidebilir, normal devam etsin
+
+        // Devam
         filterChain.doFilter(request, response);
     }
 }

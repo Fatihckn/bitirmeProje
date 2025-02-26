@@ -1,12 +1,15 @@
 package com.bitirmeproje.security;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 @Component
@@ -16,11 +19,22 @@ public class JwtUtil {
     private String secretKey; // application.properties içindeki değeri çeker
 
     // Örnek: 1 saat geçerli olsun (3600000 ms)
-    private long expirationTime = 60 * 60 * 1000;
+    private final long expirationTime = 60 * 60 * 1000;
+
+    // Key oluştur (Base64 Decode ile güvenli hale getirildi)
+    public Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
 
     // Token üret
-    public String generateToken(String email) {
+    public String generateToken(String email,String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+        //claims.put("email", email);
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(email) // Token'da email bilgisini tutuyoruz
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
@@ -30,13 +44,16 @@ public class JwtUtil {
 
     // Token geçerli mi kontrol et
     public boolean validateToken(String token, String email) {
-        final String tokenEmail = extractEmail(token);
-        return (tokenEmail.equals(email) && !isTokenExpired(token));
+        return email.equals(extractEmail(token)) && !isTokenExpired(token);
     }
 
     // Token içinden email'i çek
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
     }
 
     // Token içinden Expiration bilgisini çek
@@ -46,14 +63,13 @@ public class JwtUtil {
 
     // Claims üzerinden istediğin alanı çekmek için
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+        return claimsResolver.apply(extractAllClaims(token));
     }
 
     // Token'dan tüm Claims'i çek
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
-                .setSigningKey(getSigningKey())
+                .setSigningKey(getSigningKey()) // Güncellendi!
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -62,10 +78,5 @@ public class JwtUtil {
     // Token süresi dolmuş mu?
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
-    }
-
-    // Key oluştur
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 }

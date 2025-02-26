@@ -1,10 +1,13 @@
 package com.bitirmeproje.service;
 
 import com.bitirmeproje.dto.LoginDto;
+import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.model.Role;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
 import com.bitirmeproje.security.JwtAuthenticationFilter;
 import com.bitirmeproje.security.JwtUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,29 +28,35 @@ public class AuthService {
     }
 
     // Kullanıcı kayıt servisi
-    public void register(@RequestBody User user) {
+    public void registerUser(@RequestBody User user) {
+        if(user.getKullaniciRole() == null) {
+            user.setKullaniciRole(Role.USER);
+        }
+
+        if(userRepository.findByEPosta(user.getePosta()).isPresent() || userRepository.findByKullaniciTakmaAd(user.getKullaniciTakmaAd()).isPresent()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST,"Bu e-posta veya kullanıcı adı zaten kullanılıyor!");
+        }
+
         user.setSifre(passwordEncoder.encode(user.getSifre()));
         userRepository.save(user);
     }
-
-    // Kullanıcı giriş servisi
-//    public String login(@RequestBody LoginDto loginDto) {
-//
-//        Optional<User> beklenenKullanici = userRepository.findByEPosta(loginDto.getePosta());
-//        if (beklenenKullanici.isPresent() && passwordEncoder.matches(loginDto.getSifre(), beklenenKullanici.get().getSifre())) {
-//            return "Login OK";
-//        }
-//        return "Login Failed";
-//    }
     public String login(LoginDto loginDto) {
         Optional<User> beklenenKullanici = userRepository.findByEPosta(loginDto.getePosta());
-        if (beklenenKullanici.isPresent()) {
-            User user = beklenenKullanici.get();
-            if (passwordEncoder.matches(loginDto.getSifre(), user.getSifre())) {
-                // Giriş başarılıysa token üret
-                return jwtUtil.generateToken(user.getePosta());
-            }
+
+        if (beklenenKullanici.isEmpty()) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED,"E-posta veya şifre hatalı ya da kayıtlı değil!") ;
         }
-        return "Login Failed";
+
+        User user = beklenenKullanici.get();
+        if (!passwordEncoder.matches(loginDto.getSifre(), user.getSifre())) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED,"Hatalı şifre!");
+        }
+
+        // Başarılı giriş, token üret ve geri döndür
+        return jwtUtil.generateToken(user.getePosta(), user.getKullaniciRole().name());
+    }
+
+    public Optional<User> findByEposta (String ePosta) {
+        return userRepository.findByEPosta(ePosta);
     }
 }

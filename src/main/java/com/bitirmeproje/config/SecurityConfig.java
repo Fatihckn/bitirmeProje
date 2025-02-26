@@ -1,5 +1,7 @@
 package com.bitirmeproje.config;
 
+import com.bitirmeproje.security.CustomAccessDeniedHandler;
+import com.bitirmeproje.security.CustomAuthenticationEntryPoint;
 import com.bitirmeproje.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +18,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint customAuthEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                          CustomAuthenticationEntryPoint customAuthEntryPoint,
+                          CustomAccessDeniedHandler customAccessDeniedHandler) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customAuthEntryPoint = customAuthEntryPoint;
+        this.customAccessDeniedHandler = customAccessDeniedHandler;
     }
 
     @Bean
@@ -32,8 +40,20 @@ public class SecurityConfig {
 
                 // Endpoint izinleri
                 .authorizeHttpRequests(auth -> auth
-                        // Bu endpoint'ler token olmadan erişilebilir
-                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        // Auth işlemleri (JWT olmadan erişilebilir)
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // Şifre sıfırlama işlemleri (JWT olmadan erişilebilir)
+                        .requestMatchers("/api/user/sifre-sifirla").permitAll()
+                        .requestMatchers("/api/user/sifre-dogrula").permitAll()
+                        .requestMatchers("/api/user/yeni-sifre-belirle").permitAll()
+
+                        // Admin işlemleri (Admin yetkisi gerekli)
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // Kullanıcı işlemleri (JWT Token gerektirir)
+                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+
                         // Diğer tüm endpoint'ler token gerektirir
                         .anyRequest().authenticated()
                 )
@@ -42,7 +62,12 @@ public class SecurityConfig {
                 .formLogin(form -> form.disable())
 
                 // Basic Auth'u da kapat
-                .httpBasic(httpBasic -> httpBasic.disable());
+                .httpBasic(httpBasic -> httpBasic.disable())
+
+                        .exceptionHandling(ex -> ex
+                                .authenticationEntryPoint(customAuthEntryPoint)
+                                .accessDeniedHandler(customAccessDeniedHandler)
+                        );
 
         // JWT doğrulama filtresini ekle, UsernamePasswordAuthenticationFilter'dan önce çalışsın
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

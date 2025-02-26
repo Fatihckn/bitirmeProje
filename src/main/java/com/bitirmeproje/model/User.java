@@ -10,16 +10,17 @@ import java.util.List;
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "kullanici_id")
     private int kullaniciId;
 
-    @Column(name = "kullanici_eposta")
+    @Column(name = "kullanici_eposta", unique = true)
     private String ePosta;
 
     @Column(name = "kullanici_sifre")
     private String sifre;
 
-    @Column(name = "kullanici_takma_ad")
+    @Column(name = "kullanici_takma_ad", unique = true)
     private String kullaniciTakmaAd;
 
     @Column(name = "kullanici_profil_resmi")
@@ -28,14 +29,51 @@ public class User {
     @Column(name = "kullanici_bio")
     private String kullaniciBio;
 
-    @Column(name = "kullanici_telefon_no")
+    @Column(name = "kullanici_telefon_no", unique = true)
     private String kullaniciTelefonNo;
 
     @Column(name = "kullanici_dogum_tarihi")
     private LocalDate kullaniciDogumTarihi;
 
-    @Column(name = "kullanici_uye_olma_tarihi", updatable = false)
+    @Column(name = "kullanici_uye_olma_tarihi")
     private LocalDate kullaniciUyeOlmaTarihi;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "kullanici_rol")
+    private Role kullaniciRole;
+
+    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Gonderiler> gonderiler; // Kullanıcının gönderileri
+
+    @OneToMany(mappedBy = "takipEdenKullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follows> takipEdenKullaniciFollows;
+
+    @OneToMany(mappedBy = "takipEdilenKullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Follows> takipEdilenKullaniciFollows;
+
+    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<YeniYorum> yeniYorum;
+
+    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AramaGecmisi> aramaGecmisi;
+
+    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BegenilenGonderiler> begenilenGonderiler;
+
+    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CevapYorum> cevapYorum;
+
+    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CevapYorumBegeniler> cevapYorumBegeniler;
+
+    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<YeniYorumBegeniler> yeniYorumBegeniler;
+
+    @OneToMany(mappedBy = "mesajGonderilenKullaniciId",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Mesaj> mesajGonderilenKullaniciId;
+
+    @OneToMany(mappedBy = "mesajGonderenKullaniciId",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Mesaj> mesajGonderenKullaniciId;
 
     public User() {}
 
@@ -113,6 +151,102 @@ public class User {
 
     public void setKullaniciUyeOlmaTarihi(LocalDate kullaniciUyeOlmaTarihi) {
         this.kullaniciUyeOlmaTarihi = kullaniciUyeOlmaTarihi;
+    }
+
+    public Role getKullaniciRole() {
+        return kullaniciRole;
+    }
+
+    public void setKullaniciRole(Role kullaniciRole) {
+        this.kullaniciRole = kullaniciRole;
+    }
+
+    public List<Gonderiler> getGonderiler() {
+        return gonderiler;
+    }
+
+    public void setGonderiler(List<Gonderiler> gonderiler) {
+        this.gonderiler = gonderiler;
+    }
+
+    public List<Follows> getTakipEdenKullaniciFollows() {
+        return takipEdenKullaniciFollows;
+    }
+
+    public void setTakipEdenKullaniciFollows(List<Follows> takipEdenKullaniciFollows) {
+        this.takipEdenKullaniciFollows = takipEdenKullaniciFollows;
+    }
+
+    public List<Follows> getTakipEdilenKullaniciFollows() {
+        return takipEdilenKullaniciFollows;
+    }
+
+    public void setTakipEdilenKullaniciFollows(List<Follows> takipEdilenKullaniciFollows) {
+        this.takipEdilenKullaniciFollows = takipEdilenKullaniciFollows;
+    }
+
+    public List<YeniYorum> getYeniYorum() {
+        return yeniYorum;
+    }
+
+    public void setYeniYorum(List<YeniYorum> yeniYorum) {
+        this.yeniYorum = yeniYorum;
+    }
+
+    public List<AramaGecmisi> getAramaGecmisi() {
+        return aramaGecmisi;
+    }
+
+    public void setAramaGecmisi(List<AramaGecmisi> aramaGecmisi) {
+        this.aramaGecmisi = aramaGecmisi;
+    }
+
+    public List<BegenilenGonderiler> getBegenilenGonderiler() {
+        return begenilenGonderiler;
+    }
+
+    public void setBegenilenGonderiler(List<BegenilenGonderiler> begenilenGonderiler) {
+        this.begenilenGonderiler = begenilenGonderiler;
+    }
+
+    public List<CevapYorum> getCevapYorum() {
+        return cevapYorum;
+    }
+
+    public void setCevapYorum(List<CevapYorum> cevapYorum) {
+        this.cevapYorum = cevapYorum;
+    }
+
+    public List<CevapYorumBegeniler> getCevapYorumBegeniler() {
+        return cevapYorumBegeniler;
+    }
+
+    public void setCevapYorumBegeniler(List<CevapYorumBegeniler> cevapYorumBegeniler) {
+        this.cevapYorumBegeniler = cevapYorumBegeniler;
+    }
+
+    public List<YeniYorumBegeniler> getYeniYorumBegeniler() {
+        return yeniYorumBegeniler;
+    }
+
+    public void setYeniYorumBegeniler(List<YeniYorumBegeniler> yeniYorumBegeniler) {
+        this.yeniYorumBegeniler = yeniYorumBegeniler;
+    }
+
+    public List<Mesaj> getMesajGonderilenKullaniciId() {
+        return mesajGonderilenKullaniciId;
+    }
+
+    public void setMesajGonderilenKullaniciId(List<Mesaj> mesajGonderilenKullaniciId) {
+        this.mesajGonderilenKullaniciId = mesajGonderilenKullaniciId;
+    }
+
+    public List<Mesaj> getMesajGonderenKullaniciId() {
+        return mesajGonderenKullaniciId;
+    }
+
+    public void setMesajGonderenKullaniciId(List<Mesaj> mesajGonderenKullaniciId) {
+        this.mesajGonderenKullaniciId = mesajGonderenKullaniciId;
     }
 
     @PrePersist

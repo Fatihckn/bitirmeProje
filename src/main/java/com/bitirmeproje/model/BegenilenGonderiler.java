@@ -1,0 +1,58 @@
+package com.bitirmeproje.model;
+
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "begenilen_gonderiler")
+public class BegenilenGonderiler {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "begenilen_gonderiler_id")
+    private int begenilenGonderilerId;
+
+    @ManyToOne
+    @JoinColumn(name = "gonderi_id")
+    private Gonderiler gonderiId;
+
+    @ManyToOne
+    @JoinColumn(name = "kullanici_id")
+    private User kullaniciId;
+
+    @Column(name = "begenme_zamani")
+    private LocalDate begenmeZamani;
+
+    public int getBegenilenGonderilerId() {
+        return begenilenGonderilerId;
+    }
+
+    public void setBegenilenGonderilerId(int begenilenGonderilerId) {
+        this.begenilenGonderilerId = begenilenGonderilerId;
+    }
+
+    public Gonderiler getGonderiId() {
+        return gonderiId;
+    }
+
+    public void setGonderiId(Gonderiler gonderiId) {
+        this.gonderiId = gonderiId;
+    }
+
+    public User getKullaniciId() {
+        return kullaniciId;
+    }
+
+    public void setKullaniciId(User kullaniciId) {
+        this.kullaniciId = kullaniciId;
+    }
+
+    public LocalDate getBegenmeZamani() {
+        return begenmeZamani;
+    }
+
+    public void setBegenmeZamani(LocalDate begenmeZamani) {
+        this.begenmeZamani = begenmeZamani;
+    }
+}

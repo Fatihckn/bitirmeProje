@@ -2,6 +2,8 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.LoginDto;
 import com.bitirmeproje.dto.UserDto;
+import com.bitirmeproje.helper.RequireUserAccess;
+import com.bitirmeproje.helper.UserAccessValidator;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.security.JwtUtil;
 import com.bitirmeproje.service.AuthService;
@@ -10,28 +12,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
-    private JwtUtil jwtUtil;
     private final AuthService authService;
+    private final UserAccessValidator userAccessValidator;
 
-    public AuthController(AuthService authService, JwtUtil jwtUtil) {
-
+    public AuthController(AuthService authService, UserAccessValidator userAccessValidator) {
         this.authService = authService;
-        this.jwtUtil = jwtUtil;
+        this.userAccessValidator = userAccessValidator;
     }
 
     //Kullanıcıyı kaydediyoruz
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody User user) {
-        authService.register(user);
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
+        authService.registerUser(user);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body("User registered successfully");
@@ -41,13 +39,14 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
         String token = authService.login(loginDto);
-
-        if("Login Failed".equals(token)) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body("Login Failed");
-        }
-
         return ResponseEntity.ok(token);
+    }
+
+    // Çıkış yapacak kullanıcının da doğru kullanıcı olup olmadığı denenip dönüş yapılıyor.
+    @PostMapping("/logout/{id}")
+    @RequireUserAccess
+    public ResponseEntity<?> logout(@PathVariable int id) {
+        //User currentUser =  userAccessValidator.validateUserAccess(id);
+        return ResponseEntity.ok("Başarıyla çıkış yapıldı");
     }
 }

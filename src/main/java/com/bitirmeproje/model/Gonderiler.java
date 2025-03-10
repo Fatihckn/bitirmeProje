@@ -1,5 +1,6 @@
 package com.bitirmeproje.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -19,9 +20,9 @@ public class Gonderiler {
 
     @Column(name = "gonderi_tarihi")
     private LocalDate gonderiTarihi;
-
-    @Column(name = "gonderi_begeni_sayisi", nullable = false)
-    private int gonderiBegeniSayisi;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Column(name = "gonderi_begeni_sayisi", nullable = true)
+    private Integer gonderiBegeniSayisi;
 
     @ManyToOne // Bir kullanıcı birden fazla gönderi oluşturabilir
     @JoinColumn(name = "kullanici_id", nullable = false) // Foreign key belirleme
@@ -59,7 +60,7 @@ public class Gonderiler {
     }
 
     public int getGonderiBegeniSayisi() {
-        return gonderiBegeniSayisi;
+        return gonderiBegeniSayisi != null ? gonderiBegeniSayisi : 0;
     }
 
     public void setGonderiBegeniSayisi(int gonderiBegeniSayisi) {

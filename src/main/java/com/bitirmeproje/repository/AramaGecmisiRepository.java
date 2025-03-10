@@ -14,12 +14,18 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface AramaGecmisiRepository extends JpaRepository<AramaGecmisi, Integer>{
+
     List<AramaGecmisi> findByKullaniciId(User kullaniciId);//ID ye göre arama geçmişi listele
+
     void deleteById(int aramaGecmisiId);//ID ye göre arama geçmişi sil
+
+    AramaGecmisi findByAramaGecmisiId(int aramaGecmisiId);
+
     @Query("SELECT a FROM AramaGecmisi a WHERE a.kullaniciId = :kullaniciId AND a.aramaZamani BETWEEN :baslangic AND :bitis")
     List<AramaGecmisi> findByKullaniciIdAndDateRange(@Param("kullaniciId") User kullanici,
                                                      @Param("baslangic") LocalDate baslangic,
                                                      @Param("bitis") LocalDate bitis);// Kullanıcının belirli bir zaman aralığında  yaptığı aramaları listeler
+
     @Query("SELECT a.aramaIcerigi, COUNT(a) FROM AramaGecmisi a GROUP BY a.aramaIcerigi ORDER BY COUNT(a) DESC")
     List<Object[]> findMostPopularSearches();//En çok yapılan aramaları listeleme.
 

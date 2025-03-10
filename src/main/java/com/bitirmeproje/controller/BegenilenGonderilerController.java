@@ -1,79 +1,50 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.model.BegenilenGonderiler;
-import com.bitirmeproje.model.Gonderiler;
-import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
 import com.bitirmeproje.service.BegenilenGonderilerService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.bitirmeproje.dto.BegenilenGonderilerDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/gonderi")
+@RequestMapping("/api/gonderiBegeni")
 public class BegenilenGonderilerController {
     private final BegenilenGonderilerService service;
-    private final UserRepository userRepository; // Kullanıcıyı veritabanından almak için repo
+    private final BegenilenGonderilerService begenilenGonderilerService;
 
-    public BegenilenGonderilerController(BegenilenGonderilerService service, UserRepository userRepository) {
+    public BegenilenGonderilerController(BegenilenGonderilerService service, BegenilenGonderilerService begenilenGonderilerService) {
         this.service = service;
-        this.userRepository = userRepository;
+        this.begenilenGonderilerService = begenilenGonderilerService;
     }
 
-    @PostMapping("/{gonderi_id}/begeni") // Gonderiyi begen
-    public ResponseEntity<String> begeniEkle(@PathVariable("gonderi_id") int gonderiId, @RequestBody User kullanici) {
-        if (kullanici.getKullaniciId() == 0) {
-            return ResponseEntity.badRequest().body("Kullanıcı ID eksik!");
-        }
+    @PostMapping("/{gonderi_id}/begeni")
+    public ResponseEntity<String> begeniEkle(@PathVariable("gonderi_id") int gonderiId,
+                                             Authentication authentication) {
+        // Beğeni işlemini Service katmanına yönlendir
+        begenilenGonderilerService.begeniEkle(gonderiId, authentication.getName());
 
-        // Kullanıcı veritabanında var mı kontrol et
-        User dbKullanici = userRepository.findById(kullanici.getKullaniciId()).orElse(null);
-        if (dbKullanici == null) {
-            return ResponseEntity.badRequest().body("Kullanıcı bulunamadı!");
-        }
-
-        Gonderiler gonderi = new Gonderiler();
-        gonderi.setGonderiId(gonderiId); // ID ile gönderi nesnesi oluştur
-        service.begeniEkle(gonderi, dbKullanici);
-        return ResponseEntity.ok("Begeni eklendi");
+        return ResponseEntity.ok("Beğeni eklendi!");
     }
 
-    @DeleteMapping("/{gonderi_id}/begeni") // Gonderiden begeni kaldır
-    public ResponseEntity<String> begeniKaldir(@PathVariable("gonderi_id") int gonderiId, @RequestBody User kullanici) {
-        if (kullanici.getKullaniciId() == 0) {
-            return ResponseEntity.badRequest().body("Kullanıcı ID eksik!");
-        }
+    @DeleteMapping("/{gonderi_id}/begeni-kaldir") // Gonderiden begeni kaldır
+    public ResponseEntity<String> begeniKaldir(@PathVariable("gonderi_id") int gonderiId,
+                                               Authentication authentication) {
 
-        User dbKullanici = userRepository.findById(kullanici.getKullaniciId()).orElse(null);
-        if (dbKullanici == null) {
-            return ResponseEntity.badRequest().body("Kullanıcı bulunamadı!");
-        }
-
-        Gonderiler gonderi = new Gonderiler();
-        gonderi.setGonderiId(gonderiId);
-        service.begeniKaldir(gonderi, dbKullanici);
+        service.begeniKaldir(gonderiId, authentication.getName());
         return ResponseEntity.ok("Begeni kaldirildi");
     }
 
     @GetMapping("/{gonderi_id}/begeni-sayisi") // Belirli bir gönderinin beğeni sayısını getir
-    public ResponseEntity<Integer> begeniSayisi(@PathVariable("gonderi_id") int gonderiId) {
-        Gonderiler gonderi = new Gonderiler();
-        gonderi.setGonderiId(gonderiId);
-        return ResponseEntity.ok(service.gonderiBegeniSayisi(gonderi));
+    public ResponseEntity<String> begeniSayisi(@PathVariable("gonderi_id") int gonderiId) {
+
+        return ResponseEntity.ok("Gönderinin Beğeni sayısı: " + service.gonderiBegeniSayisi(gonderiId));
     }
 
-    @GetMapping("/kullanici/{kullanici_id}/begenilen-gonderiler")
-    public ResponseEntity<List<BegenilenGonderilerDto>> kullanicininBegenileri(@PathVariable("kullanici_id") int kullaniciId) {
-        User dbKullanici = userRepository.findById(kullaniciId).orElse(null);
-        if (dbKullanici == null) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        return ResponseEntity.ok(service.kullanicininBegenileri(dbKullanici));
-    }
+    @GetMapping("/kullanici/begenilen-gonderiler")
+    public ResponseEntity<List<BegenilenGonderilerDto>> kullanicininBegenileri(Authentication authentication) {
 
-    /*@GetMapping("/populer") // En popüler gönderileri listele
-    public ResponseEntity<List<BegenilenGonderilerDto>> populerGonderiler() {
-        return ResponseEntity.ok(service.populerGonderiler());
-    }*/
+        return ResponseEntity.ok(service.kullanicininBegenileri(authentication.getName()));
+    }
 }

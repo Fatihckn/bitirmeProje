@@ -1,6 +1,8 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.AramaGecmisiDto;
+import com.bitirmeproje.helper.RequireUserAccess;
+import com.bitirmeproje.helper.UserIdControl;
 import com.bitirmeproje.model.AramaGecmisi;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
@@ -17,30 +19,23 @@ import java.util.Optional;
 @RequestMapping("/api/arama")
 public class AramaGecmisiController {
     private final AramaGecmisiService aramaGecmisiService;
-    private final UserRepository userRepository;
 
-    public AramaGecmisiController(AramaGecmisiService aramaGecmisiService, UserRepository userRepository) {
+    public AramaGecmisiController(AramaGecmisiService aramaGecmisiService) {
         this.aramaGecmisiService = aramaGecmisiService;
-        this.userRepository = userRepository;
     }
 
     // Yeni arama kaydetme
     @PostMapping("/yeni")
-    public ResponseEntity<AramaGecmisi> AramaKaydet(@RequestBody AramaGecmisi aramaGecmisi) {
-        AramaGecmisi yeniArama = aramaGecmisiService.AramaKaydet(aramaGecmisi);
-        return ResponseEntity.status(HttpStatus.CREATED).body(yeniArama);
+    public ResponseEntity<String> AramaKaydet(@RequestBody AramaGecmisiDto aramaGecmisi) {
+        aramaGecmisiService.AramaKaydet(aramaGecmisi);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Arama geçmişi kaydedildi");
     }
 
     // Kullanıcının tüm arama geçmişini getirme
     @GetMapping("/gecmis/{kullaniciId}")
     public ResponseEntity<List<AramaGecmisiDto>> getKullaniciAramaGecmisi(@PathVariable int kullaniciId) {
-        Optional<User> kullaniciOpt = userRepository.findById(kullaniciId);
 
-        if (kullaniciOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisi(kullaniciOpt.get());
+        List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisi(kullaniciId);
         return ResponseEntity.ok(aramaGecmisiList);
     }
 
@@ -51,22 +46,17 @@ public class AramaGecmisiController {
             @RequestParam("baslangic") String baslangic,
             @RequestParam("bitis") String bitis) {
 
-        Optional<User> kullaniciOpt = userRepository.findById(kullaniciId);
-        if (kullaniciOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
         List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisiByDate(
-                kullaniciOpt.get(), LocalDate.parse(baslangic), LocalDate.parse(bitis));
+                kullaniciId, LocalDate.parse(baslangic), LocalDate.parse(bitis));
 
         return ResponseEntity.ok(aramaGecmisiList);
     }
 
     // Arama geçmişini silme
     @DeleteMapping("/{aramaGecmisiId}")
-    public ResponseEntity<Void> deleteArama(@PathVariable int aramaGecmisiId) {
+    public ResponseEntity<String> deleteArama(@PathVariable int aramaGecmisiId) {
         aramaGecmisiService.deleteArama(aramaGecmisiId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("Arama Gecmisi Silindi");
     }
 
     // En çok yapılan aramaları getir

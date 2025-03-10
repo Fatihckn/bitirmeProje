@@ -54,4 +54,11 @@ public class AramaGecmisi {
     public void setKullaniciId(User kullaniciId) {
         this.kullaniciId = kullaniciId;
     }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.aramaZamani == null) {
+            this.aramaZamani = LocalDate.now();
+        }
+    }
 }

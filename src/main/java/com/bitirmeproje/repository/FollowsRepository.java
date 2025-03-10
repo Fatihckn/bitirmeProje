@@ -15,20 +15,19 @@ import java.util.Optional;
 
 @Repository
 public interface FollowsRepository extends JpaRepository<Follows, Integer> {
+
     //Bir kullanıcının başka bir kullanıcıyı takip edip etmediğini kontrol eder.
     @Query("SELECT f FROM Follows f WHERE f.takipEdenKullaniciId = :follower AND f.takipEdilenKullaniciId = :following")
     Optional<Follows> findByFollowerAndFollowing(@Param("follower") User follower, @Param("following") User following);
+
     //Belirtilen kullanıcının tüm takipçilerini (onu takip edenleri) getirir.
     @Query("SELECT f.takipEdenKullaniciId FROM Follows f WHERE f.takipEdilenKullaniciId.kullaniciId = :userId")
     List<User> findByFollowersUserId(@Param("userId") int userId);
+
     //Belirtilen kullanıcının takip ettiği tüm kullanıcıları getirir.
     @Query("SELECT f.takipEdilenKullaniciId FROM Follows f WHERE f.takipEdenKullaniciId.kullaniciId = :userId")
     List<User> findByFollowingUserId(@Param("userId") int userId);
-    @Query("DELETE FROM Follows f WHERE f.takipEdenKullaniciId.kullaniciId = :takipEdenId " +
-            "AND f.takipEdilenKullaniciId.kullaniciId = :takipEdilenId")
-    @Modifying
-    @Transactional
-    void takiptenCik(@Param("takipEdenId") int takipEdenId, @Param("takipEdilenId") int takipEdilenId);
+
     @Query("SELECT new com.bitirmeproje.dto.PopulerKullaniciDto( k.kullaniciId, k.kullaniciTakmaAd, COUNT(f) ) " +
             "FROM Follows f " +
             "JOIN f.takipEdilenKullaniciId k " +

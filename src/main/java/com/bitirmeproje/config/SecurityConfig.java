@@ -53,6 +53,10 @@ public class SecurityConfig {
 
                         // Kullanıcı işlemleri (JWT Token gerektirir)
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/arama/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/gonderiBegeni/**").hasAnyRole("USER", "ADMIN")
+
+
 
                         // Diğer tüm endpoint'ler token gerektirir
                         .anyRequest().authenticated()

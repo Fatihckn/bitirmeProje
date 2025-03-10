@@ -55,4 +55,11 @@ public class BegenilenGonderiler {
     public void setBegenmeZamani(LocalDate begenmeZamani) {
         this.begenmeZamani = begenmeZamani;
     }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.begenmeZamani == null) {
+            this.begenmeZamani = LocalDate.now();
+        }
+    }
 }

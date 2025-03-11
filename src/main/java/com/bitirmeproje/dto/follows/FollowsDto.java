@@ -1,4 +1,4 @@
-package com.bitirmeproje.dto;
+package com.bitirmeproje.dto.follows;
 
 import java.time.LocalDate;
 

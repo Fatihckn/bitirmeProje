@@ -1,6 +1,9 @@
 package com.bitirmeproje.service;
 
-import com.bitirmeproje.dto.*;
+import com.bitirmeproje.dto.user.ChangeEmailDto;
+import com.bitirmeproje.dto.user.SifreDegistirDto;
+import com.bitirmeproje.dto.user.UserDto;
+import com.bitirmeproje.dto.user.UserUpdateDto;
 import com.bitirmeproje.model.User;
 
 import java.util.List;

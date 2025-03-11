@@ -1,4 +1,4 @@
-package com.bitirmeproje.dto;
+package com.bitirmeproje.dto.user;
 
 import com.bitirmeproje.model.Role;
 import java.time.LocalDate;

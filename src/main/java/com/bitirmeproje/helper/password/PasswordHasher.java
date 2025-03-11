@@ -1,4 +1,4 @@
-package com.bitirmeproje.helper;
+package com.bitirmeproje.helper.password;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

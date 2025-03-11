@@ -1,4 +1,4 @@
-package com.bitirmeproje.dto;
+package com.bitirmeproje.dto.aramagecmisi;
 
 import java.time.LocalDate;
 
@@ -6,13 +6,11 @@ public class AramaGecmisiDto {
     private int aramaGecmisiId;
     private String aramaIcerigi;
     private LocalDate aramaZamani;
-    private int kullaniciId;
 
-    public AramaGecmisiDto(int aramaGecmisiId, String aramaIcerigi, LocalDate aramaZamani, int kullaniciId) {
+    public AramaGecmisiDto(int aramaGecmisiId, String aramaIcerigi, LocalDate aramaZamani) {
         this.aramaGecmisiId = aramaGecmisiId;
         this.aramaIcerigi = aramaIcerigi;
         this.aramaZamani = aramaZamani;
-        this.kullaniciId = kullaniciId;
     }
 
     public int getAramaGecmisiId() {
@@ -25,9 +23,5 @@ public class AramaGecmisiDto {
 
     public LocalDate getAramaZamani() {
         return aramaZamani;
-    }
-
-    public int getKullaniciId() {
-        return kullaniciId;
     }
 }

@@ -1,14 +1,15 @@
 package com.bitirmeproje.service;
 import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.model.BegenilenGonderiler;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.BegenilenGonderilerRepository;
-import com.bitirmeproje.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.bitirmeproje.dto.BegenilenGonderilerDto;
+import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
 
 import java.util.List;
 
@@ -16,19 +17,18 @@ import java.util.List;
 public class BegenilenGonderilerService {
 
     private final BegenilenGonderilerRepository begenilenGonderilerRepository;
-    private final UserRepository userRepository;
+    private final FindUser<String> findUser;
 
-    public BegenilenGonderilerService(BegenilenGonderilerRepository begenilenGonderilerRepository, UserRepository userRepository)//Repoyla bağlılığı sağlandı heralde
+    public BegenilenGonderilerService(BegenilenGonderilerRepository begenilenGonderilerRepository,@Qualifier("findUserByEmail") FindUser<String> findUser)//Repoyla bağlılığı sağlandı heralde
     {
         this.begenilenGonderilerRepository=begenilenGonderilerRepository;
-        this.userRepository=userRepository;
+        this.findUser = findUser;
     }
 
     // Gönderi Beğenme
     public void begeniEkle(int gonderiId, String kullaniciEmail) {
         // Kullanıcıyı email ile bul
-        User kullanici = userRepository.findByEPosta(kullaniciEmail)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı!"));
+        User kullanici = findUser.findUser(kullaniciEmail);
 
         // Gonderiler nesnesini oluşturan metod çağırılıyor
         Gonderiler gonderi = getGonderiById(gonderiId);
@@ -65,8 +65,7 @@ public class BegenilenGonderilerService {
     public void begeniKaldir(int gonderiId,String kullaniciEmail) {
 
         // Kullanıcıyı email ile bul
-        User kullanici = userRepository.findByEPosta(kullaniciEmail)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı!"));
+        User kullanici = findUser.findUser(kullaniciEmail);
 
         Gonderiler gonderi = getGonderiById(gonderiId);
 
@@ -80,16 +79,15 @@ public class BegenilenGonderilerService {
 
     // Gönderinin beğeni sayısı
     public int gonderiBegeniSayisi(int gonderiId) {
+
         Gonderiler gonderi = getGonderiById(gonderiId);
-        gonderi.setGonderiId(gonderiId);
         return begenilenGonderilerRepository.countByGonderiId(gonderi);
     }
 
     //belirli bir kullanıcının beğendiği gönderiler
     public List<BegenilenGonderilerDto> kullanicininBegenileri(String kullaniciEmail)
     {
-        User kullanici = userRepository.findByEPosta(kullaniciEmail)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı!"));
+        User kullanici = findUser.findUser(kullaniciEmail);
 
         List<BegenilenGonderiler> begenilenGonderilers = begenilenGonderilerRepository.findByKullaniciId(kullanici);
         if (begenilenGonderilers.isEmpty()) {

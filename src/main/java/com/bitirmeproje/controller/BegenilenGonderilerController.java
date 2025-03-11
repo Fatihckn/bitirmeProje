@@ -1,21 +1,18 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.repository.UserRepository;
 import com.bitirmeproje.service.BegenilenGonderilerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import com.bitirmeproje.dto.BegenilenGonderilerDto;
+import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/gonderiBegeni")
 public class BegenilenGonderilerController {
-    private final BegenilenGonderilerService service;
     private final BegenilenGonderilerService begenilenGonderilerService;
 
-    public BegenilenGonderilerController(BegenilenGonderilerService service, BegenilenGonderilerService begenilenGonderilerService) {
-        this.service = service;
+    public BegenilenGonderilerController(BegenilenGonderilerService begenilenGonderilerService) {
         this.begenilenGonderilerService = begenilenGonderilerService;
     }
 
@@ -32,19 +29,19 @@ public class BegenilenGonderilerController {
     public ResponseEntity<String> begeniKaldir(@PathVariable("gonderi_id") int gonderiId,
                                                Authentication authentication) {
 
-        service.begeniKaldir(gonderiId, authentication.getName());
+        begenilenGonderilerService.begeniKaldir(gonderiId, authentication.getName());
         return ResponseEntity.ok("Begeni kaldirildi");
     }
 
     @GetMapping("/{gonderi_id}/begeni-sayisi") // Belirli bir gönderinin beğeni sayısını getir
     public ResponseEntity<String> begeniSayisi(@PathVariable("gonderi_id") int gonderiId) {
 
-        return ResponseEntity.ok("Gönderinin Beğeni sayısı: " + service.gonderiBegeniSayisi(gonderiId));
+        return ResponseEntity.ok("Gönderinin Beğeni sayısı: " + begenilenGonderilerService.gonderiBegeniSayisi(gonderiId));
     }
 
     @GetMapping("/kullanici/begenilen-gonderiler")
     public ResponseEntity<List<BegenilenGonderilerDto>> kullanicininBegenileri(Authentication authentication) {
 
-        return ResponseEntity.ok(service.kullanicininBegenileri(authentication.getName()));
+        return ResponseEntity.ok(begenilenGonderilerService.kullanicininBegenileri(authentication.getName()));
     }
 }

@@ -1,11 +1,9 @@
 package com.bitirmeproje.repository;
 
-import com.bitirmeproje.dto.PopulerKullaniciDto;
+import com.bitirmeproje.dto.follows.PopulerKullaniciDto;
 import com.bitirmeproje.model.Follows;
 import com.bitirmeproje.model.User;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -28,7 +26,7 @@ public interface FollowsRepository extends JpaRepository<Follows, Integer> {
     @Query("SELECT f.takipEdilenKullaniciId FROM Follows f WHERE f.takipEdenKullaniciId.kullaniciId = :userId")
     List<User> findByFollowingUserId(@Param("userId") int userId);
 
-    @Query("SELECT new com.bitirmeproje.dto.PopulerKullaniciDto( k.kullaniciId, k.kullaniciTakmaAd, COUNT(f) ) " +
+    @Query("SELECT new com.bitirmeproje.dto.follows.PopulerKullaniciDto( k.kullaniciId, k.kullaniciTakmaAd, COUNT(f) ) " +
             "FROM Follows f " +
             "JOIN f.takipEdilenKullaniciId k " +
             "GROUP BY k.kullaniciId, k.kullaniciTakmaAd " +

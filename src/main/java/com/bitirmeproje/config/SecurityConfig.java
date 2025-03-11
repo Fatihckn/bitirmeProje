@@ -1,8 +1,8 @@
 package com.bitirmeproje.config;
 
-import com.bitirmeproje.security.CustomAccessDeniedHandler;
-import com.bitirmeproje.security.CustomAuthenticationEntryPoint;
-import com.bitirmeproje.security.JwtAuthenticationFilter;
+import com.bitirmeproje.security.exception.CustomAccessDeniedHandler;
+import com.bitirmeproje.security.exception.CustomAuthenticationEntryPoint;
+import com.bitirmeproje.security.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

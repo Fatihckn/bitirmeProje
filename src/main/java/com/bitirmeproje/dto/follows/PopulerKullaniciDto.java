@@ -1,4 +1,4 @@
-package com.bitirmeproje.dto;
+package com.bitirmeproje.dto.follows;
 
 public class PopulerKullaniciDto {
     private int kullaniciId;

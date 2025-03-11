@@ -1,18 +1,16 @@
 package com.bitirmeproje.service;
 
-import com.bitirmeproje.dto.LoginDto;
+import com.bitirmeproje.dto.auth.LoginDto;
 import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.model.Role;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
-import com.bitirmeproje.security.JwtAuthenticationFilter;
-import com.bitirmeproje.security.JwtUtil;
+import com.bitirmeproje.security.jwt.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -20,11 +18,13 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final FindUser<String> findUser;
 
-    AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, FindUser<String> findUser) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.findUser = findUser;
     }
 
     // Kullanıcı kayıt servisi
@@ -41,22 +41,13 @@ public class AuthService {
         userRepository.save(user);
     }
     public String login(LoginDto loginDto) {
-        Optional<User> beklenenKullanici = userRepository.findByEPosta(loginDto.getePosta());
+        User user = findUser.findUser(loginDto.getePosta());
 
-        if (beklenenKullanici.isEmpty()) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED,"E-posta veya şifre hatalı ya da kayıtlı değil!") ;
-        }
-
-        User user = beklenenKullanici.get();
         if (!passwordEncoder.matches(loginDto.getSifre(), user.getSifre())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED,"Hatalı şifre!");
         }
 
         // Başarılı giriş, token üret ve geri döndür
         return jwtUtil.generateToken(user.getePosta(), user.getKullaniciRole().name());
-    }
-
-    public Optional<User> findByEposta (String ePosta) {
-        return userRepository.findByEPosta(ePosta);
     }
 }

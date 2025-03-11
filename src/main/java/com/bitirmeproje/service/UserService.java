@@ -1,18 +1,20 @@
 package com.bitirmeproje.service;
 
-import com.bitirmeproje.dto.*;
+import com.bitirmeproje.dto.user.ChangeEmailDto;
+import com.bitirmeproje.dto.user.SifreDegistirDto;
+import com.bitirmeproje.dto.user.UserDto;
+import com.bitirmeproje.dto.user.UserUpdateDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.PasswordHasher;
+import com.bitirmeproje.helper.password.PasswordHasher;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.model.Follows;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.FollowsRepository;
 import com.bitirmeproje.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.IIOException;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +25,13 @@ public class UserService implements IUserService{
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
     private final FollowsRepository followsRepository;
+    private final FindUser<Integer> findUser;
 
-    UserService(UserRepository userRepository, PasswordHasher passwordHasher, FollowsRepository followsRepository) {
+    UserService(UserRepository userRepository, PasswordHasher passwordHasher, FollowsRepository followsRepository,@Qualifier("findUserById") FindUser<Integer> findUser) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
         this.followsRepository = followsRepository;
+        this.findUser = findUser;
     }
 
     // Kullanıcnın şifresini değiştiriyoruz(Şifremi unuttum değil)
@@ -122,13 +126,7 @@ public class UserService implements IUserService{
 
     // Kullanıcının istediği kişiyi takipten çık
     public void unfollowUser(User follower, int takipEdilenId) {
-        Optional<User> followingUserOptional = userRepository.findByKullaniciId(takipEdilenId);
-
-        if (followingUserOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Takipten çıkılmak istenen kullanıcı bulunamadı!");
-        }
-
-        User followingUser = followingUserOptional.get();
+        User followingUser = findUser.findUser(takipEdilenId);
 
         // Kullanıcı kendi kendisini takipten çıkamaz çünkü zaten takip etmiyor
         if (follower.getKullaniciId() == followingUser.getKullaniciId()) {
@@ -148,11 +146,8 @@ public class UserService implements IUserService{
 
     // Kullanıcıyı takip eden kişileri getir
     public List<UserDto> getFollowers(int userId) {
-        Optional<User> userOptional = userRepository.findByKullaniciId(userId);
 
-        if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı!");
-        }
+        findUser.findUser(userId);
 
         List<User> followers = followsRepository.findByFollowersUserId(userId);
 
@@ -175,11 +170,8 @@ public class UserService implements IUserService{
 
     // Kullanıcının takip ettiği kişileri getir.
     public List<UserDto> getFollowing(int userId) {
-        Optional<User> userOptional = userRepository.findByKullaniciId(userId);
 
-        if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı!");
-        }
+        findUser.findUser(userId);
 
         List<User> following = followsRepository.findByFollowingUserId(userId);
 
@@ -202,13 +194,8 @@ public class UserService implements IUserService{
 
     // Kullanıcının bilgilerini güncelle.
     public void updateUser(int userId, UserUpdateDto userUpdateDto) {
-        Optional<User> userOptional = userRepository.findByKullaniciId(userId);
 
-        if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı!");
-        }
-
-        User user = userOptional.get();
+        User user = findUser.findUser(userId);
 
         // Güncellenen değerleri boş değilse ata, boşsa eski değerleri koru
         if (userUpdateDto.getKullaniciTakmaAd() != null && !userUpdateDto.getKullaniciTakmaAd().isEmpty()) {
@@ -230,23 +217,17 @@ public class UserService implements IUserService{
 
     // ID'ye göre kullanıcı bilgilerini getir.
     public List<UserDto> findUserById(int id) {
-        Optional<User> users = userRepository.findById(id);
+        User users = findUser.findUser(id);
 
-        if (users.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Kullanıcı bulunamadı");
-        }
-
-        return users.stream()
-                .map(user -> new UserDto(
-                        user.getKullaniciTakmaAd(),
-                        user.getePosta(),
-                        user.getKullaniciBio(),
-                        user.getKullaniciProfilResmi(),
-                        user.getKullaniciTelefonNo(),
-                        user.getKullaniciDogumTarihi(),
-                        user.getKullaniciUyeOlmaTarihi()
-                ))
-                .toList();
+        return List.of(new UserDto(
+                users.getKullaniciTakmaAd(),
+                users.getePosta(),
+                users.getKullaniciBio(),
+                users.getKullaniciProfilResmi(),
+                users.getKullaniciTelefonNo(),
+                users.getKullaniciDogumTarihi(),
+                users.getKullaniciUyeOlmaTarihi()
+        ));
     }
 
     // Şifreyi kaydet
@@ -262,13 +243,7 @@ public class UserService implements IUserService{
 
     // Kullanıcı e-posta değiştiriyoruz
     public void changeUserEmail(int userId, ChangeEmailDto changeEmailDto) {
-        Optional<User> userOptional = userRepository.findByKullaniciId(userId);
-
-        if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı!");
-        }
-
-        User user = userOptional.get();
+        User user = findUser.findUser(userId);
 
         // Eski e-posta eşleşiyor mu kontrol et
         if (!user.getePosta().equals(changeEmailDto.getEskiEposta())) {
@@ -289,6 +264,4 @@ public class UserService implements IUserService{
         user.setePosta(changeEmailDto.getYeniEposta());
         userRepository.save(user);
     }
-
-
 }

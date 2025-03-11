@@ -26,7 +26,7 @@ public class UserAccessAspect {
         this.userService = userService;
     }
 
-    @Before("@annotation(com.bitirmeproje.helper.RequireUserAccess)")
+    @Before("@annotation(com.bitirmeproje.helper.user.RequireUserAccess)")
     public void validateUserAccess(JoinPoint joinPoint) {
         // SecurityContext'ten giriş yapan kullanıcının email'ini al
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

@@ -1,7 +1,7 @@
 package com.bitirmeproje.service;
 
-import com.bitirmeproje.dto.UserAllDto;
-import com.bitirmeproje.dto.UserUpdateDto;
+import com.bitirmeproje.dto.user.UserAllDto;
+import com.bitirmeproje.dto.user.UserUpdateDto;
 
 import java.util.List;
 

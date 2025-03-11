@@ -1,4 +1,4 @@
-package com.bitirmeproje.dto;
+package com.bitirmeproje.dto.gonderi;
 
 public class GonderiDto {
     private int gonderiId;

@@ -1,17 +1,11 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.dto.LoginDto;
-import com.bitirmeproje.dto.UserDto;
-import com.bitirmeproje.helper.RequireUserAccess;
-import com.bitirmeproje.helper.UserAccessValidator;
+import com.bitirmeproje.dto.auth.LoginDto;
+import com.bitirmeproje.helper.user.RequireUserAccess;
 import com.bitirmeproje.model.User;
-import com.bitirmeproje.security.JwtUtil;
 import com.bitirmeproje.service.AuthService;
-import org.apache.coyote.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,11 +13,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserAccessValidator userAccessValidator;
 
-    public AuthController(AuthService authService, UserAccessValidator userAccessValidator) {
+    public AuthController(AuthService authService) {
         this.authService = authService;
-        this.userAccessValidator = userAccessValidator;
     }
 
     //Kullanıcıyı kaydediyoruz
@@ -45,8 +37,5 @@ public class AuthController {
     // Çıkış yapacak kullanıcının da doğru kullanıcı olup olmadığı denenip dönüş yapılıyor.
     @PostMapping("/logout/{id}")
     @RequireUserAccess
-    public ResponseEntity<?> logout(@PathVariable int id) {
-        //User currentUser =  userAccessValidator.validateUserAccess(id);
-        return ResponseEntity.ok("Başarıyla çıkış yapıldı");
-    }
+    public ResponseEntity<?> logout(@PathVariable int id) {return ResponseEntity.ok("Başarıyla çıkış yapıldı");}
 }

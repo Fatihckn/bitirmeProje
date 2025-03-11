@@ -1,4 +1,4 @@
-package com.bitirmeproje.helper;
+package com.bitirmeproje.helper.user;
 
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.model.User;

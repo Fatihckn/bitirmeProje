@@ -1,23 +1,28 @@
 package com.bitirmeproje.service;
 
-import com.bitirmeproje.dto.UserAllDto;
-import com.bitirmeproje.dto.UserUpdateDto;
+import com.bitirmeproje.dto.user.UserAllDto;
+import com.bitirmeproje.dto.user.UserUpdateDto;
 import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 public class AdminUserService implements IAdminUserService {
 
     private final UserRepository userRepository;
+    private final FindUser<Integer> findUser;
 
-    AdminUserService(UserRepository userRepository) {
+    AdminUserService(UserRepository userRepository,
+                     @Qualifier("findUserById") FindUser<Integer> findUser) {
         this.userRepository = userRepository;
+        this.findUser = findUser;
     }
 
     // Kullanıcının bütün bilgilerini getir(Admin API'si için)
@@ -63,29 +68,19 @@ public class AdminUserService implements IAdminUserService {
 
     // İstediğin kullanıcının bilgilerini güncelle.
     public void updateUser(int userId, UserUpdateDto userUpdateDto) {
-        Optional<User> userOptional = userRepository.findByKullaniciId(userId);
+        User user = findUser.findUser(userId);
 
-        if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı!");
-        }
+        updateField(userUpdateDto.getKullaniciTakmaAd(), user::setKullaniciTakmaAd);
+        updateField(userUpdateDto.getKullaniciBio(), user::setKullaniciBio);
+        updateField(userUpdateDto.getKullaniciTelefonNo(), user::setKullaniciTelefonNo);
+        updateField(userUpdateDto.getKullaniciProfilResmi(), user::setKullaniciProfilResmi);
 
-        User user = userOptional.get();
-
-        // Güncellenen değerleri boş değilse ata, boşsa eski değerleri koru
-        if (userUpdateDto.getKullaniciTakmaAd() != null && !userUpdateDto.getKullaniciTakmaAd().isEmpty()) {
-            user.setKullaniciTakmaAd(userUpdateDto.getKullaniciTakmaAd());
-        }
-        if (userUpdateDto.getKullaniciBio() != null && !userUpdateDto.getKullaniciBio().isEmpty()) {
-            user.setKullaniciBio(userUpdateDto.getKullaniciBio());
-        }
-        if (userUpdateDto.getKullaniciTelefonNo() != null && !userUpdateDto.getKullaniciTelefonNo().isEmpty()) {
-            user.setKullaniciTelefonNo(userUpdateDto.getKullaniciTelefonNo());
-        }
-        if (userUpdateDto.getKullaniciProfilResmi() != null && !userUpdateDto.getKullaniciProfilResmi().isEmpty()) {
-            user.setKullaniciProfilResmi(userUpdateDto.getKullaniciProfilResmi());
-        }
-
-        // Güncellenmiş kullanıcıyı kaydet
         userRepository.save(user);
+    }
+
+    private void updateField(String newValue, Consumer<String> setter) {
+        if (newValue != null && !newValue.isEmpty()) {
+            setter.accept(newValue);
+        }
     }
 }

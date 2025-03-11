@@ -1,12 +1,9 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.dto.UserAllDto;
-import com.bitirmeproje.dto.UserDto;
-import com.bitirmeproje.dto.UserUpdateDto;
-import com.bitirmeproje.helper.RequireUserAccess;
+import com.bitirmeproje.dto.user.UserAllDto;
+import com.bitirmeproje.dto.user.UserUpdateDto;
 import com.bitirmeproje.service.AdminUserService;
 import com.bitirmeproje.service.IAdminUserService;
-import com.bitirmeproje.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +21,7 @@ public class AdminUserController {
 
     // Bütün kullanıcılar getiriliyor.
     @GetMapping("/allUsers")
-    public List<UserAllDto> findAll(){
-        List<UserAllDto> userDtos = adminUserService.findAll();
-        return userDtos;
-    }
+    public List<UserAllDto> findAll(){return adminUserService.findAll();}
 
     // Aradığın kullanıcının bilgileri getiriliyor
     @GetMapping("/arama")

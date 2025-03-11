@@ -1,4 +1,4 @@
-package com.bitirmeproje.dto;
+package com.bitirmeproje.dto.user;
 
 public class ChangeEmailDto {
     private String eskiEposta;

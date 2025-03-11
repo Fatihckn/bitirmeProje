@@ -1,8 +1,7 @@
-package com.bitirmeproje.helper;
+package com.bitirmeproje.helper.otp;
 
 import org.springframework.stereotype.Component;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class OtpStorage {

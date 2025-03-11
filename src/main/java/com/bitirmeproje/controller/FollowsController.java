@@ -1,8 +1,6 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.dto.FollowsDto;
-import com.bitirmeproje.dto.PopulerKullaniciDto;
-import com.bitirmeproje.model.Follows;
+import com.bitirmeproje.dto.follows.PopulerKullaniciDto;
 import com.bitirmeproje.service.FollowsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package com.bitirmeproje.security;
+package com.bitirmeproje.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

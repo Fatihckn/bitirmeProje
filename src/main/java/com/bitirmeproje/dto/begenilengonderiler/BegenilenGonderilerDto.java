@@ -1,4 +1,4 @@
-package com.bitirmeproje.dto;
+package com.bitirmeproje.dto.begenilengonderiler;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

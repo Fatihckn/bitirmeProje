@@ -1,11 +1,14 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.dto.*;
+import com.bitirmeproje.dto.user.ChangeEmailDto;
+import com.bitirmeproje.dto.user.SifreDegistirDto;
+import com.bitirmeproje.dto.user.UserDto;
+import com.bitirmeproje.dto.user.UserUpdateDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.OtpGenerator;
-import com.bitirmeproje.helper.OtpStorage;
-import com.bitirmeproje.helper.RequireUserAccess;
-import com.bitirmeproje.helper.UserAccessValidator;
+import com.bitirmeproje.helper.otp.OtpGenerator;
+import com.bitirmeproje.helper.otp.OtpStorage;
+import com.bitirmeproje.helper.user.RequireUserAccess;
+import com.bitirmeproje.helper.user.UserAccessValidator;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.service.EmailService;
 import com.bitirmeproje.service.IUserService;

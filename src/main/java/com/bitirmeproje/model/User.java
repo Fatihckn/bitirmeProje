@@ -1,5 +1,6 @@
 package com.bitirmeproje.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -42,6 +43,7 @@ public class User {
     @Column(name = "kullanici_rol")
     private Role kullaniciRole;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Gonderiler> gonderiler; // Kullanıcının gönderileri
 

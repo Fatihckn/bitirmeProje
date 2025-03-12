@@ -3,12 +3,15 @@ package com.bitirmeproje.controller;
 import com.bitirmeproje.dto.auth.LoginDto;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.service.AuthService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:8080") // Doğru kullanım
 public class AuthController {
 
     private final AuthService authService;
@@ -28,8 +31,16 @@ public class AuthController {
 
     //Kullanıcı oturumunu kontrol edip token döndürüyoruz
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<String> login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+
         String token = authService.login(loginDto);
+
+        Cookie cookie = new Cookie("JSESSION", token);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        response.addCookie(cookie);
+
         return ResponseEntity.ok(token);
     }
 

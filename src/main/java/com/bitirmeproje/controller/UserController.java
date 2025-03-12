@@ -23,6 +23,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
+@CrossOrigin(origins = "http://localhost:8080") // Doğru kullanım
 public class UserController {
     private final IUserService userService;
     private final EmailService emailService;

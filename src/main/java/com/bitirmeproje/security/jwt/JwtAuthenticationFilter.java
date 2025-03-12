@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -34,12 +35,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+        String jwt = null;
+        if(request.getCookies()!=null){
+            for(Cookie cookie:request.getCookies()){
+                if(cookie.getName().equals("JSESSION")){
+                    jwt = cookie.getValue();
+                }
+            }
+        }
+
+        System.out.println("JAF: calisti1");
+
+
+
+
 
         // "Bearer " ile başlayan token var mı?
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-
+        if (jwt != null) {
+            String token = jwt;
+            System.out.println("token= "+token);
             try {
                 // Token'ı parse edelim
                 Claims claims = Jwts.parser()
@@ -48,16 +62,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .parseClaimsJws(token)
                         .getBody();
 
+                System.out.println("token= "+token);
                 String email = claims.getSubject();
                 String role  = claims.get("role", String.class);
+                System.out.println("JAF: calisti2");
 
                 if (email == null || role == null) {
+                    System.out.println("JAF: calisti3");
                     throw new BadCredentialsException("Token formatı geçersiz: email veya role yok!");
                 }
 
                 // Süre dolmuş mu?
                 Date expiration = claims.getExpiration();
                 if (expiration.before(new Date())) {
+                    System.out.println("JAF: calisti3");
                     throw new BadCredentialsException("Token süresi dolmuş!");
                 }
 

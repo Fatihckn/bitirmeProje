@@ -222,7 +222,10 @@ public class UserService implements IUserService{
 
     // ID'ye göre kullanıcı bilgilerini getir.
     public UserDto findUserById() {
+        System.out.println("US hata1");
         User users = findUser.findUser(jwtUtil.extractUserId());
+        System.out.println("US hata2");
+
 
         return new UserDto(
                 users.getKullaniciTakmaAd(),

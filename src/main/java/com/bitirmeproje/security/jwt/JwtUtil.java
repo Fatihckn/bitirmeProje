@@ -4,6 +4,7 @@ import com.bitirmeproje.exception.CustomException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,7 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + expirationTime))
                 .signWith(getSigningKey())
                 .compact();
+
     }
 
     // Token geçerli mi kontrol et
@@ -65,20 +67,52 @@ public class JwtUtil {
         return extractAllClaims(token).get("role", String.class);
     }
 
-    public Integer extractUserId() {
-        String token = request.getHeader("Authorization");
+//    public Integer extractUserId() {
+//        String token = request.getHeader("Authorization");
+//
+//        if (token == null || !token.startsWith("Bearer ")) {
+//            throw new CustomException(HttpStatus.UNAUTHORIZED, "JWT bulunamadı veya geçersiz!");
+//        }
+//
+//        String jwt = token.substring(7); // "Bearer " kısmını çıkar
+//        try {
+//            return extractAllClaims(jwt).get("userId", Integer.class);
+//        } catch (Exception e) {
+//            throw new CustomException(HttpStatus.FORBIDDEN, "Geçersiz veya süresi dolmuş JWT!");
+//        }
+//    }
 
-        if (token == null || !token.startsWith("Bearer ")) {
+    public Integer extractUserId() {
+
+        String jwt = null;
+        if(request.getCookies()!=null){
+            for(Cookie cookie:request.getCookies()){
+                if(cookie.getName().equals("JSESSION")){
+                    jwt = cookie.getValue();
+                }
+            }
+        }
+        System.out.println("JU: calisti1");
+
+        if(jwt==null){
+            System.out.println("JU: calisti2");
             throw new CustomException(HttpStatus.UNAUTHORIZED, "JWT bulunamadı veya geçersiz!");
         }
 
-        String jwt = token.substring(7); // "Bearer " kısmını çıkar
-        try {
+        try{
+            System.out.println("JU: calisti2");
+            System.out.println("gelen jwt degeri="+extractAllClaims(jwt).get("userId", Integer.class));
             return extractAllClaims(jwt).get("userId", Integer.class);
-        } catch (Exception e) {
+        }
+        catch (Exception e){
+            System.out.println("JU: calisti3");
             throw new CustomException(HttpStatus.FORBIDDEN, "Geçersiz veya süresi dolmuş JWT!");
         }
+
+
     }
+
+
 
     // Token içinden Expiration bilgisini çek
     public Date extractExpiration(String token) {

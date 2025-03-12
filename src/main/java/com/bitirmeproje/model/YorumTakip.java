@@ -15,10 +15,6 @@ public class YorumTakip {
     @JoinColumn(name = "yeni_yorum_id")
     private YeniYorum yeniYorumId;
 
-    @ManyToOne
-    @JoinColumn(name = "cevap_yorum_id")
-    private CevapYorum cevapYorumId;
-
     public int getYorumTakipId() {
         return yorumTakipId;
     }
@@ -33,14 +29,6 @@ public class YorumTakip {
 
     public void setYorumYorumId(YeniYorum yorumYorumId) {
         this.yeniYorumId = yorumYorumId;
-    }
-
-    public CevapYorum getCevapYorumId() {
-        return cevapYorumId;
-    }
-
-    public void setCevapYorumId(CevapYorum cevapYorumId) {
-        this.cevapYorumId = cevapYorumId;
     }
 
     public YeniYorum getYeniYorumId() {

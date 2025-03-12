@@ -62,13 +62,7 @@ public class User {
     @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BegenilenGonderiler> begenilenGonderiler;
 
-    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CevapYorum> cevapYorum;
-
-    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CevapYorumBegeniler> cevapYorumBegeniler;
-
-    @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "kullanici", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<YeniYorumBegeniler> yeniYorumBegeniler;
 
     @OneToMany(mappedBy = "mesajGonderilenKullaniciId",cascade = CascadeType.ALL, orphanRemoval = true)
@@ -213,22 +207,6 @@ public class User {
 
     public void setBegenilenGonderiler(List<BegenilenGonderiler> begenilenGonderiler) {
         this.begenilenGonderiler = begenilenGonderiler;
-    }
-
-    public List<CevapYorum> getCevapYorum() {
-        return cevapYorum;
-    }
-
-    public void setCevapYorum(List<CevapYorum> cevapYorum) {
-        this.cevapYorum = cevapYorum;
-    }
-
-    public List<CevapYorumBegeniler> getCevapYorumBegeniler() {
-        return cevapYorumBegeniler;
-    }
-
-    public void setCevapYorumBegeniler(List<CevapYorumBegeniler> cevapYorumBegeniler) {
-        this.cevapYorumBegeniler = cevapYorumBegeniler;
     }
 
     public List<YeniYorumBegeniler> getYeniYorumBegeniler() {

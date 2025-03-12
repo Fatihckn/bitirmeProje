@@ -2,6 +2,7 @@ package com.bitirmeproje.repository;
 
 import com.bitirmeproje.dto.gonderiler.GonderiResponseDto;
 import com.bitirmeproje.model.Gonderiler;
+import com.bitirmeproje.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -30,4 +31,13 @@ public interface GonderilerRepository extends JpaRepository<Gonderiler, Integer>
 
     // Gönderiyi ID'ye göre bul
     Optional<Gonderiler> findById(int id);
+
+    // Belirli bir kullanıcıya ait tüm gönderileri getir
+    List<Gonderiler> findByKullaniciId_KullaniciIdAndGonderiIcerigiContaining(int kullaniciId, String gonderiIcerigi);
+
+    // Belirli bir gönderiyi ID ile getir
+    Optional<Gonderiler> findByGonderiId(int gonderiId);
+
+    // Belirli bir kullanıcının belirli bir içeriğe sahip gönderilerini getir
+    List<Gonderiler> findByKullaniciIdAndGonderiIcerigiContaining(User kullaniciId, String gonderiIcerigi);
 }

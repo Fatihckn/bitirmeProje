@@ -1,7 +1,7 @@
 package com.bitirmeproje.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,28 +15,33 @@ public class YeniYorum {
     private int yorumId;
 
     @ManyToOne
-    @JoinColumn(name = "kullanici_id")
-    private User kullaniciId;
+    @JoinColumn(name = "kullanici_id", nullable = false)
+    private User kullaniciId; // User Modeline Uygun
 
     @ManyToOne
-    @JoinColumn(name = "gonderi_id")
-    private Gonderiler gonderiId;
+    @JoinColumn(name = "gonderi_id", nullable = true) // Eğer bir gönderiye yapılan yorumsa dolu olacak
+    private Gonderiler gonderiId; // Gonderiler Modeline Uygun
 
-    @Column(name = "yeni_yorum_icerigi")
+    @Column(name = "yorum_icerigi", nullable = false)
     private String yeniYorumIcerigi;
 
-    @Column(name = "yeni_yorum_begeni_sayisi")
-    private int yeniYorumBegeniSayisi;
-
-    @Column(name = "yeni_yorum_olusturulma_tarihi")
+    @Column(name = "yorum_tarihi", nullable = false)
     private LocalDate yeniYorumOlusturulmaTarihi;
 
-    @OneToMany(mappedBy = "yeniYorumId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "begeni_sayisi", nullable = false)
+    private int yeniYorumBegeniSayisi = 0; // Varsayılan değer sıfır olsun
+
+    @ManyToOne
+    @JoinColumn(name = "parent_yorum_id", nullable = true) // Eğer bir başka yoruma yapılan alt yorumsa
+    private YeniYorum parentYorum;
+
+    @OneToMany(mappedBy = "parentYorum", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<YeniYorum> altYorumlar;
+
+    @OneToMany(mappedBy = "yeniYorum", cascade = CascadeType.ALL, orphanRemoval = true) // *yeniYorumId değil yeniYorum olacak*
     private List<YeniYorumBegeniler> yeniYorumBegeniler;
 
-    @OneToMany(mappedBy = "yeniYorumId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<YorumTakip> yorumTakip;
-
+    // Getter ve Setter metotları
     public int getYorumId() {
         return yorumId;
     }
@@ -69,14 +74,6 @@ public class YeniYorum {
         this.yeniYorumIcerigi = yeniYorumIcerigi;
     }
 
-    public int getYeniYorumBegeniSayisi() {
-        return yeniYorumBegeniSayisi;
-    }
-
-    public void setYeniYorumBegeniSayisi(int yeniYorumBegeniSayisi) {
-        this.yeniYorumBegeniSayisi = yeniYorumBegeniSayisi;
-    }
-
     public LocalDate getYeniYorumOlusturulmaTarihi() {
         return yeniYorumOlusturulmaTarihi;
     }
@@ -85,19 +82,35 @@ public class YeniYorum {
         this.yeniYorumOlusturulmaTarihi = yeniYorumOlusturulmaTarihi;
     }
 
+    public int getYeniYorumBegeniSayisi() {
+        return yeniYorumBegeniSayisi;
+    }
+
+    public void setYeniYorumBegeniSayisi(int yeniYorumBegeniSayisi) {
+        this.yeniYorumBegeniSayisi = yeniYorumBegeniSayisi;
+    }
+
+    public YeniYorum getParentYorum() {
+        return parentYorum;
+    }
+
+    public void setParentYorum(YeniYorum parentYorum) {
+        this.parentYorum = parentYorum;
+    }
+
+    public List<YeniYorum> getAltYorumlar() {
+        return altYorumlar;
+    }
+
+    public void setAltYorumlar(List<YeniYorum> altYorumlar) {
+        this.altYorumlar = altYorumlar;
+    }
+
     public List<YeniYorumBegeniler> getYeniYorumBegeniler() {
         return yeniYorumBegeniler;
     }
 
     public void setYeniYorumBegeniler(List<YeniYorumBegeniler> yeniYorumBegeniler) {
         this.yeniYorumBegeniler = yeniYorumBegeniler;
-    }
-
-    public List<YorumTakip> getYorumTakip() {
-        return yorumTakip;
-    }
-
-    public void setYorumTakip(List<YorumTakip> yorumTakip) {
-        this.yorumTakip = yorumTakip;
     }
 }

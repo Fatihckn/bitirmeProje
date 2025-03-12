@@ -2,65 +2,45 @@ package com.bitirmeproje.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
-
 @Entity
 @Table(name = "yeni_yorum_begeniler")
 public class YeniYorumBegeniler {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "yeni_yorum_begeni_id")
-    private int yorumBegenilerId;
+    @Column(name = "begeni_id")
+    private int begeniId;
 
     @ManyToOne
-    @JoinColumn(name = "yeni_yorum_id")
-    private YeniYorum yeniYorumId;
+    @JoinColumn(name = "yeni_yorum_id", nullable = false)
+    private YeniYorum yeniYorum;
 
     @ManyToOne
-    @JoinColumn(name = "kullanici_id")
-    private User kullaniciId;
+    @JoinColumn(name = "kullanici_id", nullable = false)
+    private User kullanici; // ❗ "kullaniciId" yerine "kullanici" olmalı
 
-    @Column(name = "begenme_zamani")
-    private LocalDate begenmeZamani;
-
-    public int getYorumBegenilerId() {
-        return yorumBegenilerId;
+    // Getter ve Setter metotları
+    public int getBegeniId() {
+        return begeniId;
     }
 
-    public void setYorumBegenilerId(int yorumBegenilerId) {
-        this.yorumBegenilerId = yorumBegenilerId;
+    public void setBegeniId(int begeniId) {
+        this.begeniId = begeniId;
     }
 
-    public YeniYorum getYorumId() {
-        return yeniYorumId;
+    public YeniYorum getYeniYorum() {
+        return yeniYorum;
     }
 
-    public void setYorumId(YeniYorum yorumId) {
-        this.yeniYorumId = yorumId;
+    public void setYeniYorum(YeniYorum yeniYorum) {
+        this.yeniYorum = yeniYorum;
     }
 
-    public User getKullaniciId() {
-        return kullaniciId;
+    public User getKullanici() { // ❗ Hata burada olabilir
+        return kullanici;
     }
 
-    public void setKullaniciId(User kullaniciId) {
-        this.kullaniciId = kullaniciId;
-    }
-
-    public LocalDate getBegenmeZamani() {
-        return begenmeZamani;
-    }
-
-    public void setBegenmeZamani(LocalDate begenmeZamani) {
-        this.begenmeZamani = begenmeZamani;
-    }
-
-    public YeniYorum getYeniYorumId() {
-        return yeniYorumId;
-    }
-
-    public void setYeniYorumId(YeniYorum yeniYorumId) {
-        this.yeniYorumId = yeniYorumId;
+    public void setKullanici(User kullanici) {
+        this.kullanici = kullanici;
     }
 }

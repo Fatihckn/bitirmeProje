@@ -48,6 +48,6 @@ public class AuthService {
         }
 
         // Başarılı giriş, token üret ve geri döndür
-        return jwtUtil.generateToken(user.getePosta(), user.getKullaniciRole().name());
+        return jwtUtil.generateToken(user.getePosta(), user.getKullaniciRole().name(), user.getKullaniciId());
     }
 }

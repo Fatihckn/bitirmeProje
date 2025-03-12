@@ -11,6 +11,7 @@ import com.bitirmeproje.model.Follows;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.FollowsRepository;
 import com.bitirmeproje.repository.UserRepository;
+import com.bitirmeproje.security.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,16 @@ public class UserService implements IUserService{
     private final PasswordHasher passwordHasher;
     private final FollowsRepository followsRepository;
     private final FindUser<Integer> findUser;
+    private final JwtUtil jwtUtil;
 
-    UserService(UserRepository userRepository, PasswordHasher passwordHasher, FollowsRepository followsRepository,@Qualifier("findUserById") FindUser<Integer> findUser) {
+    UserService(UserRepository userRepository, PasswordHasher passwordHasher,
+                FollowsRepository followsRepository,@Qualifier("findUserById") FindUser<Integer> findUser,
+                JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
         this.followsRepository = followsRepository;
         this.findUser = findUser;
+        this.jwtUtil = jwtUtil;
     }
 
     // Kullanıcnın şifresini değiştiriyoruz(Şifremi unuttum değil)
@@ -216,10 +221,10 @@ public class UserService implements IUserService{
     }
 
     // ID'ye göre kullanıcı bilgilerini getir.
-    public List<UserDto> findUserById(int id) {
-        User users = findUser.findUser(id);
+    public UserDto findUserById() {
+        User users = findUser.findUser(jwtUtil.extractUserId());
 
-        return List.of(new UserDto(
+        return new UserDto(
                 users.getKullaniciTakmaAd(),
                 users.getePosta(),
                 users.getKullaniciBio(),
@@ -227,7 +232,7 @@ public class UserService implements IUserService{
                 users.getKullaniciTelefonNo(),
                 users.getKullaniciDogumTarihi(),
                 users.getKullaniciUyeOlmaTarihi()
-        ));
+        );
     }
 
     // Şifreyi kaydet

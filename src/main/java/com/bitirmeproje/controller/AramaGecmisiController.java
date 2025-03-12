@@ -1,7 +1,7 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.aramagecmisi.AramaGecmisiDto;
-import com.bitirmeproje.helper.user.RequireUserAccess;
+import com.bitirmeproje.security.jwt.JwtUtil;
 import com.bitirmeproje.service.AramaGecmisiService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +15,12 @@ import java.util.List;
 @RequestMapping("/api/arama")
 public class AramaGecmisiController {
     private final AramaGecmisiService aramaGecmisiService;
+    private final JwtUtil jwtUtil;
 
-    public AramaGecmisiController(AramaGecmisiService aramaGecmisiService) {
+    public AramaGecmisiController(AramaGecmisiService aramaGecmisiService,
+                                  JwtUtil jwtUtil) {
         this.aramaGecmisiService = aramaGecmisiService;
+        this.jwtUtil = jwtUtil;
     }
 
     // Yeni arama kaydetme
@@ -28,24 +31,21 @@ public class AramaGecmisiController {
     }
 
     // Kullanıcının tüm arama geçmişini getirme
-    @RequireUserAccess
-    @GetMapping("/gecmis/{kullaniciId}")
-    public ResponseEntity<List<AramaGecmisiDto>> getKullaniciAramaGecmisi(@PathVariable int kullaniciId) {
+    @GetMapping("/gecmis")
+    public ResponseEntity<List<AramaGecmisiDto>> getKullaniciAramaGecmisi() {
 
-        List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisi(kullaniciId);
+        List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisi(jwtUtil.extractUserId());
         return ResponseEntity.ok(aramaGecmisiList);
     }
 
     // Kullanıcının belirli tarih aralığındaki aramalarını getirme
-    @RequireUserAccess
-    @GetMapping("/gecmis/{kullaniciId}/tarih")
+    @GetMapping("/gecmis/tarih")
     public ResponseEntity<List<AramaGecmisiDto>> getKullaniciAramaGecmisiByDate(
-            @PathVariable int kullaniciId,
             @RequestParam("baslangic") String baslangic,
             @RequestParam("bitis") String bitis) {
 
         List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisiByDate(
-                kullaniciId, LocalDate.parse(baslangic), LocalDate.parse(bitis));
+                jwtUtil.extractUserId(), LocalDate.parse(baslangic), LocalDate.parse(bitis));
 
         return ResponseEntity.ok(aramaGecmisiList);
     }

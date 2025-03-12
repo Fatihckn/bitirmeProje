@@ -1,9 +1,12 @@
 package com.bitirmeproje.security.jwt;
 
+import com.bitirmeproje.exception.CustomException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -14,6 +17,12 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
+
+    private final HttpServletRequest request;
+
+    public JwtUtil(HttpServletRequest request) {
+        this.request = request;
+    }
 
     @Value("${jwt.secret}")
     private String secretKey; // application.properties içindeki değeri çeker
@@ -28,17 +37,17 @@ public class JwtUtil {
     }
 
     // Token üret
-    public String generateToken(String email,String role) {
+    public String generateToken(String email,String role, int userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
-        //claims.put("email", email);
+        claims.put("userId", userId);
 
         return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(email) // Token'da email bilgisini tutuyoruz
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .claims(claims)
+                .subject(email) // Token'da email bilgisini tutuyoruz
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(getSigningKey())
                 .compact();
     }
 
@@ -54,6 +63,21 @@ public class JwtUtil {
 
     public String extractRole(String token) {
         return extractAllClaims(token).get("role", String.class);
+    }
+
+    public Integer extractUserId() {
+        String token = request.getHeader("Authorization");
+
+        if (token == null || !token.startsWith("Bearer ")) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED, "JWT bulunamadı veya geçersiz!");
+        }
+
+        String jwt = token.substring(7); // "Bearer " kısmını çıkar
+        try {
+            return extractAllClaims(jwt).get("userId", Integer.class);
+        } catch (Exception e) {
+            throw new CustomException(HttpStatus.FORBIDDEN, "Geçersiz veya süresi dolmuş JWT!");
+        }
     }
 
     // Token içinden Expiration bilgisini çek

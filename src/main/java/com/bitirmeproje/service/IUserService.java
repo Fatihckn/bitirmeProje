@@ -11,27 +11,27 @@ import java.util.Optional;
 
 public interface IUserService {
 
-    public void passwordChange(User user, SifreDegistirDto sifreDto);
+    void passwordChange(User user, SifreDegistirDto sifreDto);
 
-//  public void profilResmiGuncelle(User user, ProfilResmiGuncelleDto profilResmiGuncelle);
+//  void profilResmiGuncelle(User user, ProfilResmiGuncelleDto profilResmiGuncelle);
 
-    public List<UserDto> searchUsers(String query);
+    List<UserDto> searchUsers(String query);
 
-    public void followUser(User follower, int followingId);
+    void followUser(User follower, int followingId);
 
-    public void unfollowUser(User follower, int followingId);
+    void unfollowUser(User follower, int followingId);
 
-    public List<UserDto> getFollowers(int userId);
+    List<UserDto> getFollowers(int userId);
 
-    public List<UserDto> getFollowing(int userId);
+    List<UserDto> getFollowing(int userId);
 
-    public void updateUser(int userId, UserUpdateDto userUpdateDto);
+    void updateUser(int userId, UserUpdateDto userUpdateDto);
 
-    public List<UserDto> findUserById(int id);
+    UserDto findUserById();
 
-    public void passwordSave(User user, String yeniSifre);
+    void passwordSave(User user, String yeniSifre);
 
-    public Optional<User> findByEposta (String ePosta);
+    Optional<User> findByEposta (String ePosta);
 
-    public void changeUserEmail(int userId, ChangeEmailDto changeEmailDto);
+    void changeUserEmail(int userId, ChangeEmailDto changeEmailDto);
 }

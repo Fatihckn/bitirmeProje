@@ -7,12 +7,13 @@ import com.bitirmeproje.dto.user.UserUpdateDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.otp.OtpGenerator;
 import com.bitirmeproje.helper.otp.OtpStorage;
-import com.bitirmeproje.helper.user.RequireUserAccess;
-import com.bitirmeproje.helper.user.UserAccessValidator;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.model.User;
+import com.bitirmeproje.security.jwt.JwtUtil;
 import com.bitirmeproje.service.EmailService;
 import com.bitirmeproje.service.IUserService;
 import com.bitirmeproje.service.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,27 +25,27 @@ import java.util.Optional;
 @RequestMapping("/api/user")
 public class UserController {
     private final IUserService userService;
-    private final UserAccessValidator userAccessValidator;
     private final EmailService emailService;
     private final OtpStorage otpStorage;
+    private final JwtUtil jwtUtil;
+    private final FindUser<Integer> findUser;
 
-    public UserController(UserService userService, UserAccessValidator userAccessValidator,
-                          EmailService emailService, OtpStorage otpStorage) {
+    public UserController(UserService userService,
+                          EmailService emailService, OtpStorage otpStorage,
+                          JwtUtil jwtUtil,@Qualifier("findUserById") FindUser<Integer> findUser) {
         this.userService = userService;
-        this.userAccessValidator = userAccessValidator;
         this.emailService = emailService;
         this.otpStorage = otpStorage;
+        this.jwtUtil = jwtUtil;
+        this.findUser = findUser;
     }
 
     // Kullanıcı şifresini değiştirme API'si(eski şifresini biliyor)
-    @PostMapping("/{id}/sifre-degistir")
+    @PostMapping("/sifre-degistir")
     public ResponseEntity<String> kullaniciSifreDegistir(
-            @PathVariable int id,
             @RequestBody SifreDegistirDto sifreDto) {
 
-        User currentUser = userAccessValidator.validateUserAccess(id);
-        //System.out.println("kullanıcı doğrulandı");
-        userService.passwordChange(currentUser, sifreDto);
+        userService.passwordChange(getCurrentUser(), sifreDto);
         return ResponseEntity.ok("Şifre başarıyla değiştirildi, lütfen tekrar giriş yapınız!");
     }
 
@@ -119,79 +120,73 @@ public class UserController {
     }
 
     // Aradığın kullanıcının bilgileri getiriliyor(Rolü, id'si gibi bilgiler hariç)
-    @GetMapping("/{id}/arama")
-    @RequireUserAccess  // Token ile istek atan kullanıcının doğru olup olmadığını kontrol ettikten sonra user tipinde o kullanıcıyı döndürmek isterseniz,
-    // UserAccessValidator sınıfını kullanın. Örneğin;" userService.findByEposta(email); "
-    // Burada id kullanılmıyor gibi görünebilir ancak RequireUserAccess anotasyonunda bu id ile kullanıcının kimlik doğrulaması yapılıyor.
-    public ResponseEntity<List<UserDto>> searchUsers(@RequestParam String query, @PathVariable int id) {
+    @GetMapping("/arama")
+    public ResponseEntity <List<UserDto>> searchUsers(@RequestParam String query) {
 
         List<UserDto> users = userService.searchUsers(query);
         return ResponseEntity.ok(users);
     }
 
     // Bir kullanıcıyı takip et
-    @PostMapping("/{id}/takip-et")
-    public ResponseEntity<String> followUser(@PathVariable int id, @RequestParam int takipEdilenId) {
+    @PostMapping("/takip-et")
+    public ResponseEntity<String> followUser(@RequestParam int takipEdilenId) {
 
-        User currentUser = userAccessValidator.validateUserAccess(id);
-
-        userService.followUser(currentUser, takipEdilenId);
+        userService.followUser(getCurrentUser(), takipEdilenId);
         return ResponseEntity.ok("Kullanıcı başarıyla takip edildi.");
     }
 
     // Bir kullanıcıyı takipten çık
-    @DeleteMapping("/{id}/takibi-bırakma")
-    public ResponseEntity<String> unfollowUser(@PathVariable int id, @RequestParam int takipEdilenId) {
+    @DeleteMapping("/takibi-bırakma")
+    public ResponseEntity<String> unfollowUser(@RequestParam int takipEdilenId) {
 
-        User currentUser = userAccessValidator.validateUserAccess(id);
-
-        userService.unfollowUser(currentUser, takipEdilenId);
+        userService.unfollowUser(getCurrentUser(), takipEdilenId);
         return ResponseEntity.ok("Kullanıcı başarıyla takipten çıkıldı");
     }
 
     // Kullanıcının takipçilerini getir
-    @GetMapping("/{id}/takipciler")
-    @RequireUserAccess
-    public ResponseEntity<List<UserDto>> getFollowers(@PathVariable int id) {
+    @GetMapping("/takipciler")
+    public ResponseEntity<List<UserDto>> getFollowers() {
 
-        List<UserDto> followers = userService.getFollowers(id);
+        List<UserDto> followers = userService.getFollowers(jwtUtil.extractUserId());
         return ResponseEntity.ok(followers);
     }
 
     // Kullanıcının takip ettiği kişileri getir
-    @GetMapping("/{id}/takip-edilenler")
-    @RequireUserAccess
-    public ResponseEntity<List<UserDto>> getFollowing(@PathVariable int id) {
+    @GetMapping("/takip-edilenler")
+    public ResponseEntity<List<UserDto>> getFollowing() {
 
-        List<UserDto> following = userService.getFollowing(id);
+        List<UserDto> following = userService.getFollowing(jwtUtil.extractUserId());
         return ResponseEntity.ok(following);
     }
 
     // Kullanıcı bilgilerini yenile
-    @PutMapping("/{id}/kullanici-bilgi-yenile")
-    @RequireUserAccess
-    public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody UserUpdateDto userUpdateDto){
+    @PutMapping("/kullanici-bilgi-yenile")
+    public ResponseEntity<String> updateUser(@RequestBody UserUpdateDto userUpdateDto){
 
-        userService.updateUser(id, userUpdateDto);
+        userService.updateUser(jwtUtil.extractUserId(), userUpdateDto);
         return ResponseEntity.ok("Kullanıcı bilgileri başarıyla güncellendi.");
     }
 
     // Kullanıcının profilini getir
-    @GetMapping("/{id}/me")
-    @RequireUserAccess
-    public ResponseEntity<List<UserDto>> findProfil(@PathVariable int id){
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> findProfil() {
 
-        List<UserDto> currentUser = userService.findUserById(id);
+        UserDto currentUser = userService.findUserById();
         return ResponseEntity.ok(currentUser);
     }
 
     // Kullanıcı e-posta değiştiriyoruz
-    @PostMapping("/{id}/eposta-degistir")
-    @RequireUserAccess
-    public ResponseEntity<String> changeEmail(@PathVariable int id, @RequestBody ChangeEmailDto changeEmailDto) {
+    @PostMapping("/eposta-degistir")
+    public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailDto changeEmailDto) {
 
-        userService.changeUserEmail(id, changeEmailDto);
+        userService.changeUserEmail(jwtUtil.extractUserId(), changeEmailDto);
         return ResponseEntity.ok("E-posta başarıyla güncellendi.");
+    }
+
+    // Kullanıcı ID'ye göre nesnesini almak için bu metodu her yerde kullanabiliriz.
+    private User getCurrentUser() {
+        int userId = jwtUtil.extractUserId();
+        return findUser.findUser(userId);
     }
 
 

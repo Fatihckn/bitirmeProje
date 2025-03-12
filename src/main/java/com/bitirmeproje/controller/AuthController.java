@@ -1,7 +1,6 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.auth.LoginDto;
-import com.bitirmeproje.helper.user.RequireUserAccess;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.service.AuthService;
 import org.springframework.http.HttpStatus;
@@ -35,7 +34,6 @@ public class AuthController {
     }
 
     // Çıkış yapacak kullanıcının da doğru kullanıcı olup olmadığı denenip dönüş yapılıyor.
-    @PostMapping("/logout/{id}")
-    @RequireUserAccess
-    public ResponseEntity<?> logout(@PathVariable int id) {return ResponseEntity.ok("Başarıyla çıkış yapıldı");}
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {return ResponseEntity.ok("Başarıyla çıkış yapıldı");}
 }

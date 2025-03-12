@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface IAdminUserService {
 
-    public List<UserAllDto> findAll();
+    List<UserAllDto> findAll();
 
-    public List<UserAllDto> searchUsers(String query);
+    List<UserAllDto> searchUsers(String query);
 
-    public void updateUser(int userId, UserUpdateDto userUpdateDto);
+    void updateUser(int userId, UserUpdateDto userUpdateDto);
 }

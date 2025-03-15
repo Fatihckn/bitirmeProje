@@ -31,8 +31,11 @@ public class HomeService {
     // Kullanıcının takip ettiği kişilerin gönderilerini getir.
     public List<HomeDto> getHome() {
         User user = findUser.findUser(jwtUtil.extractUserId());
+        System.out.println("user id= "+user.getKullaniciId());
 
         List<HomeDto> gonderiler = homeRepository.getGonderiler(user.getKullaniciId());
+        System.out.println(gonderiler.isEmpty());
+
 
         if(gonderiler.isEmpty()){
             throw new CustomException(HttpStatus.NOT_FOUND,"Gonderi Bulunamadi");

@@ -15,13 +15,12 @@ public interface HomeRepository extends JpaRepository<User, Integer> {
 
     @Query("""
     SELECT NEW com.bitirmeproje.dto.home.HomeDto(
-        g.gonderiId, g.kullaniciId.kullaniciId, g.gonderiIcerigi, 
-        g.gonderiBegeniSayisi, g.gonderiTarihi
-    ) 
-    FROM Gonderiler g
-    JOIN g.kullaniciId k
-    JOIN Follows f ON k.kullaniciId = f.takipEdenKullaniciId.kullaniciId
-    WHERE f.takipEdilenKullaniciId.kullaniciId = :kullaniciId
+        g.gonderiId, g.kullaniciId.kullaniciId, g.gonderiIcerigi,g.gonderiBegeniSayisi, g.gonderiTarihi
+    )
+    FROM User k
+    INNER JOIN Follows f ON k.kullaniciId = f.takipEdenKullaniciId.kullaniciId
+    INNER JOIN Gonderiler g ON f.takipEdilenKullaniciId = g.kullaniciId
+    WHERE k.kullaniciId = :kullaniciId
     ORDER BY g.gonderiTarihi DESC
 """)
     List<HomeDto> getGonderiler(@Param("kullaniciId") int kullaniciId);

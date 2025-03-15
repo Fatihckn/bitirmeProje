@@ -32,24 +32,22 @@ public class HomeService {
     public List<HomeDto> getHome() {
         User user = findUser.findUser(jwtUtil.extractUserId());
 
-        List<Gonderiler> gonderiler = homeRepository.getGonderiler(user.getKullaniciId());
+        List<HomeDto> gonderiler = homeRepository.getGonderiler(user.getKullaniciId());
 
         if(gonderiler.isEmpty()){
             throw new CustomException(HttpStatus.NOT_FOUND,"Gonderi Bulunamadi");
         }
 
-        return gonderiler.stream()
-                .map(this::convertToHomeDto) // Her bir gönderiyi HomeDto'ya çevir
-                .collect(Collectors.toList());
+        return gonderiler;
     }
 
-    private HomeDto convertToHomeDto(Gonderiler gonderi) {
-        return new HomeDto(
-                gonderi.getGonderiId(),
-                gonderi.getKullaniciId().getKullaniciId(),
-                gonderi.getGonderiIcerigi(),
-                gonderi.getGonderiBegeniSayisi(),
-                gonderi.getGonderiTarihi()
-        );
+//    private HomeDto convertToHomeDto(Gonderiler gonderi) {
+//        return new HomeDto(
+//                gonderi.getGonderiId(),
+//                gonderi.getKullaniciId().getKullaniciId(),
+//                gonderi.getGonderiIcerigi(),
+//                gonderi.getGonderiBegeniSayisi(),
+//                gonderi.getGonderiTarihi()
+//        );
     }
-}
+

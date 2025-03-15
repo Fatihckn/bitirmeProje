@@ -3,12 +3,12 @@ package com.bitirmeproje.repository;
 import com.bitirmeproje.model.Mesaj;
 import com.bitirmeproje.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface MesajRepository extends JpaRepository<Mesaj, Integer> {
@@ -27,8 +27,10 @@ public interface MesajRepository extends JpaRepository<Mesaj, Integer> {
     List<Mesaj> findSohbetGecmisi(@Param("kullanici1") User kullanici1, @Param("kullanici2") User kullanici2);
 
     // ID ile mesajı getir
-    Optional<Mesaj> findById(int mesajId);
+    Mesaj findByMesajId(int mesajId);
 
     // Belirli bir kullanıcıyla olan tüm mesajları sil
-    void deleteByMesajGonderenKullaniciIdOrMesajGonderilenKullaniciId(User kullanici1, User kullanici2);
+    @Modifying
+    @Query("DELETE FROM Mesaj m WHERE (m.mesajGonderenKullaniciId = :k1 AND m.mesajGonderilenKullaniciId = :k2) OR (m.mesajGonderenKullaniciId = :k2 AND m.mesajGonderilenKullaniciId = :k1)")
+    void deleteByMesajGonderenKullaniciIdOrMesajGonderilenKullaniciId(@Param("k1") User kullanici1, @Param("k2") User kullanici2);
 }

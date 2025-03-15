@@ -58,10 +58,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/gonderiBegeni/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/gonderi/**").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/mesaj/**").hasAnyRole("USER", "ADMIN")
-
-
-
-
+                        .requestMatchers("/api/follows/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/yorum/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/home/**").hasAnyRole("USER", "ADMIN")
 
                         // Diğer tüm endpoint'ler token gerektirir
                         .anyRequest().authenticated()

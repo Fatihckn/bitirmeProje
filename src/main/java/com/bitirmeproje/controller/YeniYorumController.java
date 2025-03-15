@@ -26,7 +26,7 @@ public class YeniYorumController {
         return ResponseEntity.ok(yeniYorum);
     }
 
-    @GetMapping("/gonderi/{gonderiId}")
+    @GetMapping("/gonderi/{gonderiId}") // Belirli bir Gönderiye yapılan yorumları getir
     public ResponseEntity<List<YeniYorumDto>> getYorumlarByGonderiId(@PathVariable int gonderiId) {
         List<YeniYorumDto> yorumlar = yeniYorumService.getYorumlarByGonderiId(gonderiId);
         return ResponseEntity.ok(yorumlar);
@@ -40,36 +40,29 @@ public class YeniYorumController {
     }
     @DeleteMapping("/{id}/yorumu-sil")
     public ResponseEntity<String> yorumSil(@PathVariable int id) {
-        yeniYorumService.yorumuSil(id)
-        ;
+        yeniYorumService.yorumuSil(id);
         return ResponseEntity.status(HttpStatus.OK).body("Yorum başarıyla silindi.");
     }
     @PostMapping("/{id}/begeni")
-    public ResponseEntity<String> yorumBegen(@PathVariable("id") int yorumId,
-                                             @RequestBody Map<String, Integer> requestBody) {
-        int kullaniciId = requestBody.get("kullaniciId");
-        yeniYorumService.yorumBegen(yorumId, kullaniciId);
+    public ResponseEntity<String> yorumBegen(@PathVariable("id") int yorumId) {
+        yeniYorumService.yorumBegen(yorumId);
         return ResponseEntity.ok("Yorum başarıyla beğenildi.");
     }
     @DeleteMapping("/{id}/begeni-kaldir")
-    public ResponseEntity<String> yorumBegeniCek(@PathVariable("id") int yorumId,
-                                                 @RequestBody Map<String, Integer> requestBody) {
-        int kullaniciId = requestBody.get("kullaniciId");
-
-        yeniYorumService.yorumBegeniCek(yorumId, kullaniciId);
+    public ResponseEntity<String> yorumBegeniCek(@PathVariable("id") int yorumId) {
+        yeniYorumService.yorumBegeniCek(yorumId);
 
         return ResponseEntity.ok("Beğeni başarıyla kaldırıldı.");
     }
     @PostMapping("/{id}/yanit-ekle")
-    public ResponseEntity<String> yorumaYanitEkle(@PathVariable("id") int parentYorumId,
+    public ResponseEntity<String> yorumaYanitEkle(@PathVariable("id") int yorumId,
                                                   @RequestBody YeniYorumDto yeniYorumDto) {
-        yeniYorumService.yorumaYanitEkle(parentYorumId, yeniYorumDto);
+        yeniYorumService.yorumaYanitEkle(yorumId, yeniYorumDto);
         return ResponseEntity.ok("Yanıt başarıyla eklendi.");
     }
     @GetMapping("/{id}/yanitlar")
-    public List<YeniYorumDto> getYanıtlarByYorumId(@PathVariable int id) {
-        return yeniYorumService.getYanıtlarByYorumId(id)
-                ;
+    public List<YeniYorumDto> getYanitlarByYorumId(@PathVariable int id) {
+        return yeniYorumService.getYanitlarByYorumId(id);
     }
     @GetMapping("/{yorum_id}/begeni-sayisi")
     public ResponseEntity<Integer> getBegeniSayisi(@PathVariable int yorum_id) {

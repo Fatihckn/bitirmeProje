@@ -3,26 +3,26 @@ package com.bitirmeproje.service;
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderiResponseDto;
 import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.GonderilerRepository;
-import com.bitirmeproje.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class GonderilerService {
+public class GonderilerService implements IGonderilerService {
 
     private final GonderilerRepository gonderilerRepository;
-    private final UserRepository userRepository;
+    private final FindUser<Integer> findUser;
 
-    public GonderilerService(GonderilerRepository gonderilerRepository, UserRepository userRepository) {
+    public GonderilerService(GonderilerRepository gonderilerRepository,@Qualifier("findUserById") FindUser<Integer> findUser) {
         this.gonderilerRepository = gonderilerRepository;
-        this.userRepository = userRepository;
+        this.findUser = findUser;
     }
 
     // Belirli bir kullanıcının tüm gönderilerini getir
@@ -32,16 +32,14 @@ public class GonderilerService {
 
 
     public void begeniEkle(int gonderiId) {
-        Gonderiler gonderi = gonderilerRepository.findById(gonderiId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Gönderi bulunamadı!"));
+        Gonderiler gonderi = findGonderi(gonderiId);
 
         gonderi.setGonderiBegeniSayisi(gonderi.getGonderiBegeniSayisi() + 1);
         gonderilerRepository.save(gonderi);
     }
 
     public void begeniKaldir(int gonderiId) {
-        Gonderiler gonderi = gonderilerRepository.findById(gonderiId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Gönderi bulunamadı!"));
+        Gonderiler gonderi = findGonderi(gonderiId);
 
         if (gonderi.getGonderiBegeniSayisi() > 0) {
             gonderi.setGonderiBegeniSayisi(gonderi.getGonderiBegeniSayisi() - 1);
@@ -50,25 +48,17 @@ public class GonderilerService {
     }
 
     // Yeni gönderi ekle
-    public Gonderiler yeniGonderiEkle(int kullaniciId, GonderiDto gonderiDto) {
-        Optional<User> userOptional = userRepository.findById(kullaniciId);
+    public void yeniGonderiEkle(int kullaniciId, GonderiDto gonderiDto) {
 
-        if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Kullanıcı bulunamadı!");
-        }
-
-        User user = userOptional.get();
+        User user = findUser.findUser(kullaniciId);
 
         Gonderiler gonderi = new Gonderiler();
         gonderi.setGonderiIcerigi(gonderiDto.getGonderiIcerigi());
         gonderi.setGonderiBegeniSayisi(0);
         gonderi.setGonderiTarihi(LocalDate.now());
         gonderi.setKullaniciId(user);
-
-        return gonderilerRepository.save(gonderi);
+        gonderilerRepository.save(gonderi);
     }
-
-
 
     // En popüler gönderileri getir
     public List<GonderiResponseDto> populerGonderileriGetir() {
@@ -77,26 +67,21 @@ public class GonderilerService {
 
     // Gönderiyi sil
     public void gonderiSil(int gonderiId) {
-        Optional<Gonderiler> gonderiOptional = gonderilerRepository.findById(gonderiId);
+        Gonderiler gonderi = findGonderi(gonderiId);
 
-        if (gonderiOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Gönderi bulunamadı!");
-        }
-
-        gonderilerRepository.deleteById(gonderiId);
+        gonderilerRepository.deleteById(gonderi.getGonderiId());
     }
 
     // Gönderi içeriğini güncelle
-    public Gonderiler gonderiGuncelle(int gonderiId, String yeniIcerik) {
-        Optional<Gonderiler> gonderiOptional = gonderilerRepository.findById(gonderiId);
+    public void gonderiGuncelle(int gonderiId, String yeniIcerik) {
+        Gonderiler gonderi = findGonderi(gonderiId);
 
-        if (gonderiOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Gönderi bulunamadı!");
+        if (yeniIcerik.isEmpty()){
+            throw new CustomException(HttpStatus.NOT_FOUND,"İçerik boş olamaz");
         }
 
-        Gonderiler gonderi = gonderiOptional.get();
         gonderi.setGonderiIcerigi(yeniIcerik);
-        return gonderilerRepository.save(gonderi);
+        gonderilerRepository.save(gonderi);
     }
 
 
@@ -112,4 +97,9 @@ public class GonderilerService {
         yeniYorumRepository.save(yeniYorum);
     }
 */
+
+    private Gonderiler findGonderi(int gonderiId) {
+        return gonderilerRepository.findById(gonderiId)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Gönderi bulunamadı!"));
+    }
 }

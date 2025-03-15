@@ -46,10 +46,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         System.out.println("JAF: calisti1");
 
-
-
-
-
         // "Bearer " ile başlayan token var mı?
         if (jwt != null) {
             String token = jwt;

@@ -108,8 +108,6 @@ public class JwtUtil {
             System.out.println("JU: calisti3");
             throw new CustomException(HttpStatus.FORBIDDEN, "Geçersiz veya süresi dolmuş JWT!");
         }
-
-
     }
 
 

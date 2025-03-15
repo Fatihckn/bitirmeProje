@@ -2,7 +2,6 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.mesaj.MesajCreateDto;
 import com.bitirmeproje.dto.mesaj.MesajDto;
-import com.bitirmeproje.dto.mesaj.MesajUpdateDto;
 import com.bitirmeproje.service.IMesajService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,15 +27,15 @@ public class MesajController {
     }
 
     // Gelen mesajları listeleme
-    @GetMapping("/gelen/{kullaniciId}")
-    public ResponseEntity<List<MesajDto>> gelenMesajlariListele(@PathVariable int kullaniciId) {
-        return ResponseEntity.ok(mesajService.gelenMesajlariListele(kullaniciId));
+    @GetMapping("/gelen")
+    public ResponseEntity<List<MesajDto>> gelenMesajlariListele() {
+        return ResponseEntity.ok(mesajService.gelenMesajlariListele());
     }
 
     // Gönderilen mesajları listeleme
-    @GetMapping("/gonderilen/{kullaniciId}")
-    public ResponseEntity<List<MesajDto>> gonderilenMesajlariListele(@PathVariable int kullaniciId) {
-        return ResponseEntity.ok(mesajService.gonderilenMesajlariListele(kullaniciId));
+    @GetMapping("/gonderilen")
+    public ResponseEntity<List<MesajDto>> gonderilenMesajlariListele() {
+        return ResponseEntity.ok(mesajService.gonderilenMesajlariListele());
     }
 
     // Belirli bir mesajı getir
@@ -46,15 +45,15 @@ public class MesajController {
     }
 
     // İki kullanıcı arasındaki sohbet geçmişini getir
-    @GetMapping("/sohbet/{kullanici1Id}/{kullanici2Id}")
-    public ResponseEntity<List<MesajDto>> sohbetGecmisiGetir(@PathVariable int kullanici1Id, @PathVariable int kullanici2Id) {
-        return ResponseEntity.ok(mesajService.sohbetGecmisiGetir(kullanici1Id, kullanici2Id));
+    @GetMapping("/sohbet/{kullaniciId}")
+    public ResponseEntity<List<MesajDto>> sohbetGecmisiGetir(@PathVariable int kullaniciId) {
+        return ResponseEntity.ok(mesajService.sohbetGecmisiGetir(kullaniciId));
     }
 
     // Mesaj içeriğini güncelle
     @PutMapping("/{mesajId}/duzenle")
-    public ResponseEntity<String> mesajGuncelle(@PathVariable int mesajId, @RequestBody MesajUpdateDto mesajUpdateDto) {
-        mesajService.mesajGuncelle(mesajId, mesajUpdateDto);
+    public ResponseEntity<String> mesajGuncelle(@PathVariable int mesajId, @RequestBody MesajDto mesajDto) {
+        mesajService.mesajGuncelle(mesajId, mesajDto);
         return ResponseEntity.ok("Mesaj başarıyla güncellendi.");
     }
 
@@ -67,9 +66,9 @@ public class MesajController {
     }
 
     // İki kullanıcı arasındaki tüm mesajları sil
-    @DeleteMapping("/sohbet/{kullanici1Id}/{kullanici2Id}")
-    public ResponseEntity<String> tumMesajlariSil(@PathVariable int kullanici1Id, @PathVariable int kullanici2Id) {
-        mesajService.tumMesajlariSil(kullanici1Id, kullanici2Id);
+    @DeleteMapping("/sohbet/{kullaniciId}")
+    public ResponseEntity<String> tumMesajlariSil(@PathVariable int kullaniciId) {
+        mesajService.tumMesajlariSil(kullaniciId);
         return ResponseEntity.ok("Belirtilen iki kullanıcı arasındaki tüm mesajlar silindi.");
     }
 }

@@ -1,0 +1,66 @@
+package com.bitirmeproje.dto.home;
+
+import java.time.LocalDate;
+
+public class HomeDto {
+
+    private int gonderiId;
+
+    private int kullaniciId;
+
+    private String gonderiIcerigi;
+
+    private int begeniSayisi;
+
+    private LocalDate gonderiTarihi;
+
+    public HomeDto() {}
+
+    public HomeDto(int gonderiId, int kullaniciId, String gonderiIcerigi, int gonderiBegeniSayisi, LocalDate gonderiTarihi) {
+        this.gonderiId = gonderiId;
+        this.kullaniciId = kullaniciId;
+        this.gonderiIcerigi = gonderiIcerigi;
+        this.gonderiTarihi = gonderiTarihi;
+        this.begeniSayisi = gonderiBegeniSayisi;
+    }
+
+    public int getGonderiId() {
+        return gonderiId;
+    }
+
+    public void setGonderiId(int gonderiId) {
+        this.gonderiId = gonderiId;
+    }
+
+    public int getKullaniciId() {
+        return kullaniciId;
+    }
+
+    public void setKullaniciId(int kullaniciId) {
+        this.kullaniciId = kullaniciId;
+    }
+
+    public String getGonderiIcerigi() {
+        return gonderiIcerigi;
+    }
+
+    public void setGonderiIcerigi(String gonderiIcerigi) {
+        this.gonderiIcerigi = gonderiIcerigi;
+    }
+
+    public int getBegeniSayisi() {
+        return begeniSayisi;
+    }
+
+    public void setBegeniSayisi(int begeniSayisi) {
+        this.begeniSayisi = begeniSayisi;
+    }
+
+    public LocalDate getGonderiTarihi() {
+        return gonderiTarihi;
+    }
+
+    public void setGonderiTarihi(LocalDate gonderiTarihi) {
+        this.gonderiTarihi = gonderiTarihi;
+    }
+}

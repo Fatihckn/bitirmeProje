@@ -1,24 +1,22 @@
 package com.bitirmeproje.service;
 
-import com.bitirmeproje.dto.gonderiler.GonderiCreateDto;
-import com.bitirmeproje.dto.gonderiler.GonderiUpdateDto;
+import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderiResponseDto;
+import com.bitirmeproje.model.Gonderiler;
 
 import java.util.List;
 
 public interface IGonderilerService {
 
-    List<GonderiResponseDto> kullanicininGonderileriniGetir(int kullaniciId);
+    List<Gonderiler> kullaniciGonderileriniGetir(int kullaniciId);
 
-    GonderiResponseDto yeniGonderiEkle(GonderiCreateDto gonderiDto);
+    void begeniEkle(int gonderiId);
 
-    void gonderiyiSil(int gonderiId);
+    void begeniKaldir(int gonderiId);
 
-    GonderiResponseDto gonderiyiGuncelle(int gonderiId, GonderiUpdateDto gonderiUpdateDto);
+    void yeniGonderiEkle(int kullaniciId, GonderiDto gonderiDto);
 
-    void gonderiyeBegeniEkle(int gonderiId);
+    List<GonderiResponseDto> populerGonderileriGetir();
 
-    void gonderidenBegeniCikar(int gonderiId);
-
-    List<GonderiResponseDto> enPopulerGonderileriGetir();
+    void gonderiGuncelle(int gonderiId, String yeniIcerik);
 }

@@ -3,6 +3,7 @@ package com.bitirmeproje.controller;
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderiResponseDto;
 import com.bitirmeproje.model.Gonderiler;
+import com.bitirmeproje.security.jwt.JwtUtil;
 import com.bitirmeproje.service.GonderilerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,20 +15,22 @@ import java.util.List;
 public class GonderilerController {
 
     private final GonderilerService gonderilerService;
+    private final JwtUtil jwtUtil;
 
-    public GonderilerController(GonderilerService gonderilerService) {
+    public GonderilerController(GonderilerService gonderilerService, JwtUtil jwtUtil) {
         this.gonderilerService = gonderilerService;
+        this.jwtUtil = jwtUtil;
     }
 
-    @GetMapping("/kullanici/{id}/gonderiler")
-    public ResponseEntity<List<Gonderiler>> kullaniciGonderileriniGetir(@PathVariable int id) {
-        List<Gonderiler> gonderiler = gonderilerService.kullaniciGonderileriniGetir(id);
+    @GetMapping("/kullanici/gonderiler")
+    public ResponseEntity<List<Gonderiler>> kullaniciGonderileriniGetir() {
+        List<Gonderiler> gonderiler = gonderilerService.kullaniciGonderileriniGetir(jwtUtil.extractUserId());
         return ResponseEntity.ok(gonderiler);
     }
 
     @PostMapping("/ekle")
-    public ResponseEntity<String> yeniGonderiEkle(@RequestBody GonderiDto gonderiDto, @RequestParam int kullaniciId) {
-        gonderilerService.yeniGonderiEkle(kullaniciId, gonderiDto);
+    public ResponseEntity<String> yeniGonderiEkle(@RequestBody GonderiDto gonderiDto) {
+        gonderilerService.yeniGonderiEkle(jwtUtil.extractUserId(), gonderiDto);
         return ResponseEntity.ok("Gönderi başarıyla oluşturuldu.");
     }
 
@@ -55,9 +58,9 @@ public class GonderilerController {
         return ResponseEntity.ok(populerGonderiler);
     }
 
-    @PutMapping("/guncelle/{id}")
-    public ResponseEntity<String> gonderiGuncelle(@PathVariable int id, @RequestBody GonderiDto gonderiDto) {
-        gonderilerService.gonderiGuncelle(id, gonderiDto.getGonderiIcerigi());
+    @PutMapping("/guncelle/{gonderiId}")
+    public ResponseEntity<String> gonderiGuncelle(@PathVariable int gonderiId, @RequestBody GonderiDto gonderiDto) {
+        gonderilerService.gonderiGuncelle(gonderiId, gonderiDto.getGonderiIcerigi());
         return ResponseEntity.ok("Gönderi başarıyla güncellendi.");
     }
 

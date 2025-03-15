@@ -1,6 +1,6 @@
 package com.bitirmeproje.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -16,10 +16,12 @@ public class YeniYorum {
 
     @ManyToOne
     @JoinColumn(name = "kullanici_id", nullable = false)
+    @JsonIgnore
     private User kullaniciId; // User Modeline Uygun
 
     @ManyToOne
     @JoinColumn(name = "gonderi_id", nullable = true) // Eğer bir gönderiye yapılan yorumsa dolu olacak
+    @JsonIgnore
     private Gonderiler gonderiId; // Gonderiler Modeline Uygun
 
     @Column(name = "yorum_icerigi", nullable = false)
@@ -33,12 +35,14 @@ public class YeniYorum {
 
     @ManyToOne
     @JoinColumn(name = "parent_yorum_id", nullable = true) // Eğer bir başka yoruma yapılan alt yorumsa
+    @JsonIgnore
     private YeniYorum parentYorum;
 
     @OneToMany(mappedBy = "parentYorum", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<YeniYorum> altYorumlar;
 
     @OneToMany(mappedBy = "yeniYorum", cascade = CascadeType.ALL, orphanRemoval = true) // *yeniYorumId değil yeniYorum olacak*
+    @JsonIgnore
     private List<YeniYorumBegeniler> yeniYorumBegeniler;
 
     // Getter ve Setter metotları

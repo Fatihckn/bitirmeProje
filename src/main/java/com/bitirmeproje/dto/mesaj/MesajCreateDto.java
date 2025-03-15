@@ -1,31 +1,14 @@
 package com.bitirmeproje.dto.mesaj;
 
-public class MesajCreateDto {
+public class MesajCreateDto extends BaseMesajDto {
 
-    private int mesajGonderenKullaniciId;
+    private final int mesajGonderilenKullaniciId;
 
-    private int mesajGonderilenKullaniciId;
-
-    private String mesajIcerigi;
-
-    public MesajCreateDto() {
-    }
-
-    public MesajCreateDto(int mesajGonderenKullaniciId, int mesajGonderilenKullaniciId, String mesajIcerigi) {
-        this.mesajGonderenKullaniciId = mesajGonderenKullaniciId;
+    public MesajCreateDto(int mesajGonderilenKullaniciId) {
         this.mesajGonderilenKullaniciId = mesajGonderilenKullaniciId;
-        this.mesajIcerigi = mesajIcerigi;
-    }
-
-    public int getMesajGonderenKullaniciId() {
-        return mesajGonderenKullaniciId;
     }
 
     public int getMesajGonderilenKullaniciId() {
         return mesajGonderilenKullaniciId;
-    }
-
-    public String getMesajIcerigi() {
-        return mesajIcerigi;
     }
 }

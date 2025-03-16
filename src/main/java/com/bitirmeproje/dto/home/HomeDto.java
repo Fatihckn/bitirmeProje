@@ -14,14 +14,18 @@ public class HomeDto {
 
     private LocalDate gonderiTarihi;
 
+    private String takipEdilenKullaniciTakmaAd;
+
+
     public HomeDto() {}
 
-    public HomeDto(int gonderiId, int kullaniciId, String gonderiIcerigi, int gonderiBegeniSayisi, LocalDate gonderiTarihi) {
+    public HomeDto(int gonderiId, int kullaniciId, String gonderiIcerigi, int gonderiBegeniSayisi, LocalDate gonderiTarihi, String takipEdilenKullaniciTakmaAd) {
         this.gonderiId = gonderiId;
         this.kullaniciId = kullaniciId;
         this.gonderiIcerigi = gonderiIcerigi;
         this.gonderiTarihi = gonderiTarihi;
         this.begeniSayisi = gonderiBegeniSayisi;
+        this.takipEdilenKullaniciTakmaAd = takipEdilenKullaniciTakmaAd;
     }
 
     public int getGonderiId() {
@@ -62,5 +66,13 @@ public class HomeDto {
 
     public void setGonderiTarihi(LocalDate gonderiTarihi) {
         this.gonderiTarihi = gonderiTarihi;
+    }
+
+    public String getTakipEdilenKullaniciTakmaAd() {
+        return takipEdilenKullaniciTakmaAd;
+    }
+
+    public void setTakipEdilenKullaniciTakmaAd(String takipEdilenKullaniciTakmaAd) {
+        this.takipEdilenKullaniciTakmaAd = takipEdilenKullaniciTakmaAd;
     }
 }

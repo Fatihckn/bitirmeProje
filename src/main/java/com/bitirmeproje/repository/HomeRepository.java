@@ -15,7 +15,7 @@ public interface HomeRepository extends JpaRepository<User, Integer> {
 
     @Query("""
     SELECT NEW com.bitirmeproje.dto.home.HomeDto(
-        g.gonderiId, g.kullaniciId.kullaniciId, g.gonderiIcerigi,g.gonderiBegeniSayisi, g.gonderiTarihi
+        g.gonderiId, g.kullaniciId.kullaniciId, g.gonderiIcerigi,g.gonderiBegeniSayisi, g.gonderiTarihi, f.takipEdilenKullaniciId.kullaniciTakmaAd
     )
     FROM User k
     INNER JOIN Follows f ON k.kullaniciId = f.takipEdenKullaniciId.kullaniciId

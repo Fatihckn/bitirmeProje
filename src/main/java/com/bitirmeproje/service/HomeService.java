@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class HomeService {
@@ -43,14 +42,5 @@ public class HomeService {
 
         return gonderiler;
     }
-
-//    private HomeDto convertToHomeDto(Gonderiler gonderi) {
-//        return new HomeDto(
-//                gonderi.getGonderiId(),
-//                gonderi.getKullaniciId().getKullaniciId(),
-//                gonderi.getGonderiIcerigi(),
-//                gonderi.getGonderiBegeniSayisi(),
-//                gonderi.getGonderiTarihi()
-//        );
-    }
+}
 

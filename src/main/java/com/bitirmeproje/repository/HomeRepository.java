@@ -1,7 +1,6 @@
 package com.bitirmeproje.repository;
 
 import com.bitirmeproje.dto.home.HomeDto;
-import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

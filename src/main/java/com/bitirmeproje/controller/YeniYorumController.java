@@ -42,17 +42,7 @@ public class YeniYorumController {
         yeniYorumService.yorumuSil(id);
         return ResponseEntity.status(HttpStatus.OK).body("Yorum başarıyla silindi.");
     }
-    @PostMapping("/{id}/begeni")
-    public ResponseEntity<String> yorumBegen(@PathVariable("id") int yorumId) {
-        yeniYorumService.yorumBegen(yorumId);
-        return ResponseEntity.ok("Yorum başarıyla beğenildi.");
-    }
-    @DeleteMapping("/{id}/begeni-kaldir")
-    public ResponseEntity<String> yorumBegeniCek(@PathVariable("id") int yorumId) {
-        yeniYorumService.yorumBegeniCek(yorumId);
 
-        return ResponseEntity.ok("Beğeni başarıyla kaldırıldı.");
-    }
     @PostMapping("/{id}/yanit-ekle")
     public ResponseEntity<String> yorumaYanitEkle(@PathVariable("id") int yorumId,
                                                   @RequestBody YeniYorumDto yeniYorumDto) {
@@ -62,14 +52,5 @@ public class YeniYorumController {
     @GetMapping("/{id}/yanitlar")
     public List<YeniYorumDto> getYanitlarByYorumId(@PathVariable int id) {
         return yeniYorumService.getYanitlarByYorumId(id);
-    }
-    @GetMapping("/{yorum_id}/begeni-sayisi")
-    public ResponseEntity<Integer> getBegeniSayisi(@PathVariable int yorum_id) {
-        int begeniSayisi = yeniYorumService.getBegeniSayisi(yorum_id);
-        return ResponseEntity.ok(begeniSayisi);
-    }
-    @GetMapping("/kullanici/{kullaniciId}/begenilen-yorumlar")
-    public List<YeniYorumDto> getBegenilenYorumlar(@PathVariable int kullaniciId) {
-        return yeniYorumService.getBegenilenYorumlar(kullaniciId);
     }
 }

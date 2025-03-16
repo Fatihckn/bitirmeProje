@@ -17,7 +17,6 @@ public class YeniYorumDto {
         this.gonderiId = yeniYorum.getGonderiId().getGonderiId();
         this.yorumIcerigi = yeniYorum.getYeniYorumIcerigi();
         this.parentYorumId = yeniYorum.getParentYorum().getYorumId();
-
     }
 
     // Getter ve Setter metodları

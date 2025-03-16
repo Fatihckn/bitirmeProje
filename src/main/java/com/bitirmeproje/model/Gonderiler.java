@@ -35,6 +35,10 @@ public class Gonderiler {
     @OneToMany(mappedBy = "gonderiId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<YeniYorum> yeniYorum;
 
+    public Gonderiler() {}
+
+    public Gonderiler(int gonderiId) {this.gonderiId = gonderiId;}
+
     // Getter ve Setter Metotları
     public int getGonderiId() {
         return gonderiId;

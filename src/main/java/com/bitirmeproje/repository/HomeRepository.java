@@ -23,6 +23,4 @@ public interface HomeRepository extends JpaRepository<User, Integer> {
     ORDER BY g.gonderiTarihi DESC
 """)
     List<HomeDto> getGonderiler(@Param("kullaniciId") int kullaniciId);
-
-
 }

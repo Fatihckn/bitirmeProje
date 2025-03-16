@@ -8,7 +8,6 @@ import com.bitirmeproje.model.User;
 import com.bitirmeproje.model.YeniYorum;
 import com.bitirmeproje.model.YeniYorumBegeniler;
 import com.bitirmeproje.repository.GonderilerRepository;
-import com.bitirmeproje.repository.UserRepository;
 import com.bitirmeproje.repository.YeniYorumBegenilerRepository;
 import com.bitirmeproje.repository.YeniYorumRepository;
 import com.bitirmeproje.security.jwt.JwtUtil;
@@ -31,7 +30,7 @@ public class YeniYorumService {
     private final JwtUtil jwtUtil;
 
 
-    public YeniYorumService(YeniYorumRepository yeniYorumRepository, UserRepository userRepository,
+    public YeniYorumService(YeniYorumRepository yeniYorumRepository,
                             GonderilerRepository gonderilerRepository,
                             YeniYorumBegenilerRepository yeniYorumBegenilerRepository,
                             @Qualifier("findUserById") FindUser<Integer> findUser,
@@ -41,15 +40,6 @@ public class YeniYorumService {
         this.yeniYorumBegenilerRepository=yeniYorumBegenilerRepository;
         this.findUser = findUser;
         this.jwtUtil = jwtUtil;
-    }
-
-    private YeniYorumDto convertToDTO(YeniYorum yorum) {
-        YeniYorumDto dto = new YeniYorumDto();
-        dto.setKullaniciId(yorum.getKullaniciId().getKullaniciId());
-        dto.setGonderiId(yorum.getGonderiId().getGonderiId());
-        dto.setYorumIcerigi(yorum.getYeniYorumIcerigi());
-        dto.setParentYorumId(yorum.getParentYorum() != null ? yorum.getParentYorum().getYorumId() : null);
-        return dto;
     }
 
     public YeniYorum yeniYorumEkle(YeniYorumDto yeniYorumDto) {
@@ -69,12 +59,8 @@ public class YeniYorumService {
 
         // Eğer parent yorum ID varsa alt yorum olarak ata
         if (yeniYorumDto.getParentYorumId() != null) {
-            Optional<YeniYorum> parentYorum = getYeniYorum(yeniYorumDto.getParentYorumId());
-            if (parentYorum.isPresent()) {
-                yeniYorum.setParentYorum(parentYorum.get());
-            } else {
-                throw new CustomException(HttpStatus.NOT_FOUND, "Üst yorum bulunamadı.");
-            }
+            YeniYorum parentYorum = getYeniYorum(yeniYorumDto.getParentYorumId());
+            yeniYorum.setParentYorum(parentYorum);
         }
 
         return yeniYorumRepository.save(yeniYorum);
@@ -96,9 +82,9 @@ public class YeniYorumService {
         return yorumlar.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
     public void yorumuSil(int yorumId) {
-        Optional<YeniYorum> yorum = getYeniYorum(yorumId);
+        YeniYorum yorum = getYeniYorum(yorumId);
 
-        if(yorum.get().getKullaniciId().getKullaniciId() != jwtUtil.extractUserId()) {
+        if(yorum.getKullaniciId().getKullaniciId() != jwtUtil.extractUserId()) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Yorum bulunamadi");
         }
 
@@ -107,10 +93,10 @@ public class YeniYorumService {
     public void yorumBegen(int yorumId) {
         User user = getUser();
 
-        Optional<YeniYorum> yorum = getYeniYorum(yorumId);
+        YeniYorum yorum = getYeniYorum(yorumId);
 
         // Kullanıcının daha önce bu yorumu beğenip beğenmediğini kontrol et
-        boolean begeniVar = yeniYorumBegenilerRepository.existsByYeniYorumAndKullanici(yorum.get(), user);
+        boolean begeniVar = yeniYorumBegenilerRepository.existsByYeniYorumAndKullanici(yorum, user);
 
         if (begeniVar) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Zaten bu yorumu beğendiniz.");
@@ -118,23 +104,22 @@ public class YeniYorumService {
 
         // Yeni beğeni kaydı oluştur
         YeniYorumBegeniler yeniBegeni = new YeniYorumBegeniler();
-        yeniBegeni.setYeniYorum(yorum.get());
+        yeniBegeni.setYeniYorum(yorum);
         yeniBegeni.setKullanici(user);
 
         yeniYorumBegenilerRepository.save(yeniBegeni);
 
         // Yorumun beğeni sayısını artır
-        YeniYorum guncellenenYorum = yorum.get();
-        guncellenenYorum.setYeniYorumBegeniSayisi(guncellenenYorum.getYeniYorumBegeniSayisi() + 1);
-        yeniYorumRepository.save(guncellenenYorum);
+        yorum.setYeniYorumBegeniSayisi(yorum.getYeniYorumBegeniSayisi() + 1);
+        yeniYorumRepository.save(yorum);
     }
     public void yorumBegeniCek(int yorumId) {
         User user = getUser();
 
-        Optional<YeniYorum> yorum = getYeniYorum(yorumId);
+        YeniYorum yorum = getYeniYorum(yorumId);
 
         // Kullanıcının bu yoruma yaptığı beğeniyi kontrol et
-        Optional<YeniYorumBegeniler> begeni = yeniYorumBegenilerRepository.findByYeniYorumAndKullanici(yorum.get(), user);
+        Optional<YeniYorumBegeniler> begeni = yeniYorumBegenilerRepository.findByYeniYorumAndKullanici(yorum, user);
 
         if (begeni.isEmpty()) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Bu yorumu zaten beğenmemişsiniz.");
@@ -144,25 +129,26 @@ public class YeniYorumService {
         yeniYorumBegenilerRepository.delete(begeni.get());
 
         // Yorumun beğeni sayısını azalt
-        YeniYorum guncellenenYorum = yorum.get();
-        guncellenenYorum.setYeniYorumBegeniSayisi(Math.max(0, guncellenenYorum.getYeniYorumBegeniSayisi() - 1));
-        yeniYorumRepository.save(guncellenenYorum);
+        yorum.setYeniYorumBegeniSayisi(Math.max(0, yorum.getYeniYorumBegeniSayisi() - 1));
+        yeniYorumRepository.save(yorum);
     }
+
     public void yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto) {
         User user = getUser();
 
-        Optional<YeniYorum> parentYorum = getYeniYorum(yorumId);
+        YeniYorum parentYorum = getYeniYorum(yorumId);
 
         YeniYorum yeniYorum = new YeniYorum();
         yeniYorum.setKullaniciId(user);
-        yeniYorum.setGonderiId(parentYorum.get().getGonderiId()); // Yanıt, aynı gönderiye ait olmalı
+        yeniYorum.setGonderiId(parentYorum.getGonderiId()); // Yanıt, aynı gönderiye ait olmalı
         yeniYorum.setYeniYorumIcerigi(yeniYorumDto.getYorumIcerigi());
         yeniYorum.setYeniYorumOlusturulmaTarihi(LocalDate.now());
         yeniYorum.setYeniYorumBegeniSayisi(0);
-        yeniYorum.setParentYorum(parentYorum.get()); // Parent yorum set ediliyor
+        yeniYorum.setParentYorum(parentYorum); // Parent yorum set ediliyor
 
         yeniYorumRepository.save(yeniYorum);
     }
+
     public List<YeniYorumDto> getYanitlarByYorumId(int yorumId) {
         List<YeniYorum> yanitlar = yeniYorumRepository.findByParentYorum_YorumId(yorumId);
 
@@ -174,28 +160,43 @@ public class YeniYorumService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
     public int getBegeniSayisi(int yorumId) {
-        Optional<YeniYorum> yeniYorum = yeniYorumRepository.findById(yorumId);
-        if (yeniYorum.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Yorum bulunamadı.");
+        YeniYorum yeniYorum = getYeniYorum(yorumId);
+
+        int begeniSayisi = yeniYorumBegenilerRepository.countByYeniYorum(yeniYorum);
+
+        if (begeniSayisi == 0) {
+            throw new CustomException(HttpStatus.NOT_FOUND,"Yorumun begeni sayisi yoktur");
         }
-        return yeniYorumBegenilerRepository.countByYeniYorum(yeniYorum.get());
+        return begeniSayisi;
     }
+
     public List<YeniYorumDto> getBegenilenYorumlar(int kullaniciId) {
         List<YeniYorum> begenilenYorumlar = yeniYorumBegenilerRepository
                 .findByKullanici_KullaniciId(kullaniciId)
                 .stream()
                 .map(YeniYorumBegeniler::getYeniYorum) // Beğenilen yorumları çekiyoruz
-                .collect(Collectors.toList());
+                .toList();
 
         return begenilenYorumlar.stream()
                 .map(this::convertToDTO) // DTO'ya çeviriyoruz
                 .collect(Collectors.toList());
     }
 
-    private Optional<YeniYorum> getYeniYorum(int yorumId) {
-        Optional<YeniYorum> yeniYorum = yeniYorumRepository.findById(yorumId);
-        if (yeniYorum.isEmpty()) {
+    private YeniYorumDto convertToDTO(YeniYorum yorum) {
+        YeniYorumDto dto = new YeniYorumDto();
+        dto.setYeniYorumId(yorum.getYorumId());
+        dto.setKullaniciId(yorum.getKullaniciId().getKullaniciId());
+        dto.setGonderiId(yorum.getGonderiId().getGonderiId());
+        dto.setYorumIcerigi(yorum.getYeniYorumIcerigi());
+        dto.setParentYorumId(yorum.getParentYorum() != null ? yorum.getParentYorum().getYorumId() : null);
+        return dto;
+    }
+
+    private YeniYorum getYeniYorum(int yorumId) {
+        YeniYorum yeniYorum = yeniYorumRepository.findByYorumId(yorumId);
+        if (yeniYorum == null) {
             throw new CustomException(HttpStatus.NOT_FOUND,"Yorum bulunamadi");
         }
         return yeniYorum;

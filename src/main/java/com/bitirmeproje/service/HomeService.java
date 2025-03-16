@@ -3,7 +3,6 @@ package com.bitirmeproje.service;
 import com.bitirmeproje.dto.home.HomeDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.user.FindUser;
-import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.HomeRepository;
 import com.bitirmeproje.security.jwt.JwtUtil;

@@ -1,6 +1,7 @@
 package com.bitirmeproje.repository;
 
 import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
+import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderilerAllDto;
 import com.bitirmeproje.model.BegenilenGonderiler;
 import com.bitirmeproje.model.Gonderiler;

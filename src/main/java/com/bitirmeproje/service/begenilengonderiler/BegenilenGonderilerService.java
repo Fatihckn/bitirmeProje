@@ -1,6 +1,5 @@
 package com.bitirmeproje.service.begenilengonderiler;
 
-import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderilerAllDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.user.GetUserByToken;
@@ -15,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class BegenilenGonderilerService implements IBegenilenGonderilerService {
@@ -80,13 +81,19 @@ public class BegenilenGonderilerService implements IBegenilenGonderilerService {
     }
 
     // Bütün gönderilerin beğeni sayısı
-    public List<GonderilerAllDto> gonderiBegeniSayisiAll() {
+    public Map<Integer, Integer> gonderiBegeniSayisiAll() {
         List<GonderilerAllDto> allGonderiler = begenilenGonderilerRepository.findAllBegeniler();
 
         if(allGonderiler.isEmpty()) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Begenilen gonderi bulunamadi");
         }
-        return allGonderiler;
+
+        // DTO listesini Map'e çeviriyoruz
+        return  allGonderiler.stream()
+                .collect(Collectors.toMap(
+                        GonderilerAllDto::getGonderi_id,   // Key = gonderi_id
+                        GonderilerAllDto::getGonderi_begeni_sayisi // Value = gonderi_begeni_sayisi
+                ));
     }
 
 

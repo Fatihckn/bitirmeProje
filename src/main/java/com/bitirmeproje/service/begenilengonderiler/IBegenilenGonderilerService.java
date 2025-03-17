@@ -1,11 +1,9 @@
 package com.bitirmeproje.service.begenilengonderiler;
 
 import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
-import com.bitirmeproje.dto.gonderiler.GonderiDto;
-import com.bitirmeproje.dto.gonderiler.GonderilerAllDto;
-import com.bitirmeproje.model.Gonderiler;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IBegenilenGonderilerService {
 
@@ -17,6 +15,6 @@ public interface IBegenilenGonderilerService {
 
     List<BegenilenGonderilerDto> kullanicininBegenileri();
 
-    List<GonderilerAllDto> gonderiBegeniSayisiAll();
+    Map<Integer, Integer> gonderiBegeniSayisiAll();
 
 }

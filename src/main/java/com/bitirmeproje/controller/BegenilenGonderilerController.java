@@ -1,8 +1,5 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.dto.gonderiler.GonderiDto;
-import com.bitirmeproje.dto.gonderiler.GonderilerAllDto;
-import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.service.begenilengonderiler.IBegenilenGonderilerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,7 +51,7 @@ public class BegenilenGonderilerController {
     }
 
     @GetMapping("/begeni-sayisi-all") // Belirli bir gönderinin beğeni sayısını getir
-    public ResponseEntity<List<GonderilerAllDto>> begeniSayisiAll() {
+    public ResponseEntity<Map<Integer, Integer>> begeniSayisiAll() {
         return ResponseEntity.ok(begenilenGonderilerService.gonderiBegeniSayisiAll());
     }
 

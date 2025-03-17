@@ -18,6 +18,11 @@ public class GonderiDto {
         this.gonderiBegeniSayisi = gonderiBegeniSayisi != null ? gonderiBegeniSayisi.intValue() : 0;
     }
 
+    public GonderiDto(int gonderiId, Number gonderiBegeniSayisi) {
+        this.gonderiId = gonderiId; // Number → int dönüşümü
+        this.gonderiBegeniSayisi = gonderiBegeniSayisi != null ? gonderiBegeniSayisi.intValue() : 0;
+    }
+
     // Getter ve Setter metotları...
     public int getGonderiId() {
         return gonderiId;

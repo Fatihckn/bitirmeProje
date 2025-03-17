@@ -31,9 +31,9 @@ public class BegenilenGonderilerController {
     }
 
     @GetMapping("/{gonderi_id}/begeni-sayisi") // Belirli bir gönderinin beğeni sayısını getir
-    public ResponseEntity<String> begeniSayisi(@PathVariable("gonderi_id") int gonderiId) {
+    public ResponseEntity<Integer> begeniSayisi(@PathVariable("gonderi_id") int gonderiId) {
 
-        return ResponseEntity.ok("Gönderinin Beğeni sayısı: " + begenilenGonderilerService.gonderiBegeniSayisi(gonderiId));
+        return ResponseEntity.ok(begenilenGonderilerService.gonderiBegeniSayisi(gonderiId));
     }
 
     @GetMapping("/kullanici/begenilen-gonderiler")

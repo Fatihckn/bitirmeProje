@@ -4,7 +4,10 @@ import com.bitirmeproje.service.begenilengonderiler.IBegenilenGonderilerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/gonderiBegeni")
@@ -30,10 +33,21 @@ public class BegenilenGonderilerController {
         return ResponseEntity.ok("Begeni kaldirildi");
     }
 
-    @GetMapping("/{gonderi_id}/begeni-sayisi") // Belirli bir gönderinin beğeni sayısını getir
-    public ResponseEntity<Integer> begeniSayisi(@PathVariable("gonderi_id") int gonderiId) {
+//    @GetMapping("/{gonderi_id}/begeni-sayisi") // Belirli bir gönderinin beğeni sayısını getir
+//    public ResponseEntity<Integer> begeniSayisi(@PathVariable("gonderi_id") int gonderiId) {
+//
+//        return ResponseEntity.ok(begenilenGonderilerService.gonderiBegeniSayisi(gonderiId));
+//    }
 
-        return ResponseEntity.ok(begenilenGonderilerService.gonderiBegeniSayisi(gonderiId));
+    @GetMapping("/{gonderi_id}/begeni-sayisi") // Belirli bir gönderinin beğeni sayısını getir
+    public ResponseEntity<Map<String, Integer>> begeniSayisi(@PathVariable("gonderi_id") int gonderiId) {
+        int begeniSayisi = begenilenGonderilerService.gonderiBegeniSayisi(gonderiId);
+
+        // JSON formatında dönmek için Map kullan
+        Map<String, Integer> response = new HashMap<>();
+        response.put("begeni_sayisi", begeniSayisi);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/kullanici/begenilen-gonderiler")

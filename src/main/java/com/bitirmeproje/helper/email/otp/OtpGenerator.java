@@ -1,4 +1,4 @@
-package com.bitirmeproje.helper.otp;
+package com.bitirmeproje.helper.email.otp;
 
 import java.security.SecureRandom;
 import java.util.Random;

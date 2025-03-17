@@ -1,15 +1,14 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.yeniyorumbegeniler;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.dto.IEntityDtoConvert;
-import com.bitirmeproje.helper.user.FindUser;
+import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.model.YeniYorum;
 import com.bitirmeproje.model.YeniYorumBegeniler;
 import com.bitirmeproje.repository.YeniYorumBegenilerRepository;
 import com.bitirmeproje.repository.YeniYorumRepository;
-import com.bitirmeproje.security.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,27 +18,24 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class YeniYorumBegenilerService {
+public class YeniYorumBegenilerService implements IYeniYorumBegenilerService{
     private final YeniYorumBegenilerRepository yeniYorumBegenilerRepository;
     private final YeniYorumRepository yeniYorumRepository;
-    private final JwtUtil jwtUtil;
-    private final FindUser<Integer> findUser;
     private final IEntityDtoConvert<YeniYorum,YeniYorumDto> iEntityDtoConvert;
+    private final GetUserByToken getUserByToken;
 
     public YeniYorumBegenilerService(YeniYorumBegenilerRepository yeniYorumBegenilerRepository,
                                      YeniYorumRepository yeniYorumRepository,
-                                     JwtUtil jwtUtil,
-                                     @Qualifier("findUserById") FindUser<Integer> findUser,
-                                     @Qualifier("yeniYorumConverter") IEntityDtoConvert<YeniYorum, YeniYorumDto> iEntityDtoConvert) {
+                                     @Qualifier("yeniYorumConverter") IEntityDtoConvert<YeniYorum, YeniYorumDto> iEntityDtoConvert,
+                                     GetUserByToken getUserByToken) {
         this.yeniYorumBegenilerRepository = yeniYorumBegenilerRepository;
         this.yeniYorumRepository = yeniYorumRepository;
-        this.jwtUtil = jwtUtil;
-        this.findUser = findUser;
         this.iEntityDtoConvert = iEntityDtoConvert;
+        this.getUserByToken = getUserByToken;
     }
 
     public void yorumBegen(int yorumId) {
-        User user = getUser();
+        User user = getUserByToken.getUser();
 
         YeniYorum yorum = getYeniYorum(yorumId);
 
@@ -63,7 +59,7 @@ public class YeniYorumBegenilerService {
     }
 
     public void yorumBegeniCek(int yorumId) {
-        User user = getUser();
+        User user = getUserByToken.getUser();
 
         YeniYorum yorum = getYeniYorum(yorumId);
 
@@ -112,6 +108,4 @@ public class YeniYorumBegenilerService {
         }
         return yeniYorum;
     }
-
-    private User getUser() {return findUser.findUser(jwtUtil.extractUserId());}
 }

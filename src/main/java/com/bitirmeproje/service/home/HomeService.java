@@ -1,34 +1,30 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.home;
 
 import com.bitirmeproje.dto.home.HomeDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.user.FindUser;
+import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.HomeRepository;
-import com.bitirmeproje.security.jwt.JwtUtil;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class HomeService {
+public class HomeService implements IHomeService {
 
     private final HomeRepository homeRepository;
-    private final JwtUtil jwtUtil;
-    private final FindUser<Integer> findUser;
+    private final GetUserByToken getUserByToken;
 
-    public HomeService(HomeRepository homeRepository, JwtUtil jwtUtil,
-                       @Qualifier("findUserById") FindUser<Integer> findUser) {
+    public HomeService(HomeRepository homeRepository,
+                       GetUserByToken getUserByToken) {
         this.homeRepository = homeRepository;
-        this.jwtUtil = jwtUtil;
-        this.findUser = findUser;
+        this.getUserByToken = getUserByToken;
     }
 
     // Kullanıcının takip ettiği kişilerin gönderilerini getir.
     public List<HomeDto> getHome() {
-        User user = findUser.findUser(jwtUtil.extractUserId());
+        User user = getUserByToken.getUser();
         System.out.println("user id= "+user.getKullaniciId());
 
         List<HomeDto> gonderiler = homeRepository.getGonderiler(user.getKullaniciId());

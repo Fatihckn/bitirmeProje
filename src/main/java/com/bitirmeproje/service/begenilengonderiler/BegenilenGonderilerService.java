@@ -1,11 +1,12 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.begenilengonderiler;
+
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.user.FindUser;
+import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.BegenilenGonderiler;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.BegenilenGonderilerRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.bitirmeproje.repository.GonderilerRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,21 +15,25 @@ import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
 import java.util.List;
 
 @Service
-public class BegenilenGonderilerService {
+public class BegenilenGonderilerService implements IBegenilenGonderilerService {
 
     private final BegenilenGonderilerRepository begenilenGonderilerRepository;
-    private final FindUser<String> findUser;
+    private final GonderilerRepository gonderilerRepository;
+    private final GetUserByToken getUserByToken;
 
-    public BegenilenGonderilerService(BegenilenGonderilerRepository begenilenGonderilerRepository,@Qualifier("findUserByEmail") FindUser<String> findUser)//Repoyla bağlılığı sağlandı heralde
+    public BegenilenGonderilerService(BegenilenGonderilerRepository begenilenGonderilerRepository,
+                                      GonderilerRepository gonderilerRepository,
+                                      GetUserByToken getUserByToken)
     {
         this.begenilenGonderilerRepository=begenilenGonderilerRepository;
-        this.findUser = findUser;
+        this.gonderilerRepository=gonderilerRepository;
+        this.getUserByToken=getUserByToken;
     }
 
     // Gönderi Beğenme
-    public void begeniEkle(int gonderiId, String kullaniciEmail) {
+    public void begeniEkle(int gonderiId) {
         // Kullanıcıyı email ile bul
-        User kullanici = findUser.findUser(kullaniciEmail);
+        User kullanici = getUserByToken.getUser();
 
         // Gonderiler nesnesini oluşturan metod çağırılıyor
         Gonderiler gonderi = getGonderiById(gonderiId);
@@ -41,14 +46,57 @@ public class BegenilenGonderilerService {
         // Yeni beğeni kaydı oluştur
         BegenilenGonderiler begeni = createBegeni(gonderi, kullanici);
 
+        gonderilerRepository.incrementBegeniSayisi(gonderi.getGonderiId());
+
         // Kaydet
         begenilenGonderilerRepository.save(begeni);
     }
 
+    // Gönderiden beğeniyi kaldır (Repository'de delete işlemi Entity manager üzerinden çalıştığı için transaction kontrölünü eklememiz lazım)
+    @Transactional
+    public void begeniKaldir(int gonderiId) {
+
+        // Kullanıcıyı email ile bul
+        User kullanici = getUserByToken.getUser();
+
+        Gonderiler gonderi = getGonderiById(gonderiId);
+
+        // Kullanıcının bu gönderiyi daha önce beğenip beğenmediğini kontrol et
+        if (!begenilenGonderilerRepository.existsByGonderiIdAndKullaniciId(gonderi, kullanici)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu gönderiyi zaten beğenmiyorsunuz!");
+        }
+
+        gonderilerRepository.decreaseBegeniSayisi(gonderi.getGonderiId());
+        begenilenGonderilerRepository.deleteByGonderiIdAndKullaniciId(gonderi, kullanici);
+    }
+
+    // Gönderinin beğeni sayısı
+    public int gonderiBegeniSayisi(int gonderiId) {
+
+        Gonderiler gonderi = getGonderiById(gonderiId);
+        return gonderi.getGonderiBegeniSayisi();
+    }
+
+    //belirli bir kullanıcının beğendiği gönderiler
+    public List<BegenilenGonderilerDto> kullanicininBegenileri()
+    {
+        User kullanici = getUserByToken.getUser();
+
+        List<BegenilenGonderiler> begenilenGonderilers = begenilenGonderilerRepository.findByKullaniciId(kullanici);
+        if (begenilenGonderilers.isEmpty()) {
+            throw new CustomException(HttpStatus.NOT_FOUND,"Kullanıcının Beğendiği Gönderi Yok.");
+        }
+        return begenilenGonderilers.stream().map(begeni->new BegenilenGonderilerDto(begeni.getGonderiId().getGonderiId(), begeni.getBegenilenGonderilerId(), begeni.getBegenmeZamani()))
+                .toList();
+    }
+
     // Gönderi ID ile gönderi nesnesi oluşturuluyor.
     private Gonderiler getGonderiById(int gonderiId) {
-        Gonderiler gonderi = new Gonderiler();
-        gonderi.setGonderiId(gonderiId);
+        Gonderiler gonderi = gonderilerRepository.findByGonderiId(gonderiId);
+
+        if(gonderi == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND,"Gonderi bulunamadi");
+        }
         return gonderi;
     }
 
@@ -58,42 +106,5 @@ public class BegenilenGonderilerService {
         begeni.setGonderiId(gonderi);
         begeni.setKullaniciId(kullanici);
         return begeni;
-    }
-
-    // Gönderiden beğeniyi kaldır (Repository'de delete işlemi Entity manager üzerinden çalıştığı için transaction kontrölünü eklememiz lazım)
-    @Transactional
-    public void begeniKaldir(int gonderiId,String kullaniciEmail) {
-
-        // Kullanıcıyı email ile bul
-        User kullanici = findUser.findUser(kullaniciEmail);
-
-        Gonderiler gonderi = getGonderiById(gonderiId);
-
-        // Kullanıcının bu gönderiyi daha önce beğenip beğenmediğini kontrol et
-        if (!begenilenGonderilerRepository.existsByGonderiIdAndKullaniciId(gonderi, kullanici)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu gönderiyi zaten beğenmiyorsunuz!");
-        }
-
-        begenilenGonderilerRepository.deleteByGonderiIdAndKullaniciId(gonderi, kullanici);
-    }
-
-    // Gönderinin beğeni sayısı
-    public int gonderiBegeniSayisi(int gonderiId) {
-
-        Gonderiler gonderi = getGonderiById(gonderiId);
-        return begenilenGonderilerRepository.countByGonderiId(gonderi);
-    }
-
-    //belirli bir kullanıcının beğendiği gönderiler
-    public List<BegenilenGonderilerDto> kullanicininBegenileri(String kullaniciEmail)
-    {
-        User kullanici = findUser.findUser(kullaniciEmail);
-
-        List<BegenilenGonderiler> begenilenGonderilers = begenilenGonderilerRepository.findByKullaniciId(kullanici);
-        if (begenilenGonderilers.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Kullanıcının Beğendiği Gönderi Yok.");
-        }
-        return begenilenGonderilers.stream().map(begeni->new BegenilenGonderilerDto(begeni.getGonderiId().getGonderiId()))
-                .toList();
     }
 }

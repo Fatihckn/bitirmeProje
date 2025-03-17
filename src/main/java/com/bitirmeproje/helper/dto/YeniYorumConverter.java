@@ -22,14 +22,14 @@ public class YeniYorumConverter implements IEntityDtoConvert<YeniYorum, YeniYoru
         return dto;
     }
 
-    @Override
-    public YeniYorum convertToEntity(YeniYorumDto dto) {
-        YeniYorum yeniYorum = new YeniYorum();
-        yeniYorum.setKullaniciId(new User(dto.getKullaniciId()));  // Sadece ID set ediliyor
-        yeniYorum.setGonderiId(new Gonderiler(dto.getGonderiId()));  // Sadece ID set ediliyor
-        yeniYorum.setYeniYorumIcerigi(dto.getYorumIcerigi());
-        yeniYorum.setYeniYorumOlusturulmaTarihi(LocalDate.now());
-        yeniYorum.setYeniYorumBegeniSayisi(0);
-        return yeniYorum;
-    }
+//    @Override
+//    public YeniYorum convertToEntity(YeniYorumDto dto) {
+//        YeniYorum yeniYorum = new YeniYorum();
+//        yeniYorum.setKullaniciId(new User(dto.getKullaniciId()));  // Sadece ID set ediliyor
+//        yeniYorum.setGonderiId(new Gonderiler(dto.getGonderiId()));  // Sadece ID set ediliyor
+//        yeniYorum.setYeniYorumIcerigi(dto.getYorumIcerigi());
+//        yeniYorum.setYeniYorumOlusturulmaTarihi(LocalDate.now());
+//        yeniYorum.setYeniYorumBegeniSayisi(0);
+//        return yeniYorum;
+//    }
 }

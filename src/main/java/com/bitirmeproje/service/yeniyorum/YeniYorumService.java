@@ -1,57 +1,52 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.yeniyorum;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.dto.IEntityDtoConvert;
-import com.bitirmeproje.helper.user.FindUser;
+import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.model.YeniYorum;
 import com.bitirmeproje.repository.GonderilerRepository;
 import com.bitirmeproje.repository.YeniYorumRepository;
-import com.bitirmeproje.security.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class YeniYorumService {
+public class YeniYorumService implements IYeniYorumService{
 
     private final YeniYorumRepository yeniYorumRepository;
     private final GonderilerRepository gonderilerRepository;
-    private final FindUser<Integer> findUser;
-    private final JwtUtil jwtUtil;
     private final IEntityDtoConvert<YeniYorum,YeniYorumDto> iEntityDtoConvert;
+    private final GetUserByToken getUserByToken;
 
 
     public YeniYorumService(YeniYorumRepository yeniYorumRepository,
                             GonderilerRepository gonderilerRepository,
-                            @Qualifier("findUserById") FindUser<Integer> findUser,
-                            JwtUtil jwtUtil,
-                            @Qualifier("yeniYorumConverter") IEntityDtoConvert<YeniYorum, YeniYorumDto> iEntityDtoConvert) {
+                            @Qualifier("yeniYorumConverter") IEntityDtoConvert<YeniYorum, YeniYorumDto> iEntityDtoConvert,
+                            GetUserByToken getUserByToken) {
         this.yeniYorumRepository = yeniYorumRepository;
         this.gonderilerRepository = gonderilerRepository;
-        this.findUser = findUser;
-        this.jwtUtil = jwtUtil;
         this.iEntityDtoConvert = iEntityDtoConvert;
+        this.getUserByToken = getUserByToken;
     }
 
     public YeniYorum yeniYorumEkle(YeniYorumDto yeniYorumDto) {
-        User user = findUser.findUser(jwtUtil.extractUserId());
+        User user = getUserByToken.getUser();
 
-        Optional<Gonderiler> gonderi = gonderilerRepository.findByGonderiId(yeniYorumDto.getGonderiId());
-        if (gonderi.isEmpty()) {
+        Gonderiler gonderi = gonderilerRepository.findByGonderiId(yeniYorumDto.getGonderiId());
+        if (gonderi == null) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Gönderi bulunamadı.");
         }
 
         YeniYorum yeniYorum = new YeniYorum();
         yeniYorum.setKullaniciId(user);
-        yeniYorum.setGonderiId(gonderi.get());
+        yeniYorum.setGonderiId(gonderi);
         yeniYorum.setYeniYorumIcerigi(yeniYorumDto.getYorumIcerigi());
         yeniYorum.setYeniYorumOlusturulmaTarihi(LocalDate.now());
         yeniYorum.setYeniYorumBegeniSayisi(0);
@@ -83,7 +78,7 @@ public class YeniYorumService {
     public void yorumuSil(int yorumId) {
         YeniYorum yorum = getYeniYorum(yorumId);
 
-        if(yorum.getKullaniciId().getKullaniciId() != jwtUtil.extractUserId()) {
+        if(yorum.getKullaniciId().getKullaniciId() != getUserByToken.getUser().getKullaniciId()) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Yorum bulunamadi");
         }
 
@@ -91,7 +86,7 @@ public class YeniYorumService {
     }
 
     public void yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto) {
-        User user = getUser();
+        User user = getUserByToken.getUser();
 
         YeniYorum parentYorum = getYeniYorum(yorumId);
 
@@ -125,6 +120,4 @@ public class YeniYorumService {
         }
         return yeniYorum;
     }
-
-    private User getUser() {return findUser.findUser(jwtUtil.extractUserId());}
 }

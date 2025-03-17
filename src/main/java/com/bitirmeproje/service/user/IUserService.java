@@ -1,4 +1,4 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.user;
 
 import com.bitirmeproje.dto.user.ChangeEmailDto;
 import com.bitirmeproje.dto.user.SifreDegistirDto;
@@ -11,21 +11,21 @@ import java.util.Optional;
 
 public interface IUserService {
 
-    void passwordChange(User user, SifreDegistirDto sifreDto);
+    void passwordChange(SifreDegistirDto sifreDto);
 
 //  void profilResmiGuncelle(User user, ProfilResmiGuncelleDto profilResmiGuncelle);
 
     List<UserDto> searchUsers(String query);
 
-    void followUser(User follower, int followingId);
+    void followUser(int followingId);
 
-    void unfollowUser(User follower, int followingId);
+    void unfollowUser(int followingId);
 
-    List<UserDto> getFollowers(int userId);
+    List<UserDto> getFollowers();
 
-    List<UserDto> getFollowing(int userId);
+    List<UserDto> getFollowing();
 
-    void updateUser(int userId, UserUpdateDto userUpdateDto);
+    void updateUser(UserUpdateDto userUpdateDto);
 
     UserDto findUserById();
 
@@ -33,5 +33,5 @@ public interface IUserService {
 
     Optional<User> findByEposta (String ePosta);
 
-    void changeUserEmail(int userId, ChangeEmailDto changeEmailDto);
+    void changeUserEmail(ChangeEmailDto changeEmailDto);
 }

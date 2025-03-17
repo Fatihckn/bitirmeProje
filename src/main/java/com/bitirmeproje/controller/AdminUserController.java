@@ -2,8 +2,7 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.user.UserAllDto;
 import com.bitirmeproje.dto.user.UserUpdateDto;
-import com.bitirmeproje.service.AdminUserService;
-import com.bitirmeproje.service.IAdminUserService;
+import com.bitirmeproje.service.admin.IAdminUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +14,7 @@ public class AdminUserController {
 
     private final IAdminUserService adminUserService;
 
-    public AdminUserController(AdminUserService adminUserService) {
+    public AdminUserController(IAdminUserService adminUserService) {
         this.adminUserService = adminUserService;
     }
 

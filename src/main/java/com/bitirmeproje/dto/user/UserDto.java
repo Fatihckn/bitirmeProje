@@ -7,8 +7,8 @@ import java.time.LocalDate;
 public class UserDto extends BaseUserDto {
     public UserDto() {}
 
-    public UserDto(String kullaniciTakmaAd, String ePosta, String kullaniciBio, String kullaniciProfilResmi,
+    public UserDto(int kullaniciId, String kullaniciTakmaAd, String ePosta, String kullaniciBio, String kullaniciProfilResmi,
                    String kullaniciTelefonNo, LocalDate kullaniciDogumTarihi, LocalDate kullaniciUyeOlmaTarihi) {
-        super(kullaniciTakmaAd, ePosta, kullaniciBio, kullaniciProfilResmi, kullaniciTelefonNo, kullaniciDogumTarihi, kullaniciUyeOlmaTarihi);
+        super(kullaniciId, kullaniciTakmaAd, ePosta, kullaniciBio, kullaniciProfilResmi, kullaniciTelefonNo, kullaniciDogumTarihi, kullaniciUyeOlmaTarihi);
     }
 }

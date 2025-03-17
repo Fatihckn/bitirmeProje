@@ -3,6 +3,7 @@ package com.bitirmeproje.dto.user;
 import java.time.LocalDate;
 
 public abstract class BaseUserDto {
+    protected int kullaniciId;
     protected String kullaniciTakmaAd;
     protected String ePosta;
     protected String kullaniciBio;
@@ -13,7 +14,8 @@ public abstract class BaseUserDto {
 
     public BaseUserDto() {}
 
-    public BaseUserDto(String kullaniciTakmaAd, String ePosta, String kullaniciBio, String kullaniciProfilResmi, String kullaniciTelefonNo, LocalDate kullaniciDogumTarihi, LocalDate kullaniciUyeOlmaTarihi) {
+    public BaseUserDto(int kullaniciId, String kullaniciTakmaAd, String ePosta, String kullaniciBio, String kullaniciProfilResmi, String kullaniciTelefonNo, LocalDate kullaniciDogumTarihi, LocalDate kullaniciUyeOlmaTarihi) {
+        this.kullaniciId = kullaniciId;
         this.kullaniciTakmaAd = kullaniciTakmaAd;
         this.ePosta = ePosta;
         this.kullaniciBio = kullaniciBio;
@@ -24,6 +26,16 @@ public abstract class BaseUserDto {
     }
 
     // Getter ve Setter'lar
+
+
+    public int getKullaniciId() {
+        return kullaniciId;
+    }
+
+    public void setKullaniciId(int kullaniciId) {
+        this.kullaniciId = kullaniciId;
+    }
+
     public String getKullaniciTakmaAd() {
         return kullaniciTakmaAd;
     }

@@ -1,7 +1,7 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.follows.PopulerKullaniciDto;
-import com.bitirmeproje.service.FollowsService;
+import com.bitirmeproje.service.follows.IFollowsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,8 +10,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/follows")
 public class FollowsController {
-    private final FollowsService followsService;
-    public FollowsController(FollowsService followsService)
+    private final IFollowsService followsService;
+    public FollowsController(IFollowsService followsService)
     {
         this.followsService=followsService;
     }

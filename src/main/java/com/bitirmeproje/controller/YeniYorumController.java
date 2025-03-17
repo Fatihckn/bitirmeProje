@@ -2,7 +2,7 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
 import com.bitirmeproje.model.YeniYorum;
-import com.bitirmeproje.service.YeniYorumService;
+import com.bitirmeproje.service.yeniyorum.IYeniYorumService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,9 +13,9 @@ import java.util.List;
 @RequestMapping("/api/yorum")
 public class YeniYorumController {
 
-    private final YeniYorumService yeniYorumService;
+    private final IYeniYorumService yeniYorumService;
 
-    public YeniYorumController(YeniYorumService yeniYorumService) {
+    public YeniYorumController(IYeniYorumService yeniYorumService) {
         this.yeniYorumService = yeniYorumService;
     }
 

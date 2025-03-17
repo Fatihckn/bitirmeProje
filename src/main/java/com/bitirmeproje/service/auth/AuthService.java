@@ -1,4 +1,4 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.auth;
 
 import com.bitirmeproje.dto.auth.LoginDto;
 import com.bitirmeproje.exception.CustomException;
@@ -10,10 +10,8 @@ import com.bitirmeproje.security.jwt.JwtUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
 @Service
-public class AuthService {
+public class AuthService implements IAuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -28,7 +26,7 @@ public class AuthService {
     }
 
     // Kullanıcı kayıt servisi
-    public void registerUser(@RequestBody User user) {
+    public void registerUser(User user) {
         if(user.getKullaniciRole() == null) {
             user.setKullaniciRole(Role.USER);
         }

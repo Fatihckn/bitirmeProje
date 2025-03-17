@@ -1,11 +1,9 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.aramagecmisi.AramaGecmisiDto;
-import com.bitirmeproje.security.jwt.JwtUtil;
-import com.bitirmeproje.service.AramaGecmisiService;
+import com.bitirmeproje.service.aramagecmisi.IAramaGecmisiService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -14,19 +12,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/arama")
 public class AramaGecmisiController {
-    private final AramaGecmisiService aramaGecmisiService;
-    private final JwtUtil jwtUtil;
+    private final IAramaGecmisiService aramaGecmisiService;
 
-    public AramaGecmisiController(AramaGecmisiService aramaGecmisiService,
-                                  JwtUtil jwtUtil) {
+    public AramaGecmisiController(IAramaGecmisiService aramaGecmisiService) {
         this.aramaGecmisiService = aramaGecmisiService;
-        this.jwtUtil = jwtUtil;
     }
 
     // Yeni arama kaydetme
     @PostMapping("/yeni")
-    public ResponseEntity<String> AramaKaydet(@RequestBody AramaGecmisiDto aramaGecmisiDto, Authentication authentication) {
-        aramaGecmisiService.AramaKaydet(aramaGecmisiDto, authentication.getName());
+    public ResponseEntity<String> AramaKaydet(@RequestBody AramaGecmisiDto aramaGecmisiDto) {
+        aramaGecmisiService.AramaKaydet(aramaGecmisiDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("Arama geçmişi kaydedildi.");
     }
 
@@ -34,7 +29,7 @@ public class AramaGecmisiController {
     @GetMapping("/gecmis")
     public ResponseEntity<List<AramaGecmisiDto>> getKullaniciAramaGecmisi() {
 
-        List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisi(jwtUtil.extractUserId());
+        List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisi();
         return ResponseEntity.ok(aramaGecmisiList);
     }
 
@@ -44,16 +39,15 @@ public class AramaGecmisiController {
             @RequestParam("baslangic") String baslangic,
             @RequestParam("bitis") String bitis) {
 
-        List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisiByDate(
-                jwtUtil.extractUserId(), LocalDate.parse(baslangic), LocalDate.parse(bitis));
+        List<AramaGecmisiDto> aramaGecmisiList = aramaGecmisiService.getKullaniciAramaGecmisiByDate(LocalDate.parse(baslangic), LocalDate.parse(bitis));
 
         return ResponseEntity.ok(aramaGecmisiList);
     }
 
     // Arama geçmişini silme
     @DeleteMapping("/{aramaGecmisiId}")
-    public ResponseEntity<String> deleteArama(@PathVariable int aramaGecmisiId, Authentication authentication) {
-        aramaGecmisiService.deleteArama(aramaGecmisiId, authentication.getName());
+    public ResponseEntity<String> deleteArama(@PathVariable int aramaGecmisiId) {
+        aramaGecmisiService.deleteArama(aramaGecmisiId);
         return ResponseEntity.ok("Arama Gecmisi Silindi");
     }
 

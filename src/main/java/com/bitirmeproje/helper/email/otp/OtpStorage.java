@@ -1,4 +1,4 @@
-package com.bitirmeproje.helper.otp;
+package com.bitirmeproje.helper.email.otp;
 
 import org.springframework.stereotype.Component;
 import java.util.concurrent.ConcurrentHashMap;

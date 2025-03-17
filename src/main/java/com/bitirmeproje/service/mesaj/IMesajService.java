@@ -1,4 +1,4 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.mesaj;
 
 import com.bitirmeproje.dto.mesaj.MesajCreateDto;
 import com.bitirmeproje.dto.mesaj.MesajDto;

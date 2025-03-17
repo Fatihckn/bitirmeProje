@@ -1,67 +1,52 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.gonderiler;
 
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
-import com.bitirmeproje.dto.gonderiler.GonderiResponseDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.user.FindUser;
+import com.bitirmeproje.helper.dto.IEntityDtoConvert;
+import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.GonderilerRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class GonderilerService implements IGonderilerService {
 
     private final GonderilerRepository gonderilerRepository;
-    private final FindUser<Integer> findUser;
+    private final IEntityDtoConvert<Gonderiler, GonderiDto> entityDtoConvert;
+    private final GetUserByToken getUserByToken;
 
-    public GonderilerService(GonderilerRepository gonderilerRepository,@Qualifier("findUserById") FindUser<Integer> findUser) {
+    public GonderilerService(GonderilerRepository gonderilerRepository,
+                             IEntityDtoConvert<Gonderiler, GonderiDto> entityDtoConvert,
+                             GetUserByToken getUserByToken) {
         this.gonderilerRepository = gonderilerRepository;
-        this.findUser = findUser;
+        this.entityDtoConvert = entityDtoConvert;
+        this.getUserByToken = getUserByToken;
     }
 
     // Belirli bir kullanıcının tüm gönderilerini getir
-    public List<Gonderiler> kullaniciGonderileriniGetir(int kullaniciId) {
-        return gonderilerRepository.findByKullaniciId_KullaniciId(kullaniciId);
-    }
+    public List<GonderiDto> kullaniciGonderileriniGetir() {
+        User user = getUserByToken.getUser();
 
+        List<Gonderiler> gonderilerList = gonderilerRepository.findByKullaniciId_KullaniciId(user.getKullaniciId());
 
-    public void begeniEkle(int gonderiId) {
-        Gonderiler gonderi = findGonderi(gonderiId);
-
-        gonderi.setGonderiBegeniSayisi(gonderi.getGonderiBegeniSayisi() + 1);
-        gonderilerRepository.save(gonderi);
-    }
-
-    public void begeniKaldir(int gonderiId) {
-        Gonderiler gonderi = findGonderi(gonderiId);
-
-        if (gonderi.getGonderiBegeniSayisi() > 0) {
-            gonderi.setGonderiBegeniSayisi(gonderi.getGonderiBegeniSayisi() - 1);
-        }
-        gonderilerRepository.save(gonderi);
+        return gonderilerList.stream()
+                .map(entityDtoConvert::convertToDTO)
+                .toList();
     }
 
     // Yeni gönderi ekle
-    public void yeniGonderiEkle(int kullaniciId, GonderiDto gonderiDto) {
+    public void yeniGonderiEkle(GonderiDto gonderiDto) {
 
-        User user = findUser.findUser(kullaniciId);
-
-        Gonderiler gonderi = new Gonderiler();
-        gonderi.setGonderiIcerigi(gonderiDto.getGonderiIcerigi());
-        gonderi.setGonderiBegeniSayisi(0);
-        gonderi.setGonderiTarihi(LocalDate.now());
-        gonderi.setKullaniciId(user);
+        Gonderiler gonderi = entityDtoConvert.convertToEntity(gonderiDto);
         gonderilerRepository.save(gonderi);
     }
 
     // En popüler gönderileri getir
-    public List<GonderiResponseDto> populerGonderileriGetir() {
+    public List<GonderiDto> populerGonderileriGetir() {
         return gonderilerRepository.findPopularPosts();
     }
 
@@ -78,6 +63,11 @@ public class GonderilerService implements IGonderilerService {
 
         if (yeniIcerik.isEmpty()){
             throw new CustomException(HttpStatus.NOT_FOUND,"İçerik boş olamaz");
+        }
+        User user = getUserByToken.getUser();
+
+        if(gonderi.getKullaniciId().getKullaniciId() != user.getKullaniciId()){
+            throw new CustomException(HttpStatus.NOT_FOUND,"Gönderi Bulunamadi");
         }
 
         gonderi.setGonderiIcerigi(yeniIcerik);

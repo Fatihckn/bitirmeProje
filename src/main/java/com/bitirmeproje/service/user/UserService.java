@@ -1,17 +1,18 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.user;
 
 import com.bitirmeproje.dto.user.ChangeEmailDto;
 import com.bitirmeproje.dto.user.SifreDegistirDto;
 import com.bitirmeproje.dto.user.UserDto;
 import com.bitirmeproje.dto.user.UserUpdateDto;
 import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.helper.dto.IEntityDtoConvert;
 import com.bitirmeproje.helper.password.PasswordHasher;
 import com.bitirmeproje.helper.user.FindUser;
+import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Follows;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.FollowsRepository;
 import com.bitirmeproje.repository.UserRepository;
-import com.bitirmeproje.security.jwt.JwtUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,26 +22,30 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserService implements IUserService{
+public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
     private final FollowsRepository followsRepository;
     private final FindUser<Integer> findUser;
-    private final JwtUtil jwtUtil;
+    private final GetUserByToken getUserByToken;
+    private final IEntityDtoConvert<User, UserDto> entityDtoConvert;
 
     UserService(UserRepository userRepository, PasswordHasher passwordHasher,
                 FollowsRepository followsRepository,@Qualifier("findUserById") FindUser<Integer> findUser,
-                JwtUtil jwtUtil) {
+                GetUserByToken getUserByToken,@Qualifier("userConverter") IEntityDtoConvert<User, UserDto> entityDtoConvert) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
         this.followsRepository = followsRepository;
         this.findUser = findUser;
-        this.jwtUtil = jwtUtil;
+        this.getUserByToken = getUserByToken;
+        this.entityDtoConvert = entityDtoConvert;
     }
 
     // Kullanıcnın şifresini değiştiriyoruz(Şifremi unuttum değil)
-    public void passwordChange(User user, SifreDegistirDto sifreDto) {
+    public void passwordChange(SifreDegistirDto sifreDto) {
+        User user = getUserByToken.getUser();
+
         // Eski şifreyi doğrula
 //        System.out.println("satır 49 geldi");
         if (sifreDto == null || sifreDto.getEskiSifre() == null || sifreDto.getYeniSifre() == null) {
@@ -88,20 +93,14 @@ public class UserService implements IUserService{
         }
 
         return users.stream()
-                .map(user -> new UserDto(
-                        user.getKullaniciTakmaAd(),
-                        user.getePosta(),
-                        user.getKullaniciBio(),
-                        user.getKullaniciProfilResmi(),
-                        user.getKullaniciTelefonNo(),
-                        user.getKullaniciDogumTarihi(),
-                        user.getKullaniciUyeOlmaTarihi()
-                ))
+                .map(entityDtoConvert::convertToDTO)
                 .toList();
     }
 
     // Kullanıcının istediği kişiyi takip et
-    public void followUser(User follower, int followingId) {
+    public void followUser(int followingId) {
+        User follower = getUserByToken.getUser();
+
         Optional<User> followingUserOptional = userRepository.findByKullaniciId(followingId);
 
         if (followingUserOptional.isEmpty()) {
@@ -130,7 +129,9 @@ public class UserService implements IUserService{
     }
 
     // Kullanıcının istediği kişiyi takipten çık
-    public void unfollowUser(User follower, int takipEdilenId) {
+    public void unfollowUser(int takipEdilenId) {
+        User follower = getUserByToken.getUser();
+
         User followingUser = findUser.findUser(takipEdilenId);
 
         // Kullanıcı kendi kendisini takipten çıkamaz çünkü zaten takip etmiyor
@@ -150,57 +151,41 @@ public class UserService implements IUserService{
     }
 
     // Kullanıcıyı takip eden kişileri getir
-    public List<UserDto> getFollowers(int userId) {
+    public List<UserDto> getFollowers() {
 
-        findUser.findUser(userId);
+        User userId = getUserByToken.getUser();
 
-        List<User> followers = followsRepository.findByFollowersUserId(userId);
+        List<User> followers = followsRepository.findByFollowersUserId(userId.getKullaniciId());
 
         if (followers.isEmpty()) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Bu kullanıcının takipçisi bulunmamaktadır.");
         }
 
         return followers.stream()
-                .map(user -> new UserDto(
-                        user.getKullaniciTakmaAd(),
-                        user.getePosta(),
-                        user.getKullaniciBio(),
-                        user.getKullaniciProfilResmi(),
-                        user.getKullaniciTelefonNo(),
-                        user.getKullaniciDogumTarihi(),
-                        user.getKullaniciUyeOlmaTarihi()
-                ))
+                .map(entityDtoConvert::convertToDTO)
                 .toList();
     }
 
     // Kullanıcının takip ettiği kişileri getir.
-    public List<UserDto> getFollowing(int userId) {
+    public List<UserDto> getFollowing() {
 
-        findUser.findUser(userId);
+        User userId = getUserByToken.getUser();
 
-        List<User> following = followsRepository.findByFollowingUserId(userId);
+        List<User> following = followsRepository.findByFollowingUserId(userId.getKullaniciId());
 
         if (following.isEmpty()) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Bu kullanıcı kimseyi takip etmiyor.");
         }
 
         return following.stream()
-                .map(user -> new UserDto(
-                        user.getKullaniciTakmaAd(),
-                        user.getePosta(),
-                        user.getKullaniciBio(),
-                        user.getKullaniciProfilResmi(),
-                        user.getKullaniciTelefonNo(),
-                        user.getKullaniciDogumTarihi(),
-                        user.getKullaniciUyeOlmaTarihi()
-                ))
+                .map(entityDtoConvert::convertToDTO)
                 .toList();
     }
 
     // Kullanıcının bilgilerini güncelle.
-    public void updateUser(int userId, UserUpdateDto userUpdateDto) {
+    public void updateUser(UserUpdateDto userUpdateDto) {
 
-        User user = findUser.findUser(userId);
+        User user = getUserByToken.getUser();
 
         // Güncellenen değerleri boş değilse ata, boşsa eski değerleri koru
         if (userUpdateDto.getKullaniciTakmaAd() != null && !userUpdateDto.getKullaniciTakmaAd().isEmpty()) {
@@ -222,20 +207,9 @@ public class UserService implements IUserService{
 
     // ID'ye göre kullanıcı bilgilerini getir.
     public UserDto findUserById() {
-        System.out.println("US hata1");
-        User users = findUser.findUser(jwtUtil.extractUserId());
-        System.out.println("US hata2");
+        User users = getUserByToken.getUser();
 
-
-        return new UserDto(
-                users.getKullaniciTakmaAd(),
-                users.getePosta(),
-                users.getKullaniciBio(),
-                users.getKullaniciProfilResmi(),
-                users.getKullaniciTelefonNo(),
-                users.getKullaniciDogumTarihi(),
-                users.getKullaniciUyeOlmaTarihi()
-        );
+        return entityDtoConvert.convertToDTO(users);
     }
 
     // Şifreyi kaydet
@@ -250,8 +224,8 @@ public class UserService implements IUserService{
     }
 
     // Kullanıcı e-posta değiştiriyoruz
-    public void changeUserEmail(int userId, ChangeEmailDto changeEmailDto) {
-        User user = findUser.findUser(userId);
+    public void changeUserEmail(ChangeEmailDto changeEmailDto) {
+        User user = getUserByToken.getUser();
 
         // Eski e-posta eşleşiyor mu kontrol et
         if (!user.getePosta().equals(changeEmailDto.getEskiEposta())) {

@@ -2,7 +2,7 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.auth.LoginDto;
 import com.bitirmeproje.model.User;
-import com.bitirmeproje.service.AuthService;
+import com.bitirmeproje.service.auth.IAuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "http://localhost:8080") // Doğru kullanım
 public class AuthController {
 
-    private final AuthService authService;
+    private final IAuthService authService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(IAuthService authService) {
         this.authService = authService;
     }
 

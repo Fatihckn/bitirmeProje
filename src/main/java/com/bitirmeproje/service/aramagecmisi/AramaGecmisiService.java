@@ -1,12 +1,11 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.aramagecmisi;
 
 import com.bitirmeproje.dto.aramagecmisi.AramaGecmisiDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.user.FindUser;
+import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.AramaGecmisi;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.AramaGecmisiRepository;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -15,23 +14,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class AramaGecmisiService {
+public class AramaGecmisiService implements IAramaGecmisiService {
     private final AramaGecmisiRepository aramaGecmisiRepository;
-    private final FindUser<Integer> findUserById; // ID ile kullanıcı bul
-    private final FindUser<String> findUserByEmail; // Email ile kullanıcı bul
+    private final GetUserByToken getUserByToken;
 
     public AramaGecmisiService(AramaGecmisiRepository aramaGecmisiRepository,
-                               @Qualifier("findUserById") FindUser<Integer> findUserById,
-                               @Qualifier("findUserByEmail")  FindUser<String> findUserByEmail) {
+                               GetUserByToken getUserByToken) {
         this.aramaGecmisiRepository = aramaGecmisiRepository;
-        this.findUserById = findUserById;
-        this.findUserByEmail = findUserByEmail;
+        this.getUserByToken = getUserByToken;
     }
 
     // Kullanıcının yaptığı aramayı kaydet
-    public void AramaKaydet(AramaGecmisiDto aramaGecmisiDto, String kullaniciEmail) {
+    public void AramaKaydet(AramaGecmisiDto aramaGecmisiDto) {
         // Kullanıcıyı veritabanından çekiyoruz
-        User kullanici = findUserByEmail.findUser(kullaniciEmail);
+        User kullanici = getUserByToken.getUser();
 
         // DTO'yu Entity'ye çeviriyoruz
         AramaGecmisi yeniArama = new AramaGecmisi();
@@ -43,9 +39,9 @@ public class AramaGecmisiService {
     }
 
     // Kullanıcının tüm arama geçmişini getir (DTO formatında)
-    public List<AramaGecmisiDto> getKullaniciAramaGecmisi(int kullaniciId) {
+    public List<AramaGecmisiDto> getKullaniciAramaGecmisi() {
 
-        User kullanici = findUserById.findUser(kullaniciId);
+        User kullanici = getUserByToken.getUser();
 
         return aramaGecmisiRepository.findByKullaniciId(kullanici)
                 .stream()
@@ -58,9 +54,9 @@ public class AramaGecmisiService {
     }
 
     // Kullanıcının belirli tarih aralığındaki aramalarını getir
-    public List<AramaGecmisiDto> getKullaniciAramaGecmisiByDate(int kullaniciId, LocalDate baslangic, LocalDate bitis) {
+    public List<AramaGecmisiDto> getKullaniciAramaGecmisiByDate(LocalDate baslangic, LocalDate bitis) {
 
-        User kullanici = findUserById.findUser(kullaniciId);
+        User kullanici = getUserByToken.getUser();
 
         // Tarih kontrolü: Başlangıç tarihi, bitiş tarihinden sonra olamaz
         if (baslangic.isAfter(bitis)) {
@@ -86,9 +82,9 @@ public class AramaGecmisiService {
     }
 
     // Arama geçmişinden belirli bir kaydı sil
-    public void deleteArama(int aramaGecmisiId, String kullaniciEmail) {
+    public void deleteArama(int aramaGecmisiId) {
         // 1️⃣ Kullanıcıyı JWT token içindeki email'den bul
-        User kullanici = findUserByEmail.findUser(kullaniciEmail);
+        User kullanici = getUserByToken.getUser();
 
         // 2️⃣ Arama geçmişini veritabanından çek
         AramaGecmisi aramaGecmisi = aramaGecmisiRepository.findById(aramaGecmisiId)
@@ -102,7 +98,6 @@ public class AramaGecmisiService {
         // 4️⃣ Arama geçmişini sil
         aramaGecmisiRepository.deleteById(aramaGecmisiId);
     }
-
 
     // En çok yapılan aramaları getir
     public List<Object[]> getPopulerAramalar() {

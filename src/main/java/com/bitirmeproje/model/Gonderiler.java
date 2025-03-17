@@ -22,7 +22,7 @@ public class Gonderiler {
     private LocalDate gonderiTarihi;
 
     @Column(name = "gonderi_begeni_sayisi", nullable = false)
-    private Integer gonderiBegeniSayisi;
+    private Integer gonderiBegeniSayisi = 0;
 
     @JsonBackReference
     @ManyToOne // Bir kullanıcı birden fazla gönderi oluşturabilir

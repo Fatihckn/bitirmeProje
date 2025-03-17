@@ -1,8 +1,7 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.service.BegenilenGonderilerService;
+import com.bitirmeproje.service.begenilengonderiler.IBegenilenGonderilerService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
 import java.util.List;
@@ -10,26 +9,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/gonderiBegeni")
 public class BegenilenGonderilerController {
-    private final BegenilenGonderilerService begenilenGonderilerService;
+    private final IBegenilenGonderilerService begenilenGonderilerService;
 
-    public BegenilenGonderilerController(BegenilenGonderilerService begenilenGonderilerService) {
+    public BegenilenGonderilerController(IBegenilenGonderilerService begenilenGonderilerService) {
         this.begenilenGonderilerService = begenilenGonderilerService;
     }
 
     @PostMapping("/{gonderi_id}/begeni")
-    public ResponseEntity<String> begeniEkle(@PathVariable("gonderi_id") int gonderiId,
-                                             Authentication authentication) {
+    public ResponseEntity<String> begeniEkle(@PathVariable("gonderi_id") int gonderiId) {
         // Beğeni işlemini Service katmanına yönlendir
-        begenilenGonderilerService.begeniEkle(gonderiId, authentication.getName());
+        begenilenGonderilerService.begeniEkle(gonderiId);
 
         return ResponseEntity.ok("Beğeni eklendi!");
     }
 
     @DeleteMapping("/{gonderi_id}/begeni-kaldir") // Gonderiden begeni kaldır
-    public ResponseEntity<String> begeniKaldir(@PathVariable("gonderi_id") int gonderiId,
-                                               Authentication authentication) {
+    public ResponseEntity<String> begeniKaldir(@PathVariable("gonderi_id") int gonderiId) {
 
-        begenilenGonderilerService.begeniKaldir(gonderiId, authentication.getName());
+        begenilenGonderilerService.begeniKaldir(gonderiId);
         return ResponseEntity.ok("Begeni kaldirildi");
     }
 
@@ -40,8 +37,8 @@ public class BegenilenGonderilerController {
     }
 
     @GetMapping("/kullanici/begenilen-gonderiler")
-    public ResponseEntity<List<BegenilenGonderilerDto>> kullanicininBegenileri(Authentication authentication) {
+    public ResponseEntity<List<BegenilenGonderilerDto>> kullanicininBegenileri() {
 
-        return ResponseEntity.ok(begenilenGonderilerService.kullanicininBegenileri(authentication.getName()));
+        return ResponseEntity.ok(begenilenGonderilerService.kullanicininBegenileri());
     }
 }

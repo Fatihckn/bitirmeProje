@@ -2,7 +2,7 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.mesaj.MesajCreateDto;
 import com.bitirmeproje.dto.mesaj.MesajDto;
-import com.bitirmeproje.service.IMesajService;
+import com.bitirmeproje.service.mesaj.IMesajService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

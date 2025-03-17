@@ -5,15 +5,11 @@ import com.bitirmeproje.dto.user.SifreDegistirDto;
 import com.bitirmeproje.dto.user.UserDto;
 import com.bitirmeproje.dto.user.UserUpdateDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.otp.OtpGenerator;
-import com.bitirmeproje.helper.otp.OtpStorage;
-import com.bitirmeproje.helper.user.FindUser;
+import com.bitirmeproje.helper.email.SendEmail;
+import com.bitirmeproje.helper.email.otp.OtpGenerator;
+import com.bitirmeproje.helper.email.otp.OtpStorage;
 import com.bitirmeproje.model.User;
-import com.bitirmeproje.security.jwt.JwtUtil;
-import com.bitirmeproje.service.EmailService;
-import com.bitirmeproje.service.IUserService;
-import com.bitirmeproje.service.UserService;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.bitirmeproje.service.user.IUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,19 +22,14 @@ import java.util.Optional;
 @CrossOrigin(origins = "http://localhost:8080") // Doğru kullanım
 public class UserController {
     private final IUserService userService;
-    private final EmailService emailService;
+    private final SendEmail emailService;
     private final OtpStorage otpStorage;
-    private final JwtUtil jwtUtil;
-    private final FindUser<Integer> findUser;
 
-    public UserController(UserService userService,
-                          EmailService emailService, OtpStorage otpStorage,
-                          JwtUtil jwtUtil,@Qualifier("findUserById") FindUser<Integer> findUser) {
+    public UserController(IUserService userService,
+                          SendEmail emailService, OtpStorage otpStorage) {
         this.userService = userService;
         this.emailService = emailService;
         this.otpStorage = otpStorage;
-        this.jwtUtil = jwtUtil;
-        this.findUser = findUser;
     }
 
     // Kullanıcı şifresini değiştirme API'si(eski şifresini biliyor)
@@ -46,7 +37,7 @@ public class UserController {
     public ResponseEntity<String> kullaniciSifreDegistir(
             @RequestBody SifreDegistirDto sifreDto) {
 
-        userService.passwordChange(getCurrentUser(), sifreDto);
+        userService.passwordChange(sifreDto);
         return ResponseEntity.ok("Şifre başarıyla değiştirildi, lütfen tekrar giriş yapınız!");
     }
 
@@ -132,7 +123,7 @@ public class UserController {
     @PostMapping("/takip-et")
     public ResponseEntity<String> followUser(@RequestParam int takipEdilenId) {
 
-        userService.followUser(getCurrentUser(), takipEdilenId);
+        userService.followUser(takipEdilenId);
         return ResponseEntity.ok("Kullanıcı başarıyla takip edildi.");
     }
 
@@ -140,7 +131,7 @@ public class UserController {
     @DeleteMapping("/takibi-bırakma")
     public ResponseEntity<String> unfollowUser(@RequestParam int takipEdilenId) {
 
-        userService.unfollowUser(getCurrentUser(), takipEdilenId);
+        userService.unfollowUser(takipEdilenId);
         return ResponseEntity.ok("Kullanıcı başarıyla takipten çıkıldı");
     }
 
@@ -148,7 +139,7 @@ public class UserController {
     @GetMapping("/takipciler")
     public ResponseEntity<List<UserDto>> getFollowers() {
 
-        List<UserDto> followers = userService.getFollowers(jwtUtil.extractUserId());
+        List<UserDto> followers = userService.getFollowers();
         return ResponseEntity.ok(followers);
     }
 
@@ -156,7 +147,7 @@ public class UserController {
     @GetMapping("/takip-edilenler")
     public ResponseEntity<List<UserDto>> getFollowing() {
 
-        List<UserDto> following = userService.getFollowing(jwtUtil.extractUserId());
+        List<UserDto> following = userService.getFollowing();
         return ResponseEntity.ok(following);
     }
 
@@ -164,7 +155,7 @@ public class UserController {
     @PutMapping("/kullanici-bilgi-yenile")
     public ResponseEntity<String> updateUser(@RequestBody UserUpdateDto userUpdateDto){
 
-        userService.updateUser(jwtUtil.extractUserId(), userUpdateDto);
+        userService.updateUser(userUpdateDto);
         return ResponseEntity.ok("Kullanıcı bilgileri başarıyla güncellendi.");
     }
 
@@ -180,15 +171,7 @@ public class UserController {
     @PostMapping("/eposta-degistir")
     public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailDto changeEmailDto) {
 
-        userService.changeUserEmail(jwtUtil.extractUserId(), changeEmailDto);
+        userService.changeUserEmail(changeEmailDto);
         return ResponseEntity.ok("E-posta başarıyla güncellendi.");
     }
-
-    // Kullanıcı ID'ye göre nesnesini almak için bu metodu her yerde kullanabiliriz.
-    private User getCurrentUser() {
-        int userId = jwtUtil.extractUserId();
-        return findUser.findUser(userId);
-    }
-
-
 }

@@ -1,7 +1,7 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.home.HomeDto;
-import com.bitirmeproje.service.HomeService;
+import com.bitirmeproje.service.home.IHomeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +12,9 @@ import java.util.List;
 @RestController
 public class HomeController {
 
-    private final HomeService homeService;
+    private final IHomeService homeService;
 
-    public HomeController(HomeService homeService) {
+    public HomeController(IHomeService homeService) {
         this.homeService = homeService;
     }
 

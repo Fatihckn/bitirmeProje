@@ -16,16 +16,28 @@ public class HomeDto {
 
     private String takipEdilenKullaniciTakmaAd;
 
+    private Boolean begenildiMi;
 
     public HomeDto() {}
 
-    public HomeDto(int gonderiId, int kullaniciId, String gonderiIcerigi, int gonderiBegeniSayisi, LocalDate gonderiTarihi, String takipEdilenKullaniciTakmaAd) {
+//    public HomeDto(int gonderiId, int kullaniciId, String gonderiIcerigi, int gonderiBegeniSayisi, LocalDate gonderiTarihi, String takipEdilenKullaniciTakmaAd) {
+//        this.gonderiId = gonderiId;
+//        this.kullaniciId = kullaniciId;
+//        this.gonderiIcerigi = gonderiIcerigi;
+//        this.gonderiTarihi = gonderiTarihi;
+//        this.begeniSayisi = gonderiBegeniSayisi;
+//        this.takipEdilenKullaniciTakmaAd = takipEdilenKullaniciTakmaAd;
+//    }
+
+    public HomeDto(int gonderiId, int kullaniciId, String gonderiIcerigi, int begeniSayisi,
+                   LocalDate gonderiTarihi, String takipEdilenKullaniciTakmaAd, boolean begenildiMi) {
         this.gonderiId = gonderiId;
         this.kullaniciId = kullaniciId;
         this.gonderiIcerigi = gonderiIcerigi;
+        this.begeniSayisi = begeniSayisi;
         this.gonderiTarihi = gonderiTarihi;
-        this.begeniSayisi = gonderiBegeniSayisi;
         this.takipEdilenKullaniciTakmaAd = takipEdilenKullaniciTakmaAd;
+        this.begenildiMi = begenildiMi;
     }
 
     public int getGonderiId() {
@@ -74,5 +86,13 @@ public class HomeDto {
 
     public void setTakipEdilenKullaniciTakmaAd(String takipEdilenKullaniciTakmaAd) {
         this.takipEdilenKullaniciTakmaAd = takipEdilenKullaniciTakmaAd;
+    }
+
+    public Boolean getBegenildiMi() {
+        return begenildiMi;
+    }
+
+    public void setBegenildiMi(Boolean begenildiMi) {
+        this.begenildiMi = begenildiMi;
     }
 }

@@ -1,10 +1,7 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
-import com.bitirmeproje.dto.gonderiler.GonderiResponseDto;
-import com.bitirmeproje.model.Gonderiler;
-import com.bitirmeproje.security.jwt.JwtUtil;
-import com.bitirmeproje.service.GonderilerService;
+import com.bitirmeproje.service.gonderiler.IGonderilerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,23 +11,21 @@ import java.util.List;
 @RequestMapping("/api/gonderi")
 public class GonderilerController {
 
-    private final GonderilerService gonderilerService;
-    private final JwtUtil jwtUtil;
+    private final IGonderilerService gonderilerService;
 
-    public GonderilerController(GonderilerService gonderilerService, JwtUtil jwtUtil) {
+    public GonderilerController(IGonderilerService gonderilerService) {
         this.gonderilerService = gonderilerService;
-        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping("/kullanici/gonderiler")
-    public ResponseEntity<List<Gonderiler>> kullaniciGonderileriniGetir() {
-        List<Gonderiler> gonderiler = gonderilerService.kullaniciGonderileriniGetir(jwtUtil.extractUserId());
+    public ResponseEntity<List<GonderiDto>> kullaniciGonderileriniGetir() {
+        List<GonderiDto> gonderiler = gonderilerService.kullaniciGonderileriniGetir();
         return ResponseEntity.ok(gonderiler);
     }
 
     @PostMapping("/ekle")
     public ResponseEntity<String> yeniGonderiEkle(@RequestBody GonderiDto gonderiDto) {
-        gonderilerService.yeniGonderiEkle(jwtUtil.extractUserId(), gonderiDto);
+        gonderilerService.yeniGonderiEkle(gonderiDto);
         return ResponseEntity.ok("Gönderi başarıyla oluşturuldu.");
     }
 
@@ -40,21 +35,9 @@ public class GonderilerController {
         return ResponseEntity.ok("Gönderi başarıyla silindi.");
     }
 
-    @PostMapping("/begeni/ekle/{gonderiId}")
-    public ResponseEntity<String> begeniEkle(@PathVariable int gonderiId) {
-        gonderilerService.begeniEkle(gonderiId);
-        return ResponseEntity.ok("Beğeni başarıyla eklendi.");
-    }
-
-    @DeleteMapping("/begeni/sil/{gonderiId}")
-    public ResponseEntity<String> begeniKaldir(@PathVariable int gonderiId) {
-        gonderilerService.begeniKaldir(gonderiId);
-        return ResponseEntity.ok("Beğeni başarıyla kaldırıldı.");
-    }
-
     @GetMapping("/populer")
-    public ResponseEntity<List<GonderiResponseDto>> populerGonderileriGetir() {
-        List<GonderiResponseDto> populerGonderiler = gonderilerService.populerGonderileriGetir();
+    public ResponseEntity<List<GonderiDto>> populerGonderileriGetir() {
+        List<GonderiDto> populerGonderiler = gonderilerService.populerGonderileriGetir();
         return ResponseEntity.ok(populerGonderiler);
     }
 

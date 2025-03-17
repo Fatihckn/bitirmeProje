@@ -17,8 +17,6 @@ public interface AramaGecmisiRepository extends JpaRepository<AramaGecmisi, Inte
 
     void deleteById(int aramaGecmisiId);//ID ye göre arama geçmişi sil
 
-    AramaGecmisi findByAramaGecmisiId(int aramaGecmisiId);
-
     @Query("SELECT a FROM AramaGecmisi a WHERE a.kullaniciId = :kullaniciId AND a.aramaZamani BETWEEN :baslangic AND :bitis")
     List<AramaGecmisi> findByKullaniciIdAndDateRange(@Param("kullaniciId") User kullanici,
                                                      @Param("baslangic") LocalDate baslangic,

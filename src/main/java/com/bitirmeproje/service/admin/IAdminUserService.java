@@ -1,4 +1,4 @@
-package com.bitirmeproje.service;
+package com.bitirmeproje.service.admin;
 
 import com.bitirmeproje.dto.user.UserAllDto;
 import com.bitirmeproje.dto.user.UserUpdateDto;

@@ -1,5 +1,7 @@
 package com.bitirmeproje.service.begenilengonderiler;
 
+import com.bitirmeproje.dto.gonderiler.GonderiDto;
+import com.bitirmeproje.dto.gonderiler.GonderilerAllDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.BegenilenGonderiler;
@@ -76,6 +78,17 @@ public class BegenilenGonderilerService implements IBegenilenGonderilerService {
         Gonderiler gonderi = getGonderiById(gonderiId);
         return gonderi.getGonderiBegeniSayisi();
     }
+
+    // Bütün gönderilerin beğeni sayısı
+    public List<GonderilerAllDto> gonderiBegeniSayisiAll() {
+        List<GonderilerAllDto> allGonderiler = begenilenGonderilerRepository.findAllBegeniler();
+
+        if(allGonderiler.isEmpty()) {
+            throw new CustomException(HttpStatus.NOT_FOUND, "Begenilen gonderi bulunamadi");
+        }
+        return allGonderiler;
+    }
+
 
     //belirli bir kullanıcının beğendiği gönderiler
     public List<BegenilenGonderilerDto> kullanicininBegenileri()

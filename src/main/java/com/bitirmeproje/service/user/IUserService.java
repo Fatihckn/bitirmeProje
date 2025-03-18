@@ -17,14 +17,6 @@ public interface IUserService {
 
     List<UserDto> searchUsers(String query);
 
-    void followUser(int followingId);
-
-    void unfollowUser(int followingId);
-
-    List<UserDto> getFollowers();
-
-    List<UserDto> getFollowing();
-
     void updateUser(UserUpdateDto userUpdateDto);
 
     UserDto findUserById();

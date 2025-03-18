@@ -5,19 +5,15 @@ import com.bitirmeproje.dto.user.SifreDegistirDto;
 import com.bitirmeproje.dto.user.UserDto;
 import com.bitirmeproje.dto.user.UserUpdateDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.dto.IEntityDtoConvert;
+import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.password.PasswordHasher;
-import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
-import com.bitirmeproje.model.Follows;
 import com.bitirmeproje.model.User;
-import com.bitirmeproje.repository.FollowsRepository;
 import com.bitirmeproje.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,18 +22,13 @@ public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final PasswordHasher passwordHasher;
-    private final FollowsRepository followsRepository;
-    private final FindUser<Integer> findUser;
     private final GetUserByToken getUserByToken;
-    private final IEntityDtoConvert<User, UserDto> entityDtoConvert;
+    private final IEntityDtoConverter<User, UserDto> entityDtoConvert;
 
     UserService(UserRepository userRepository, PasswordHasher passwordHasher,
-                FollowsRepository followsRepository,@Qualifier("findUserById") FindUser<Integer> findUser,
-                GetUserByToken getUserByToken,@Qualifier("userConverter") IEntityDtoConvert<User, UserDto> entityDtoConvert) {
+                GetUserByToken getUserByToken,@Qualifier("userConverterer") IEntityDtoConverter<User, UserDto> entityDtoConvert) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
-        this.followsRepository = followsRepository;
-        this.findUser = findUser;
         this.getUserByToken = getUserByToken;
         this.entityDtoConvert = entityDtoConvert;
     }
@@ -93,91 +84,6 @@ public class UserService implements IUserService {
         }
 
         return users.stream()
-                .map(entityDtoConvert::convertToDTO)
-                .toList();
-    }
-
-    // Kullanıcının istediği kişiyi takip et
-    public void followUser(int followingId) {
-        User follower = getUserByToken.getUser();
-
-        Optional<User> followingUserOptional = userRepository.findByKullaniciId(followingId);
-
-        if (followingUserOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Takip edilmek istenen kullanıcı bulunamadı!");
-        }
-
-        User followingUser = followingUserOptional.get();
-
-        // Kullanıcı kendi kendisini takip edemez
-        if (follower.getKullaniciId() == followingUser.getKullaniciId()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Kendi kendinizi takip edemezsiniz!");
-        }
-
-        // Kullanıcı zaten takip ediyorsa hata döndür
-        if (followsRepository.findByFollowerAndFollowing(follower, followingUser).isPresent()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu kullanıcıyı zaten takip ediyorsunuz!");
-        }
-
-        // Yeni takip kaydı oluştur
-        Follows follows = new Follows();
-        follows.setTakipEdenKullaniciId(follower);
-        follows.setTakipEdilenKullaniciId(followingUser);
-        follows.setTakipEtmeTarihi(LocalDate.now());
-
-        followsRepository.save(follows);
-    }
-
-    // Kullanıcının istediği kişiyi takipten çık
-    public void unfollowUser(int takipEdilenId) {
-        User follower = getUserByToken.getUser();
-
-        User followingUser = findUser.findUser(takipEdilenId);
-
-        // Kullanıcı kendi kendisini takipten çıkamaz çünkü zaten takip etmiyor
-        if (follower.getKullaniciId() == followingUser.getKullaniciId()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Kendi kendinizi takipten çıkaramazsınız!");
-        }
-
-        // Kullanıcının gerçekten takip edip etmediğini kontrol et
-        Optional<Follows> followRecordOptional = followsRepository.findByFollowerAndFollowing(follower, followingUser);
-
-        if (followRecordOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu kullanıcıyı takip etmiyorsunuz!");
-        }
-
-        // Takip kaydını veritabanından sil
-        followsRepository.delete(followRecordOptional.get());
-    }
-
-    // Kullanıcıyı takip eden kişileri getir
-    public List<UserDto> getFollowers() {
-
-        User userId = getUserByToken.getUser();
-
-        List<User> followers = followsRepository.findByFollowersUserId(userId.getKullaniciId());
-
-        if (followers.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Bu kullanıcının takipçisi bulunmamaktadır.");
-        }
-
-        return followers.stream()
-                .map(entityDtoConvert::convertToDTO)
-                .toList();
-    }
-
-    // Kullanıcının takip ettiği kişileri getir.
-    public List<UserDto> getFollowing() {
-
-        User userId = getUserByToken.getUser();
-
-        List<User> following = followsRepository.findByFollowingUserId(userId.getKullaniciId());
-
-        if (following.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Bu kullanıcı kimseyi takip etmiyor.");
-        }
-
-        return following.stream()
                 .map(entityDtoConvert::convertToDTO)
                 .toList();
     }

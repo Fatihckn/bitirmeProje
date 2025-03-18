@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/follows")
@@ -16,11 +17,41 @@ public class FollowsController {
         this.followsService=followsService;
     }
 
+    // Bir kullanıcıyı takip et
+    @PostMapping("/takip-et")
+    public ResponseEntity<String> followUser(@RequestParam int takipEdilenId) {
+
+        followsService.followUser(takipEdilenId);
+        return ResponseEntity.ok("Kullanıcı başarıyla takip edildi.");
+    }
+
+    // Bir kullanıcıyı takipten çık
+    @DeleteMapping("/takibi-bırakma")
+    public ResponseEntity<String> unfollowUser(@RequestParam int takipEdilenId) {
+
+        followsService.unfollowUser(takipEdilenId);
+        return ResponseEntity.ok("Kullanıcı başarıyla takipten çıkıldı");
+    }
+
+    // Kullanıcının takipçilerini getir
+    @GetMapping("/takipciler/{kullaniciId}")
+    public ResponseEntity <Map<String, Object>> getFollowers(@PathVariable int kullaniciId) {
+
+        Map<String, Object> followers = followsService.getFollowers(kullaniciId);
+        return ResponseEntity.ok(followers);
+    }
+
+    // Kullanıcının takip ettiği kişileri getir
+    @GetMapping("/takip-edilenler/{kullaniciId}")
+    public ResponseEntity<Map<String, Object>> getFollowing(@PathVariable int kullaniciId) {
+
+        Map<String, Object> following = followsService.getFollowing(kullaniciId);
+        return ResponseEntity.ok(following);
+    }
+
     @GetMapping("/populer")
     public ResponseEntity<List<PopulerKullaniciDto>> populerKullanicilariGetir() {
         List<PopulerKullaniciDto> populerKullanicilar = followsService.populerKullanicilariGetir();
         return ResponseEntity.ok(populerKullanicilar);
     }
-
-
 }

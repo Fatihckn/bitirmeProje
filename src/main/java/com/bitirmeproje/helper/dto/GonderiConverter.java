@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
 @Component
-public class GonderiConvert implements IEntityDtoConvert<Gonderiler, GonderiDto>{
+public class GonderiConverter implements IEntityDtoConverter<Gonderiler, GonderiDto> {
     private final GetUserByToken getUserByToken;
 
-    public GonderiConvert(GetUserByToken getUserByToken) {
+    public GonderiConverter(GetUserByToken getUserByToken) {
         this.getUserByToken = getUserByToken;
     }
 

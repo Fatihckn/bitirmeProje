@@ -1,15 +1,11 @@
 package com.bitirmeproje.helper.dto;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
-import com.bitirmeproje.model.Gonderiler;
-import com.bitirmeproje.model.User;
 import com.bitirmeproje.model.YeniYorum;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-
 @Component
-public class YeniYorumConverter implements IEntityDtoConvert<YeniYorum, YeniYorumDto> {
+public class YeniYorumConverter implements IEntityDtoConverter<YeniYorum, YeniYorumDto> {
 
     @Override
     public YeniYorumDto convertToDTO(YeniYorum yorum) {

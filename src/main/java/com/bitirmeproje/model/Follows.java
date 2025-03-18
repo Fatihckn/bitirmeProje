@@ -1,6 +1,5 @@
 package com.bitirmeproje.model;
 
-
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -15,11 +14,11 @@ public class Follows {
     private int followsId;
 
     @ManyToOne
-    @JoinColumn (name = "takip_eden_kullanici_id",nullable = true)
+    @JoinColumn (name = "takip_eden_kullanici_id")
     private User takipEdenKullaniciId;
 
     @ManyToOne
-    @JoinColumn (name = "takip_edilen_kullanici_id",nullable = true)
+    @JoinColumn (name = "takip_edilen_kullanici_id")
     private User takipEdilenKullaniciId;
 
     @Column (name = "takip_etme_tarihi")

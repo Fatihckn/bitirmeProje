@@ -2,7 +2,7 @@ package com.bitirmeproje.service.yeniyorum;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.dto.IEntityDtoConvert;
+import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
@@ -22,17 +22,17 @@ public class YeniYorumService implements IYeniYorumService{
 
     private final YeniYorumRepository yeniYorumRepository;
     private final GonderilerRepository gonderilerRepository;
-    private final IEntityDtoConvert<YeniYorum,YeniYorumDto> iEntityDtoConvert;
+    private final IEntityDtoConverter<YeniYorum,YeniYorumDto> iEntityDtoConverter;
     private final GetUserByToken getUserByToken;
 
 
     public YeniYorumService(YeniYorumRepository yeniYorumRepository,
                             GonderilerRepository gonderilerRepository,
-                            @Qualifier("yeniYorumConverter") IEntityDtoConvert<YeniYorum, YeniYorumDto> iEntityDtoConvert,
+                            @Qualifier("yeniYorumConverter") IEntityDtoConverter<YeniYorum, YeniYorumDto> iEntityDtoConverter,
                             GetUserByToken getUserByToken) {
         this.yeniYorumRepository = yeniYorumRepository;
         this.gonderilerRepository = gonderilerRepository;
-        this.iEntityDtoConvert = iEntityDtoConvert;
+        this.iEntityDtoConverter = iEntityDtoConverter;
         this.getUserByToken = getUserByToken;
     }
 
@@ -62,7 +62,7 @@ public class YeniYorumService implements IYeniYorumService{
 
     public List<YeniYorumDto> getYorumlarByGonderiId(int gonderiId) {
         List<YeniYorum> yorumlar = yeniYorumRepository.findByGonderiId_GonderiId(gonderiId);
-        return yorumlar.stream().map(iEntityDtoConvert::convertToDTO).collect(Collectors.toList());
+        return yorumlar.stream().map(iEntityDtoConverter::convertToDTO).collect(Collectors.toList());
     }
 
     // **Yeni eklenen API**: Belirli bir kullanıcının yaptığı yorumları getir
@@ -73,7 +73,7 @@ public class YeniYorumService implements IYeniYorumService{
             throw new CustomException(HttpStatus.NOT_FOUND,"Yorum bulunamadi");
         }
 
-        return yorumlar.stream().map(iEntityDtoConvert::convertToDTO).collect(Collectors.toList());
+        return yorumlar.stream().map(iEntityDtoConverter::convertToDTO).collect(Collectors.toList());
     }
     public void yorumuSil(int yorumId) {
         YeniYorum yorum = getYeniYorum(yorumId);
@@ -109,7 +109,7 @@ public class YeniYorumService implements IYeniYorumService{
         }
 
         return yanitlar.stream()
-                .map(iEntityDtoConvert::convertToDTO)
+                .map(iEntityDtoConverter::convertToDTO)
                 .collect(Collectors.toList());
     }
 

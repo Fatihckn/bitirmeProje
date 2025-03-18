@@ -5,7 +5,7 @@ import com.bitirmeproje.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserConverter implements IEntityDtoConvert<User,UserDto> {
+public class UserConverterer implements IEntityDtoConverter<User,UserDto> {
 
     @Override
     public UserDto convertToDTO(User user) {

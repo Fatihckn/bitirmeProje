@@ -2,7 +2,7 @@ package com.bitirmeproje.service.yeniyorumbegeniler;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.dto.IEntityDtoConvert;
+import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.model.YeniYorum;
@@ -21,16 +21,16 @@ import java.util.stream.Collectors;
 public class YeniYorumBegenilerService implements IYeniYorumBegenilerService{
     private final YeniYorumBegenilerRepository yeniYorumBegenilerRepository;
     private final YeniYorumRepository yeniYorumRepository;
-    private final IEntityDtoConvert<YeniYorum,YeniYorumDto> iEntityDtoConvert;
+    private final IEntityDtoConverter<YeniYorum,YeniYorumDto> iEntityDtoConverter;
     private final GetUserByToken getUserByToken;
 
     public YeniYorumBegenilerService(YeniYorumBegenilerRepository yeniYorumBegenilerRepository,
                                      YeniYorumRepository yeniYorumRepository,
-                                     @Qualifier("yeniYorumConverter") IEntityDtoConvert<YeniYorum, YeniYorumDto> iEntityDtoConvert,
+                                     @Qualifier("yeniYorumConverter") IEntityDtoConverter<YeniYorum, YeniYorumDto> iEntityDtoConverter,
                                      GetUserByToken getUserByToken) {
         this.yeniYorumBegenilerRepository = yeniYorumBegenilerRepository;
         this.yeniYorumRepository = yeniYorumRepository;
-        this.iEntityDtoConvert = iEntityDtoConvert;
+        this.iEntityDtoConverter = iEntityDtoConverter;
         this.getUserByToken = getUserByToken;
     }
 
@@ -97,7 +97,7 @@ public class YeniYorumBegenilerService implements IYeniYorumBegenilerService{
                 .toList();
 
         return begenilenYorumlar.stream()
-                .map(iEntityDtoConvert::convertToDTO) // DTO'ya çeviriyoruz
+                .map(iEntityDtoConverter::convertToDTO) // DTO'ya çeviriyoruz
                 .collect(Collectors.toList());
     }
 

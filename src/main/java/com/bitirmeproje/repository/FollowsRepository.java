@@ -32,7 +32,4 @@ public interface FollowsRepository extends JpaRepository<Follows, Integer> {
             "GROUP BY k.kullaniciId, k.kullaniciTakmaAd " +
             "ORDER BY COUNT(f) DESC")
     List<PopulerKullaniciDto> findMostFollowedUsers();
-
-
-
 }

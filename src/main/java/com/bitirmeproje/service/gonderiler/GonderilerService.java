@@ -2,7 +2,7 @@ package com.bitirmeproje.service.gonderiler;
 
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.dto.IEntityDtoConvert;
+import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
@@ -16,11 +16,11 @@ import java.util.List;
 public class GonderilerService implements IGonderilerService {
 
     private final GonderilerRepository gonderilerRepository;
-    private final IEntityDtoConvert<Gonderiler, GonderiDto> entityDtoConvert;
+    private final IEntityDtoConverter<Gonderiler, GonderiDto> entityDtoConvert;
     private final GetUserByToken getUserByToken;
 
     public GonderilerService(GonderilerRepository gonderilerRepository,
-                             IEntityDtoConvert<Gonderiler, GonderiDto> entityDtoConvert,
+                             IEntityDtoConverter<Gonderiler, GonderiDto> entityDtoConvert,
                              GetUserByToken getUserByToken) {
         this.gonderilerRepository = gonderilerRepository;
         this.entityDtoConvert = entityDtoConvert;

@@ -119,38 +119,6 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    // Bir kullanıcıyı takip et
-    @PostMapping("/takip-et")
-    public ResponseEntity<String> followUser(@RequestParam int takipEdilenId) {
-
-        userService.followUser(takipEdilenId);
-        return ResponseEntity.ok("Kullanıcı başarıyla takip edildi.");
-    }
-
-    // Bir kullanıcıyı takipten çık
-    @DeleteMapping("/takibi-bırakma")
-    public ResponseEntity<String> unfollowUser(@RequestParam int takipEdilenId) {
-
-        userService.unfollowUser(takipEdilenId);
-        return ResponseEntity.ok("Kullanıcı başarıyla takipten çıkıldı");
-    }
-
-    // Kullanıcının takipçilerini getir
-    @GetMapping("/takipciler")
-    public ResponseEntity<List<UserDto>> getFollowers() {
-
-        List<UserDto> followers = userService.getFollowers();
-        return ResponseEntity.ok(followers);
-    }
-
-    // Kullanıcının takip ettiği kişileri getir
-    @GetMapping("/takip-edilenler")
-    public ResponseEntity<List<UserDto>> getFollowing() {
-
-        List<UserDto> following = userService.getFollowing();
-        return ResponseEntity.ok(following);
-    }
-
     // Kullanıcı bilgilerini yenile
     @PutMapping("/kullanici-bilgi-yenile")
     public ResponseEntity<String> updateUser(@RequestBody UserUpdateDto userUpdateDto){

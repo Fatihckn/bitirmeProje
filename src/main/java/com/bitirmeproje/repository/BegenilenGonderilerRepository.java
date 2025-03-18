@@ -1,7 +1,5 @@
 package com.bitirmeproje.repository;
 
-import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
-import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderilerAllDto;
 import com.bitirmeproje.model.BegenilenGonderiler;
 import com.bitirmeproje.model.Gonderiler;
@@ -20,9 +18,6 @@ public interface BegenilenGonderilerRepository extends JpaRepository<BegenilenGo
     boolean existsByGonderiIdAndKullaniciId(Gonderiler gonderiler,User kullanici);//spesifik kullanıcı spesifik gönderiyi beğendi mi
 
     void deleteByGonderiIdAndKullaniciId(Gonderiler gonderi,User kullanici);//beğeni kaldır
-
-    /*@Query("SELECT b.gonderiId FROM BegenilenGonderiler b GROUP BY b.gonderiId ORDER BY COUNT(b.gonderiId) DESC")
-    List<Gonderiler> findTop10ByOrderByBegeniSayisi();*/
 
     @Query(value = "SELECT g.gonderi_id, MAX(g.gonderi_begeni_sayisi) as gonderi_begeni_sayisi " +
             "FROM kullanicilar AS k " +

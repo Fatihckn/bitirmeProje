@@ -35,6 +35,8 @@ public class AuthService implements IAuthService {
             throw new CustomException(HttpStatus.BAD_REQUEST,"Bu e-posta veya kullanıcı adı zaten kullanılıyor!");
         }
 
+        user.setKullaniciProfilResmi("/uploads/profile-pics/empty.png");
+
         user.setSifre(passwordEncoder.encode(user.getSifre()));
         userRepository.save(user);
     }

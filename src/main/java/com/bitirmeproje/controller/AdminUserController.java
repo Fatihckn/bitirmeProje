@@ -1,7 +1,7 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.user.UserAllDto;
-import com.bitirmeproje.dto.user.UserUpdateDto;
+import com.bitirmeproje.dto.user.UserDto;
 import com.bitirmeproje.service.admin.IAdminUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,9 +32,9 @@ public class AdminUserController {
 
     // Kullanıcı bilgilerini yenile(burada parametreden gelen id adminin değil, değişiklik yapmak istediği kullanıcıya ait)
     @PutMapping("/{id}/kullanici-bilgi-yenile")
-    public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody UserUpdateDto userUpdateDto){
+    public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody UserDto userDto){
 
-        adminUserService.updateUser(id, userUpdateDto);
+        adminUserService.updateUser(id, userDto);
         return ResponseEntity.ok("Kullanıcı bilgileri başarıyla güncellendi.");
     }
 

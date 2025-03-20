@@ -1,9 +1,6 @@
 package com.bitirmeproje.service.user;
 
-import com.bitirmeproje.dto.user.ChangeEmailDto;
-import com.bitirmeproje.dto.user.SifreDegistirDto;
-import com.bitirmeproje.dto.user.UserDto;
-import com.bitirmeproje.dto.user.UserUpdateDto;
+import com.bitirmeproje.dto.user.*;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.password.PasswordHasher;
@@ -11,9 +8,16 @@ import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +28,9 @@ public class UserService implements IUserService {
     private final PasswordHasher passwordHasher;
     private final GetUserByToken getUserByToken;
     private final IEntityDtoConverter<User, UserDto> entityDtoConvert;
+
+    @Value("${upload.folder}") // application.properties’ten okunacak
+    private String uploadFolder;
 
     UserService(UserRepository userRepository, PasswordHasher passwordHasher,
                 GetUserByToken getUserByToken,@Qualifier("userConverterer") IEntityDtoConverter<User, UserDto> entityDtoConvert) {
@@ -59,21 +66,40 @@ public class UserService implements IUserService {
         userRepository.save(user);
     }
 
-//    public void profilResmiGuncelle(User user, ProfilResmiGuncelleDto profilResmiGuncelle){
-//        MultipartFile profilResmi = profilResmiGuncelle.getProfilResmi();
-//
-//        if (profilResmi == null || profilResmi.isEmpty()) {
-//            throw new CustomException(HttpStatus.BAD_REQUEST, "Profil resmi boş olamaz");
-//        }
-//
-//        try {
-//            user.setKullaniciProfilResmi(profilResmi.getBytes());
-//            userRepository.save(user);
-//        } catch (IOException e){
-//            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Profil resmi kaydedilirken hata oluştu")
-//        }
-//
-//    }
+    public void profilResmiGuncelle(ProfilResmiGuncelleDto profilResmiGuncelle) {
+        User user = getUserByToken.getUser();
+
+        MultipartFile profilResmi = profilResmiGuncelle.getProfilResmi();
+
+        if (profilResmi == null || profilResmi.isEmpty()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Profil resmi boş olamaz");
+        }
+
+        try {
+            // Klasörü oluştur (eğer yoksa)
+            File uploadDir = new File(uploadFolder + "/profile-pics/");
+            if (!uploadDir.exists()) {
+                boolean isCreated = uploadDir.mkdirs();
+                if (!isCreated) {
+                    throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Profil resmi klasörü oluşturulamadı!");
+                }
+            }
+
+            // Dosya adını belirle (örn: user_12.jpg)
+            String fileName = "user_" + user.getKullaniciId() + ".jpg";
+            Path filePath = Paths.get(uploadFolder + "/profile-pics/" + fileName);
+
+            // Dosyayı kaydet
+            Files.write(filePath, profilResmi.getBytes());
+
+            // DB'ye yolu kaydet
+            user.setKullaniciProfilResmi("/uploads/profile-pics/" + fileName);
+            userRepository.save(user);
+
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Profil resmi kaydedilirken hata oluştu");
+        }
+    }
 
     // Aradığın kullanıcının bilgileri getiriliyor(Rolü, id'si gibi bilgiler hariç)
     public List<UserDto> searchUsers(String query) {
@@ -89,22 +115,19 @@ public class UserService implements IUserService {
     }
 
     // Kullanıcının bilgilerini güncelle.
-    public void updateUser(UserUpdateDto userUpdateDto) {
+    public void updateUser(UserDto userDto) {
 
         User user = getUserByToken.getUser();
 
         // Güncellenen değerleri boş değilse ata, boşsa eski değerleri koru
-        if (userUpdateDto.getKullaniciTakmaAd() != null && !userUpdateDto.getKullaniciTakmaAd().isEmpty()) {
-            user.setKullaniciTakmaAd(userUpdateDto.getKullaniciTakmaAd());
+        if (userDto.getKullaniciTakmaAd() != null && !userDto.getKullaniciTakmaAd().isEmpty()) {
+            user.setKullaniciTakmaAd(userDto.getKullaniciTakmaAd());
         }
-        if (userUpdateDto.getKullaniciBio() != null && !userUpdateDto.getKullaniciBio().isEmpty()) {
-            user.setKullaniciBio(userUpdateDto.getKullaniciBio());
+        if (userDto.getKullaniciBio() != null && !userDto.getKullaniciBio().isEmpty()) {
+            user.setKullaniciBio(userDto.getKullaniciBio());
         }
-        if (userUpdateDto.getKullaniciTelefonNo() != null && !userUpdateDto.getKullaniciTelefonNo().isEmpty()) {
-            user.setKullaniciTelefonNo(userUpdateDto.getKullaniciTelefonNo());
-        }
-        if (userUpdateDto.getKullaniciProfilResmi() != null && !userUpdateDto.getKullaniciProfilResmi().isEmpty()) {
-            user.setKullaniciProfilResmi(userUpdateDto.getKullaniciProfilResmi());
+        if (userDto.getKullaniciTelefonNo() != null && !userDto.getKullaniciTelefonNo().isEmpty()) {
+            user.setKullaniciTelefonNo(userDto.getKullaniciTelefonNo());
         }
 
         // Güncellenmiş kullanıcıyı kaydet

@@ -1,8 +1,9 @@
 package com.bitirmeproje.service.admin;
 
 import com.bitirmeproje.dto.user.UserAllDto;
-import com.bitirmeproje.dto.user.UserUpdateDto;
+import com.bitirmeproje.dto.user.UserDto;
 import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
@@ -18,28 +19,21 @@ public class AdminUserService implements IAdminUserService {
 
     private final UserRepository userRepository;
     private final FindUser<Integer> findUser;
+    private final IEntityDtoConverter<User, UserAllDto> converter;
 
     AdminUserService(UserRepository userRepository,
-                     @Qualifier("findUserById") FindUser<Integer> findUser) {
+                     @Qualifier("findUserById") FindUser<Integer> findUser,
+                     IEntityDtoConverter<User, UserAllDto> converter) {
         this.userRepository = userRepository;
         this.findUser = findUser;
+        this.converter = converter;
     }
 
     // Kullanıcının bütün bilgilerini getir(Admin API'si için)
     public List<UserAllDto> findAll() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(user -> new UserAllDto(
-                        user.getKullaniciId(),
-                        user.getKullaniciTakmaAd(),
-                        user.getePosta(),
-                        user.getKullaniciBio(),
-                        user.getKullaniciProfilResmi(),
-                        user.getKullaniciTelefonNo(),
-                        user.getKullaniciDogumTarihi(),
-                        user.getKullaniciUyeOlmaTarihi(),
-                        user.getKullaniciRole()
-                ))
+                .map(converter::convertToDTO)
                 .toList();
     }
 
@@ -52,28 +46,17 @@ public class AdminUserService implements IAdminUserService {
         }
 
         return users.stream()
-                .map(user -> new UserAllDto(
-                        user.getKullaniciId(),
-                        user.getKullaniciTakmaAd(),
-                        user.getePosta(),
-                        user.getKullaniciBio(),
-                        user.getKullaniciProfilResmi(),
-                        user.getKullaniciTelefonNo(),
-                        user.getKullaniciDogumTarihi(),
-                        user.getKullaniciUyeOlmaTarihi(),
-                        user.getKullaniciRole()
-                ))
+                .map(converter::convertToDTO)
                 .toList();
     }
 
     // İstediğin kullanıcının bilgilerini güncelle.
-    public void updateUser(int userId, UserUpdateDto userUpdateDto) {
+    public void updateUser(int userId, UserDto userDto) {
         User user = findUser.findUser(userId);
 
-        updateField(userUpdateDto.getKullaniciTakmaAd(), user::setKullaniciTakmaAd);
-        updateField(userUpdateDto.getKullaniciBio(), user::setKullaniciBio);
-        updateField(userUpdateDto.getKullaniciTelefonNo(), user::setKullaniciTelefonNo);
-        updateField(userUpdateDto.getKullaniciProfilResmi(), user::setKullaniciProfilResmi);
+        updateField(userDto.getKullaniciTakmaAd(), user::setKullaniciTakmaAd);
+        updateField(userDto.getKullaniciBio(), user::setKullaniciBio);
+        updateField(userDto.getKullaniciTelefonNo(), user::setKullaniciTelefonNo);
 
         userRepository.save(user);
     }

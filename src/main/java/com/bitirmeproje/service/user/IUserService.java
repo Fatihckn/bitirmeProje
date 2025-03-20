@@ -1,9 +1,6 @@
 package com.bitirmeproje.service.user;
 
-import com.bitirmeproje.dto.user.ChangeEmailDto;
-import com.bitirmeproje.dto.user.SifreDegistirDto;
-import com.bitirmeproje.dto.user.UserDto;
-import com.bitirmeproje.dto.user.UserUpdateDto;
+import com.bitirmeproje.dto.user.*;
 import com.bitirmeproje.model.User;
 
 import java.util.List;
@@ -13,11 +10,11 @@ public interface IUserService {
 
     void passwordChange(SifreDegistirDto sifreDto);
 
-//  void profilResmiGuncelle(User user, ProfilResmiGuncelleDto profilResmiGuncelle);
+  void profilResmiGuncelle(ProfilResmiGuncelleDto profilResmiGuncelle);
 
     List<UserDto> searchUsers(String query);
 
-    void updateUser(UserUpdateDto userUpdateDto);
+    void updateUser(UserDto userUpdateDto);
 
     UserDto findUserById();
 

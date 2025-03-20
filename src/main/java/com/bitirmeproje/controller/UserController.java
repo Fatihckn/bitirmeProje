@@ -1,9 +1,6 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.dto.user.ChangeEmailDto;
-import com.bitirmeproje.dto.user.SifreDegistirDto;
-import com.bitirmeproje.dto.user.UserDto;
-import com.bitirmeproje.dto.user.UserUpdateDto;
+import com.bitirmeproje.dto.user.*;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.email.SendEmail;
 import com.bitirmeproje.helper.email.otp.OtpGenerator;
@@ -13,6 +10,7 @@ import com.bitirmeproje.service.user.IUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -41,17 +39,13 @@ public class UserController {
         return ResponseEntity.ok("Şifre başarıyla değiştirildi, lütfen tekrar giriş yapınız!");
     }
 
-//    // Kulanıcı profil resmi güncelleme API'si
-//    @PutMapping("/kullanici/{id}/profil-resmi")
-//    public ResponseEntity<String> kullaniciProfilResmiGuncelle(
-//            @PathVariable String id,
-//            @RequestParam("resim") ProfilResmiGuncelleDto profilResmiDto) {
-//
-//        User currentUser = userAccessValidator.validateUserAccess(id);
-//        userService.profilResmiGuncelle(currentUser, new ProfilResmiGuncelleDto(profilResmi));
-//
-//        return ResponseEntity.ok("");
-//    }
+    @PutMapping("/profil-resmi-degistir")
+    public ResponseEntity<String> kullaniciProfilResmiGuncelle(@RequestParam("resim") MultipartFile resim) {
+
+        userService.profilResmiGuncelle(convertToDto(resim));
+
+        return ResponseEntity.ok("Profil resmi başarıyla güncellendi.");
+    }
 
     // Kullanıcı şifremi unuttum API'si
     // Kullanıcı şifre sıfırlama ekranında mailini girecek
@@ -121,9 +115,9 @@ public class UserController {
 
     // Kullanıcı bilgilerini yenile
     @PutMapping("/kullanici-bilgi-yenile")
-    public ResponseEntity<String> updateUser(@RequestBody UserUpdateDto userUpdateDto){
+    public ResponseEntity<String> updateUser(@RequestBody UserDto userDto){
 
-        userService.updateUser(userUpdateDto);
+        userService.updateUser(userDto);
         return ResponseEntity.ok("Kullanıcı bilgileri başarıyla güncellendi.");
     }
 
@@ -141,5 +135,11 @@ public class UserController {
 
         userService.changeUserEmail(changeEmailDto);
         return ResponseEntity.ok("E-posta başarıyla güncellendi.");
+    }
+
+    private ProfilResmiGuncelleDto convertToDto(MultipartFile profilResmi) {
+        ProfilResmiGuncelleDto profilResmiGuncelleDto = new ProfilResmiGuncelleDto();
+        profilResmiGuncelleDto.setProfilResmi(profilResmi);
+        return profilResmiGuncelleDto;
     }
 }

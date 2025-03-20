@@ -1,7 +1,7 @@
 package com.bitirmeproje.service.admin;
 
 import com.bitirmeproje.dto.user.UserAllDto;
-import com.bitirmeproje.dto.user.UserUpdateDto;
+import com.bitirmeproje.dto.user.UserDto;
 
 import java.util.List;
 
@@ -11,5 +11,5 @@ public interface IAdminUserService {
 
     List<UserAllDto> searchUsers(String query);
 
-    void updateUser(int userId, UserUpdateDto userUpdateDto);
+    void updateUser(int userId, UserDto userDto);
 }

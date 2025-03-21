@@ -12,4 +12,6 @@ public interface IAdminUserService {
     List<UserAllDto> searchUsers(String query);
 
     void updateUser(int userId, UserDto userDto);
+
+    void deleteUserAccount(int kullaniciId);
 }

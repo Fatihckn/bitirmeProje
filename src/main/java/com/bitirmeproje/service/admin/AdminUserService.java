@@ -10,6 +10,7 @@ import com.bitirmeproje.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -59,6 +60,14 @@ public class AdminUserService implements IAdminUserService {
         updateField(userDto.getKullaniciTelefonNo(), user::setKullaniciTelefonNo);
 
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUserAccount(int kullaniciId) {
+        User user = findUser.findUser(kullaniciId);
+
+        // Kullanıcıyı ve tüm ilişkili verileri sil
+        userRepository.delete(user);
     }
 
     private void updateField(String newValue, Consumer<String> setter) {

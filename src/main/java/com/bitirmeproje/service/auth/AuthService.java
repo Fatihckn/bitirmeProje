@@ -51,6 +51,7 @@ public class AuthService implements IAuthService {
         pendingUsers.put(user.getePosta(), user);
     }
 
+    // Maile gelen kod ile doğrulama başarılı olursa kullanıcı kayıt olsun.
     public void verifyOtpAndRegister(String email, String otp) {
         if (!otpStorage.validateOtp(email, otp)) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Geçersiz veya süresi dolmuş OTP!");

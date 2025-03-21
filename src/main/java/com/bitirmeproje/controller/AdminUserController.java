@@ -38,4 +38,9 @@ public class AdminUserController {
         return ResponseEntity.ok("Kullanıcı bilgileri başarıyla güncellendi.");
     }
 
+    @DeleteMapping("/delete-account/{kullaniciId}")
+    public ResponseEntity<String> deleteAccount(@PathVariable int kullaniciId) {
+        adminUserService.deleteUserAccount(kullaniciId);
+        return ResponseEntity.ok("Hesap Başarıyla Silindi");
+    }
 }

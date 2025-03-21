@@ -8,4 +8,6 @@ public interface IAuthService {
     void registerUser(User user);
 
     String login(LoginDto loginDto);
+
+    void verifyOtpAndRegister(String email, String otp);
 }

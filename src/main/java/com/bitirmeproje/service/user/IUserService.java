@@ -23,4 +23,6 @@ public interface IUserService {
     Optional<User> findByEposta (String ePosta);
 
     void changeUserEmail(ChangeEmailDto changeEmailDto);
+
+    void deleteUserAccount();
 }

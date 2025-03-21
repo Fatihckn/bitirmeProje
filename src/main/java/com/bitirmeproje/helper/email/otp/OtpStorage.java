@@ -1,32 +1,42 @@
 package com.bitirmeproje.helper.email.otp;
 
+import com.bitirmeproje.dto.otp.OtpEntry;
+import com.bitirmeproje.exception.CustomException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class OtpStorage {
-    private final ConcurrentHashMap<String, String> otpMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, OtpEntry> otpMap = new ConcurrentHashMap<>();
+    private static final long OTP_VALIDITY_DURATION = 60 * 1000; // 1 dakika (milisaniye cinsinden)
 
     // OTP'yi ekle
     public void putOtp(String email, String otp) {
-        otpMap.put(email, otp);
+        long timestamp = System.currentTimeMillis(); // Şu anki zaman
+        otpMap.put(email, new OtpEntry(otp, timestamp));
     }
 
-    // OTP'yi al
-    public String getOtp(String email) {
-        return otpMap.get(email);
-    }
-
-    // OTP'yi sil (zaman aşımı sonrası)
-    public void removeOtp(String email) {
-        otpMap.remove(email);
-    }
-
-    // OTP doğrulama
+    // OTP doğrulama (Zaman kontrolü ekledik)
     public boolean validateOtp(String email, String otp) {
-        String storedOtp = otpMap.get(email);
-        if (storedOtp != null && storedOtp.equals(otp)) {
-            removeOtp(email); // Kullanıldıktan sonra OTP'yi sil
+        OtpEntry storedOtpEntry = otpMap.get(email);
+
+        if (storedOtpEntry == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND,"Hatali mail!");
+        }
+
+        long currentTime = System.currentTimeMillis();
+        long otpGeneratedTime = storedOtpEntry.timestamp();
+
+        // 1 dakikalık süreyi kontrol et
+        if ((currentTime - otpGeneratedTime) > OTP_VALIDITY_DURATION) {
+            otpMap.remove(email); // Süresi doldu, OTP'yi kaldır
+            throw new CustomException(HttpStatus.GATEWAY_TIMEOUT,"Kodun suresi dolmustur!");
+        }
+
+        // OTP eşleşiyor mu kontrol et
+        if (storedOtpEntry.otp().equals(otp)) {
+            otpMap.remove(email); // Doğrulandıktan sonra sil
             return true;
         }
         return false;

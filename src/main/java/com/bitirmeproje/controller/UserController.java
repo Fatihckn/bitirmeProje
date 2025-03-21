@@ -2,11 +2,13 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.user.*;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.email.SendEmail;
+import com.bitirmeproje.helper.email.sendemail.SendEmail;
+import com.bitirmeproje.helper.email.sendemail.SendEmailForPasswordChange;
 import com.bitirmeproje.helper.email.otp.OtpGenerator;
 import com.bitirmeproje.helper.email.otp.OtpStorage;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.service.user.IUserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,8 @@ public class UserController {
     private final OtpStorage otpStorage;
 
     public UserController(IUserService userService,
-                          SendEmail emailService, OtpStorage otpStorage) {
+                          @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
+                          OtpStorage otpStorage) {
         this.userService = userService;
         this.emailService = emailService;
         this.otpStorage = otpStorage;
@@ -141,5 +144,11 @@ public class UserController {
         ProfilResmiGuncelleDto profilResmiGuncelleDto = new ProfilResmiGuncelleDto();
         profilResmiGuncelleDto.setProfilResmi(profilResmi);
         return profilResmiGuncelleDto;
+    }
+
+    @DeleteMapping("/delete-account")
+    public ResponseEntity<String> deleteAccount() {
+        userService.deleteUserAccount();
+        return ResponseEntity.ok("Hesap Başarıyla Silindi");
     }
 }

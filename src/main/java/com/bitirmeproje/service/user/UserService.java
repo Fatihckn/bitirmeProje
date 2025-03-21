@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -174,5 +175,13 @@ public class UserService implements IUserService {
         // Yeni e-postayı kaydet
         user.setePosta(changeEmailDto.getYeniEposta());
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void deleteUserAccount() {
+        User user = getUserByToken.getUser();
+
+        // Kullanıcıyı ve tüm ilişkili verileri sil
+        userRepository.delete(user);
     }
 }

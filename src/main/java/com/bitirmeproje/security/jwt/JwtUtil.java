@@ -67,21 +67,6 @@ public class JwtUtil {
         return extractAllClaims(token).get("role", String.class);
     }
 
-//    public Integer extractUserId() {
-//        String token = request.getHeader("Authorization");
-//
-//        if (token == null || !token.startsWith("Bearer ")) {
-//            throw new CustomException(HttpStatus.UNAUTHORIZED, "JWT bulunamadı veya geçersiz!");
-//        }
-//
-//        String jwt = token.substring(7); // "Bearer " kısmını çıkar
-//        try {
-//            return extractAllClaims(jwt).get("userId", Integer.class);
-//        } catch (Exception e) {
-//            throw new CustomException(HttpStatus.FORBIDDEN, "Geçersiz veya süresi dolmuş JWT!");
-//        }
-//    }
-
     public Integer extractUserId() {
 
         String jwt = null;

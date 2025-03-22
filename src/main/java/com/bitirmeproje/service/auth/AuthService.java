@@ -30,7 +30,7 @@ public class AuthService implements IAuthService {
     private final Map<String, User> pendingUsers = new ConcurrentHashMap<>();
 
     AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                JwtUtil jwtUtil, FindUser<String> findUser,
+                JwtUtil jwtUtil,@Qualifier("findUserByEmail") FindUser<String> findUser,
                 OtpStorage otpStorage,@Qualifier("sendEmailForRegister") SendEmail sendEmail) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -42,6 +42,10 @@ public class AuthService implements IAuthService {
 
     // Kullanıcı kayıt servisi
     public void registerUser(User user) {
+        if(userRepository.findByEPosta(user.getePosta()).isPresent() || userRepository.findByKullaniciTakmaAd(user.getKullaniciTakmaAd()).isPresent()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST,"Bu e-posta veya kullanıcı adı zaten kullanılıyor!");
+        }
+
         String otp = OtpGenerator.generateOtp();
 
         otpStorage.putOtp(user.getePosta(), otp);
@@ -63,13 +67,13 @@ public class AuthService implements IAuthService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Kayıt bilgileri bulunamadı!");
         }
 
-        if(user.getKullaniciRole() == null) {
-            user.setKullaniciRole(Role.USER);
-        }
+//        Bu Kodu kayıt olurken admin rolü ekleyecekseniz açınız, hep açık olursa herkes admin olarak kayıt olabilir!!!
+//        (Bunu açarsanız alttakini geçici olarak yorum satırına alın)
+//        if(user.getKullaniciRole() == null) {
+//            user.setKullaniciRole(Role.USER);
+//        }
 
-        if(userRepository.findByEPosta(user.getePosta()).isPresent() || userRepository.findByKullaniciTakmaAd(user.getKullaniciTakmaAd()).isPresent()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,"Bu e-posta veya kullanıcı adı zaten kullanılıyor!");
-        }
+        user.setKullaniciRole(Role.USER);
 
         // Varsayılan profil resmi ata
         user.setKullaniciProfilResmi("/uploads/profile-pics/empty.png");

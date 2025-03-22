@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,7 +37,7 @@ public class SecurityConfig {
         http
                 .cors(cors->cors.configure(http))
                 // CSRF devre dışı (Postman vb. testler için)
-                .csrf(csrf -> csrf.disable())
+                .csrf(CsrfConfigurer::disable)
 
                 // Session'ı tamamen devre dışı bırakarak stateless bir yapı kuruyoruz
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -67,10 +70,10 @@ public class SecurityConfig {
                 )
 
                 // Varsayılan Spring form login ekranını kapat
-                .formLogin(form -> form.disable())
+                .formLogin(FormLoginConfigurer::disable)
 
                 // Basic Auth'u da kapat
-                .httpBasic(httpBasic -> httpBasic.disable())
+                .httpBasic(HttpBasicConfigurer::disable)
 
                         .exceptionHandling(ex -> ex
                                 .authenticationEntryPoint(customAuthEntryPoint)

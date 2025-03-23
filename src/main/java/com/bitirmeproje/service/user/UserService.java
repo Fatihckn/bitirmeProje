@@ -30,8 +30,8 @@ public class UserService implements IUserService {
     private final GetUserByToken getUserByToken;
     private final IEntityDtoConverter<User, UserDto> entityDtoConvert;
 
-    @Value("${upload.folder}") // application.properties’ten okunacak
-    private String uploadFolder;
+//    @Value("${upload.folder}") application.properties’ten okunacak
+    private final String uploadFolder = "C:/Users/User/OneDrive/Belgeler/GitHub/bitirmeProje";
 
     UserService(UserRepository userRepository, PasswordHasher passwordHasher,
                 GetUserByToken getUserByToken,@Qualifier("userConverterer") IEntityDtoConverter<User, UserDto> entityDtoConvert) {

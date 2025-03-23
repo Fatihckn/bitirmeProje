@@ -5,6 +5,7 @@ import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.HomeRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,8 @@ public class HomeService implements IHomeService {
     private final HomeRepository homeRepository;
     private final GetUserByToken getUserByToken;
 
+    private final String uploadFolder = "C:/Users/User/OneDrive/Belgeler/GitHub/bitirmeProje";
+
     public HomeService(HomeRepository homeRepository,
                        GetUserByToken getUserByToken) {
         this.homeRepository = homeRepository;
@@ -24,16 +27,17 @@ public class HomeService implements IHomeService {
 
     // Kullanıcının takip ettiği kişilerin gönderilerini getir.
     public List<HomeDto> getHome() {
+
         User user = getUserByToken.getUser();
-        System.out.println("user id= "+user.getKullaniciId());
 
         List<HomeDto> gonderiler = homeRepository.getGonderiler(user.getKullaniciId());
-        System.out.println(gonderiler.isEmpty());
-
 
         if(gonderiler.isEmpty()){
             throw new CustomException(HttpStatus.NOT_FOUND,"Gonderi Bulunamadi");
         }
+        gonderiler.forEach(homeDto -> {
+            homeDto.setKullaniciResim(uploadFolder + homeDto.getKullaniciResim());
+        });
 
         return gonderiler;
     }

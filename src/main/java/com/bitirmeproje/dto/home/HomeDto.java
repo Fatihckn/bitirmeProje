@@ -18,6 +18,8 @@ public class HomeDto {
 
     private Boolean begenildiMi;
 
+    private String kullaniciResim;
+
     public HomeDto() {}
 
 //    public HomeDto(int gonderiId, int kullaniciId, String gonderiIcerigi, int gonderiBegeniSayisi, LocalDate gonderiTarihi, String takipEdilenKullaniciTakmaAd) {
@@ -30,7 +32,7 @@ public class HomeDto {
 //    }
 
     public HomeDto(int gonderiId, int kullaniciId, String gonderiIcerigi, int begeniSayisi,
-                   LocalDate gonderiTarihi, String takipEdilenKullaniciTakmaAd, boolean begenildiMi) {
+                   LocalDate gonderiTarihi, String takipEdilenKullaniciTakmaAd, String kullaniciResim, boolean begenildiMi) {
         this.gonderiId = gonderiId;
         this.kullaniciId = kullaniciId;
         this.gonderiIcerigi = gonderiIcerigi;
@@ -38,6 +40,7 @@ public class HomeDto {
         this.gonderiTarihi = gonderiTarihi;
         this.takipEdilenKullaniciTakmaAd = takipEdilenKullaniciTakmaAd;
         this.begenildiMi = begenildiMi;
+        this.kullaniciResim = kullaniciResim;
     }
 
     public int getGonderiId() {
@@ -94,5 +97,13 @@ public class HomeDto {
 
     public void setBegenildiMi(Boolean begenildiMi) {
         this.begenildiMi = begenildiMi;
+    }
+
+    public String getKullaniciResim() {
+        return kullaniciResim;
+    }
+
+    public void setKullaniciResim(String kullaniciResim) {
+        this.kullaniciResim = kullaniciResim;
     }
 }

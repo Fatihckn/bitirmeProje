@@ -4,6 +4,7 @@ import com.bitirmeproje.dto.auth.LoginDto;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.service.auth.IAuthService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,5 +55,13 @@ public class AuthController {
 
     // Çıkış yapacak kullanıcının da doğru kullanıcı olup olmadığı denenip dönüş yapılıyor.
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {return ResponseEntity.ok("Başarıyla çıkış yapıldı");}
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
+        Cookie cookie = new Cookie("JSESSION", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok("Çıkış Yapıldı.");
+    }
 }
+

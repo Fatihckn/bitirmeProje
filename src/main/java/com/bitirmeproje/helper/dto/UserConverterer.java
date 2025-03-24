@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserConverterer implements IEntityDtoConverter<User,UserDto> {
-    String baseUrl = "http://localhost:8080";
+    String baseUrl = "C:/Users/User/OneDrive/Belgeler/GitHub/bitirmeProje";
 
     @Override
     public UserDto convertToDTO(User user) {

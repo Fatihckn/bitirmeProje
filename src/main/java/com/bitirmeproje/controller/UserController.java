@@ -1,37 +1,21 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.user.*;
-import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.email.otp.OtpGenerator;
-import com.bitirmeproje.helper.email.otp.OtpStorage;
-import com.bitirmeproje.helper.user.FindUser;
-import com.bitirmeproje.model.User;
 import com.bitirmeproje.service.user.IUserService;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/user")
 @CrossOrigin(origins = "http://localhost:8080") // Doğru kullanım
 public class UserController {
     private final IUserService userService;
-    private final FindUser<String> findUser;
 
-    private final Map<String, String> sifremiUnuttumOtp = new ConcurrentHashMap<>();
-
-    public UserController(IUserService userService,
-                          @Qualifier("findUserByEmail") FindUser<String> findUser) {
+    public UserController(IUserService userService) {
         this.userService = userService;
-        this.findUser = findUser;
     }
 
     // Kullanıcı şifresini değiştirme API'si(eski şifresini biliyor)

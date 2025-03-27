@@ -3,7 +3,12 @@ package com.bitirmeproje.service.user;
 import com.bitirmeproje.dto.user.*;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.dto.IEntityDtoConverter;
+import com.bitirmeproje.helper.email.otp.OtpGenerator;
+import com.bitirmeproje.helper.email.otp.OtpStorage;
+import com.bitirmeproje.helper.email.sendemail.SendEmail;
+import com.bitirmeproje.helper.email.sendemail.SendEmailForPasswordChange;
 import com.bitirmeproje.helper.password.PasswordHasher;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
@@ -19,8 +24,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class UserService implements IUserService {
@@ -29,16 +34,28 @@ public class UserService implements IUserService {
     private final PasswordHasher passwordHasher;
     private final GetUserByToken getUserByToken;
     private final IEntityDtoConverter<User, UserDto> entityDtoConvert;
+    private final FindUser<String> findUser;
+    private final SendEmail emailService;
+    private final OtpStorage otpStorage;
+
+    private final Map<String, String> sifremiUnuttumOtp = new ConcurrentHashMap<>();
 
     @Value("${upload.folder}") // application.properties’ten okunacak
     private String uploadFolder;
 
     UserService(UserRepository userRepository, PasswordHasher passwordHasher,
-                GetUserByToken getUserByToken,@Qualifier("userConverterer") IEntityDtoConverter<User, UserDto> entityDtoConvert) {
+                GetUserByToken getUserByToken,
+                @Qualifier("userConverterer") IEntityDtoConverter<User, UserDto> entityDtoConvert,
+                @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
+                FindUser<String> findUser,
+                OtpStorage otpStorage) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
         this.getUserByToken = getUserByToken;
         this.entityDtoConvert = entityDtoConvert;
+        this.findUser = findUser;
+        this.emailService = emailService;
+        this.otpStorage = otpStorage;
     }
 
     // Kullanıcnın şifresini değiştiriyoruz(Şifremi unuttum değil)
@@ -99,6 +116,47 @@ public class UserService implements IUserService {
 
         } catch (IOException e) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Profil resmi kaydedilirken hata oluştu");
+        }
+    }
+
+    // Sifre sifirlamak icin maile kod gonderilir
+    public void sifreSifirla(String email) {
+        // 1. Kullanıcı var mı yok mu kontrol et
+        findUser.findUser(email);
+
+        // 2. OTP üret
+        String otp = OtpGenerator.generateOtp();
+
+        // 3. OTP'yi sakla (belirli bir süre için)
+        otpStorage.putOtp(email, otp);
+
+        // 4. Mail at
+        emailService.sendOtpEmail(email, otp);
+    }
+
+    // Maile gelen kodu dogrular
+    public void sifreDogrula(String email, String otp) {
+        boolean isValid = otpStorage.validateOtp(email, otp);
+
+        if (!isValid) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED,"Geçersiz, süresi dolmuş OTP veya e-posta!");
+        }
+
+        String sifreKod = OtpGenerator.generateOtp();
+
+        putOtpWithExpiry(email, sifreKod); // 1 dakika süresi var
+    }
+
+    // Yeni sifre belirler
+    public void yeniSifreBelirle(String email, String yeniSifre) {
+        User user = findUser.findUser(email);
+
+        if(sifremiUnuttumOtp.containsKey(email)) {
+            passwordSave(user, yeniSifre);
+            sifremiUnuttumOtp.remove(email);
+        }
+        else{
+            throw new CustomException(HttpStatus.BAD_REQUEST,"Islem gerceklestirilemedi, lütfen tekrardan deneyiniz.");
         }
     }
 
@@ -183,5 +241,17 @@ public class UserService implements IUserService {
 
         // Kullanıcıyı ve tüm ilişkili verileri sil
         userRepository.delete(user);
+    }
+
+    private void putOtpWithExpiry(String email, String otp) {
+        sifremiUnuttumOtp.put(email, otp);
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                sifremiUnuttumOtp.remove(email);
+            }
+        }, 60 * 1000);
     }
 }

@@ -22,7 +22,7 @@ public class OtpStorage {
         OtpEntry storedOtpEntry = otpMap.get(email);
 
         if (storedOtpEntry == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Hatali mail!");
+            throw new CustomException(HttpStatus.NOT_FOUND,"Kod Bulunamadi!");
         }
 
         long currentTime = System.currentTimeMillis();

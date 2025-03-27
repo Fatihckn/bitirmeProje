@@ -2,10 +2,9 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.user.*;
 import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.email.sendemail.SendEmail;
-import com.bitirmeproje.helper.email.sendemail.SendEmailForPasswordChange;
 import com.bitirmeproje.helper.email.otp.OtpGenerator;
 import com.bitirmeproje.helper.email.otp.OtpStorage;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,22 +14,24 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/user")
 @CrossOrigin(origins = "http://localhost:8080") // Doğru kullanım
 public class UserController {
     private final IUserService userService;
-    private final SendEmail emailService;
-    private final OtpStorage otpStorage;
+    private final FindUser<String> findUser;
+
+    private final Map<String, String> sifremiUnuttumOtp = new ConcurrentHashMap<>();
 
     public UserController(IUserService userService,
-                          @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
-                          OtpStorage otpStorage) {
+                          @Qualifier("findUserByEmail") FindUser<String> findUser) {
         this.userService = userService;
-        this.emailService = emailService;
-        this.otpStorage = otpStorage;
+        this.findUser = findUser;
     }
 
     // Kullanıcı şifresini değiştirme API'si(eski şifresini biliyor)
@@ -54,20 +55,7 @@ public class UserController {
     // Kullanıcı şifre sıfırlama ekranında mailini girecek
     @PostMapping("/sifre-sifirla")
     public ResponseEntity<String> sifreSifirla(@RequestParam String email) {
-        // 1. Kullanıcı var mı yok mu kontrol et
-        Optional<User> userOptional = userService.findByEposta(email);
-        if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu e-posta adresine sahip kullanıcı bulunamadı");
-        }
-
-        // 2. OTP üret
-        String otp = OtpGenerator.generateOtp();
-
-        // 3. OTP'yi sakla (belirli bir süre için)
-        otpStorage.putOtp(email, otp);
-
-        // 4. Mail at
-        emailService.sendOtpEmail(email, otp);
+        userService.sifreSifirla(email);
 
         return ResponseEntity.ok("Şifre sıfırlama kodu e-posta adresinize gönderildi.");
     }
@@ -76,35 +64,16 @@ public class UserController {
     // Kullanıcı mail'ine gelen doğrulama kodunu girecek
     @PostMapping("/sifre-dogrula")
     public ResponseEntity<String> sifreDogrula(@RequestParam String email, @RequestParam String otp) {
-
-        boolean isValid = otpStorage.validateOtp(email, otp);
-
-        if (!isValid) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED,"Geçersiz, süresi dolmuş OTP veya e-posta!");
-        }
+        userService.sifreDogrula(email, otp);
 
         return ResponseEntity.ok("OTP doğrulandı, yeni şifre belirleyebilirsiniz.");
     }
 
-    //!!!!!! Zafiyet mevcut, kullanıcı kodu doğrulasa bile url de değişiklik yaparak buraya erişebilir
-    // Bu zafiyeti, kullanıcı mailine gelen kod ile doğruladıktan sonra bir token oluşturup (passwordResetToken)
-    // bu token'ı kullanıcı yeni şifre belirleme API'sine eriştiği zaman kontrol edip ona göre yeni şifre belirlemesini isteyebiliriz.
     // Kullanıcı şifremi unuttum API'si
     // Girdiği doğrulama kodu doğru ise yeni şifre belirleyecek
     @PostMapping("/yeni-sifre-belirle")
     public ResponseEntity<String> yeniSifreBelirle(@RequestParam String email, @RequestParam String yeniSifre) {
-        // Kullanıcıyı bul
-        Optional<User> userOptional = userService.findByEposta(email);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.badRequest().body("Kullanıcı bulunamadı!");
-        }
-
-        User user = userOptional.get();
-
-        // Yeni şifreyi hash'leyerek güncelle
-//        userService.  // Şifreyi kaydet
-        userService.passwordSave(user, yeniSifre);
-
+        userService.yeniSifreBelirle(email, yeniSifre);
         return ResponseEntity.ok("Şifre başarıyla değiştirildi.");
     }
 
@@ -140,15 +109,15 @@ public class UserController {
         return ResponseEntity.ok("E-posta başarıyla güncellendi.");
     }
 
-    private ProfilResmiGuncelleDto convertToDto(MultipartFile profilResmi) {
-        ProfilResmiGuncelleDto profilResmiGuncelleDto = new ProfilResmiGuncelleDto();
-        profilResmiGuncelleDto.setProfilResmi(profilResmi);
-        return profilResmiGuncelleDto;
-    }
-
     @DeleteMapping("/delete-account")
     public ResponseEntity<String> deleteAccount() {
         userService.deleteUserAccount();
         return ResponseEntity.ok("Hesap Başarıyla Silindi");
+    }
+
+    private ProfilResmiGuncelleDto convertToDto(MultipartFile profilResmi) {
+        ProfilResmiGuncelleDto profilResmiGuncelleDto = new ProfilResmiGuncelleDto();
+        profilResmiGuncelleDto.setProfilResmi(profilResmi);
+        return profilResmiGuncelleDto;
     }
 }

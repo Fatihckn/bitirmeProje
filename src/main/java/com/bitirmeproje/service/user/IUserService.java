@@ -10,7 +10,13 @@ public interface IUserService {
 
     void passwordChange(SifreDegistirDto sifreDto);
 
-  void profilResmiGuncelle(ProfilResmiGuncelleDto profilResmiGuncelle);
+    void profilResmiGuncelle(ProfilResmiGuncelleDto profilResmiGuncelle);
+
+    void sifreSifirla(String email);
+
+    void sifreDogrula(String email, String otp);
+
+    void yeniSifreBelirle(String email, String yeniSifre);
 
     List<UserDto> searchUsers(String query);
 

@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class OtpStorage {
     private final ConcurrentHashMap<String, OtpEntry> otpMap = new ConcurrentHashMap<>();
-    private static final long OTP_VALIDITY_DURATION = 60 * 1000; // 1 dakika (milisaniye cinsinden)
+    private static final long OTP_VALIDITY_DURATION = 2*60 * 1000; // 1 dakika (milisaniye cinsinden)
 
     // OTP'yi ekle
     public void putOtp(String email, String otp) {
@@ -27,7 +27,10 @@ public class OtpStorage {
 
         long currentTime = System.currentTimeMillis();
         long otpGeneratedTime = storedOtpEntry.timestamp();
-
+        System.out.println("generatedTime= "+otpGeneratedTime);
+        System.out.println("currentTime= "+currentTime);
+        System.out.println("Fark= "+(currentTime-otpGeneratedTime));
+        System.out.println("Otp Validation Duration= "+OTP_VALIDITY_DURATION);
         // 1 dakikalık süreyi kontrol et
         if ((currentTime - otpGeneratedTime) > OTP_VALIDITY_DURATION) {
             otpMap.remove(email); // Süresi doldu, OTP'yi kaldır

@@ -30,7 +30,7 @@ public class AuthController {
                 .body("E-posta doğrulama kodu gönderildi");
     }
 
-    @GetMapping("/verify-otp")
+    @PostMapping("/verify-otp")
     public ResponseEntity<String> verifyOtp(@RequestParam String email, @RequestParam String otp) {
          authService.verifyOtpAndRegister(email, otp);
          return ResponseEntity

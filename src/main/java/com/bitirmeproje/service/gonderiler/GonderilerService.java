@@ -54,6 +54,10 @@ public class GonderilerService implements IGonderilerService {
     public void gonderiSil(int gonderiId) {
         Gonderiler gonderi = findGonderi(gonderiId);
 
+        if(gonderi.getKullaniciId().getKullaniciId() != (getUserByToken.getUser().getKullaniciId())) {
+            throw new CustomException(HttpStatus.NOT_FOUND,"Gonderi bulunamadi");
+        }
+
         gonderilerRepository.deleteById(gonderi.getGonderiId());
     }
 

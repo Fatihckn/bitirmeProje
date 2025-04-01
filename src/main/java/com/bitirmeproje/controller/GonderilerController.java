@@ -30,7 +30,7 @@ public class GonderilerController {
     }
 
     @DeleteMapping("/sil/{gonderiId}")
-    public ResponseEntity<String> gonderiSil(@PathVariable int gonderiId ) {
+    public ResponseEntity<String> gonderiSil(@PathVariable int gonderiId) {
         gonderilerService.gonderiSil(gonderiId);
         return ResponseEntity.ok("Gönderi başarıyla silindi.");
     }

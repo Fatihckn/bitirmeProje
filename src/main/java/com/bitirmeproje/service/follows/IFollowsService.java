@@ -11,9 +11,9 @@ public interface IFollowsService {
 
     void unfollowUser(int followingId);
 
-    Map<String, Object> getFollowers(int kullaniciId);
+    Map<String, Object> getFollowers();
 
-    Map<String, Object> getFollowing(int kullaniciId);
+    Map<String, Object> getFollowing();
 
     List<PopulerKullaniciDto> populerKullanicilariGetir();
 }

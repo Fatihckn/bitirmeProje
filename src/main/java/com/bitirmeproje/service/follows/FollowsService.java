@@ -11,7 +11,6 @@ import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.FollowsRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -85,13 +84,13 @@ public class FollowsService implements IFollowsService {
     }
 
     // Kullanıcıyı takip eden kişileri getir.
-    public Map<String, Object> getFollowers(@PathVariable int kullaniciId) {
-        return getFollow(kullaniciId,followsRepository::findByFollowersUserId);
+    public Map<String, Object> getFollowers() {
+        return getFollow(followsRepository::findByFollowersUserId);
     }
 
     // Kullanıcının takip ettiği kişileri getir.
-    public Map<String, Object> getFollowing(@PathVariable int kullaniciId) {
-        return getFollow(kullaniciId,followsRepository::findByFollowingUserId);
+    public Map<String, Object> getFollowing() {
+        return getFollow(followsRepository::findByFollowingUserId);
     }
 
     public List<PopulerKullaniciDto> populerKullanicilariGetir() {
@@ -99,15 +98,11 @@ public class FollowsService implements IFollowsService {
     }
 
     // getFollows ve getFollowing api'lerini ortak metoda aldık.
-    private Map<String, Object> getFollow(int kullaniciId, Function<Integer, List<User>> fetchUsersFunction){
+    private Map<String, Object> getFollow(Function<Integer, List<User>> fetchUsersFunction){
 
-        User user = findUser.findUser(kullaniciId);
+        User user = getUserByToken.getUser();
 
-        if(user == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Kullanici Bulunamadi");
-        }
-
-        List<User> following = fetchUsersFunction.apply(kullaniciId);
+        List<User> following = fetchUsersFunction.apply(user.getKullaniciId());
 
         if (following.isEmpty()) {throw new CustomException(HttpStatus.NOT_FOUND, "Bu kullanıcının takipçisi bulunmamaktadır.");}
 

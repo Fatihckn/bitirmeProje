@@ -34,18 +34,16 @@ public class FollowsController {
     }
 
     // Kullanıcının takipçilerini getir
-    @GetMapping("/takipciler/{kullaniciId}")
-    public ResponseEntity <Map<String, Object>> getFollowers(@PathVariable int kullaniciId) {
-
-        Map<String, Object> followers = followsService.getFollowers(kullaniciId);
+    @GetMapping("/takipciler")
+    public ResponseEntity <Map<String, Object>> getFollowers() {
+        Map<String, Object> followers = followsService.getFollowers();
         return ResponseEntity.ok(followers);
     }
 
     // Kullanıcının takip ettiği kişileri getir
-    @GetMapping("/takip-edilenler/{kullaniciId}")
-    public ResponseEntity<Map<String, Object>> getFollowing(@PathVariable int kullaniciId) {
-
-        Map<String, Object> following = followsService.getFollowing(kullaniciId);
+    @GetMapping("/takip-edilenler")
+    public ResponseEntity<Map<String, Object>> getFollowing() {
+        Map<String, Object> following = followsService.getFollowing();
         return ResponseEntity.ok(following);
     }
 

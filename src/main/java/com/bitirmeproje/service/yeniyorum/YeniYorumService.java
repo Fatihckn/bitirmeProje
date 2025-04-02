@@ -3,6 +3,7 @@ package com.bitirmeproje.service.yeniyorum;
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.dto.IEntityDtoConverter;
+import com.bitirmeproje.helper.dto.YeniYorumConverter;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
@@ -24,16 +25,18 @@ public class YeniYorumService implements IYeniYorumService{
     private final GonderilerRepository gonderilerRepository;
     private final IEntityDtoConverter<YeniYorum,YeniYorumDto> iEntityDtoConverter;
     private final GetUserByToken getUserByToken;
+    private final YeniYorumConverter yeniYorumConverter;
 
 
     public YeniYorumService(YeniYorumRepository yeniYorumRepository,
                             GonderilerRepository gonderilerRepository,
                             @Qualifier("yeniYorumConverter") IEntityDtoConverter<YeniYorum, YeniYorumDto> iEntityDtoConverter,
-                            GetUserByToken getUserByToken) {
+                            GetUserByToken getUserByToken, YeniYorumConverter yeniYorumConverter) {
         this.yeniYorumRepository = yeniYorumRepository;
         this.gonderilerRepository = gonderilerRepository;
         this.iEntityDtoConverter = iEntityDtoConverter;
         this.getUserByToken = getUserByToken;
+        this.yeniYorumConverter = yeniYorumConverter;
     }
 
     public YeniYorum yeniYorumEkle(YeniYorumDto yeniYorumDto) {
@@ -69,15 +72,15 @@ public class YeniYorumService implements IYeniYorumService{
     public List<YeniYorumDto> getYorumlarByKullaniciId(int kullaniciId) {
         List<YeniYorum> yorumlar = yeniYorumRepository.findByKullaniciId_KullaniciId(kullaniciId);
 
-        if (yorumlar.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Yorum bulunamadi");
-        }
-
-        return yorumlar.stream().map(iEntityDtoConverter::convertToDTO).collect(Collectors.toList());
+        return yorumlar.stream()
+                .map(iEntityDtoConverter::convertToDTO)
+                .collect(Collectors.toList());
     }
+
     public void yorumuSil(int yorumId) {
         YeniYorum yorum = getYeniYorum(yorumId);
 
+        // Başka birinin yorumunu silemesin.
         if(yorum.getKullaniciId().getKullaniciId() != getUserByToken.getUser().getKullaniciId()) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Yorum bulunamadi");
         }
@@ -90,23 +93,13 @@ public class YeniYorumService implements IYeniYorumService{
 
         YeniYorum parentYorum = getYeniYorum(yorumId);
 
-        YeniYorum yeniYorum = new YeniYorum();
-        yeniYorum.setKullaniciId(user);
-        yeniYorum.setGonderiId(parentYorum.getGonderiId()); // Yanıt, aynı gönderiye ait olmalı
-        yeniYorum.setYeniYorumIcerigi(yeniYorumDto.getYorumIcerigi());
-        yeniYorum.setYeniYorumOlusturulmaTarihi(LocalDate.now());
-        yeniYorum.setYeniYorumBegeniSayisi(0);
-        yeniYorum.setParentYorum(parentYorum); // Parent yorum set ediliyor
+        YeniYorum yeniYorum = yeniYorumConverter.convertToEntity(yeniYorumDto, user, parentYorum);
 
         yeniYorumRepository.save(yeniYorum);
     }
 
     public List<YeniYorumDto> getYanitlarByYorumId(int yorumId) {
         List<YeniYorum> yanitlar = yeniYorumRepository.findByParentYorum_YorumId(yorumId);
-
-        if (yanitlar.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Yanıt Bulunamadi");
-        }
 
         return yanitlar.stream()
                 .map(iEntityDtoConverter::convertToDTO)

@@ -40,7 +40,6 @@ public class GonderilerService implements IGonderilerService {
 
     // Yeni gönderi ekle
     public void yeniGonderiEkle(GonderiDto gonderiDto) {
-
         Gonderiler gonderi = entityDtoConvert.convertToEntity(gonderiDto);
         gonderilerRepository.save(gonderi);
     }
@@ -55,7 +54,7 @@ public class GonderilerService implements IGonderilerService {
         Gonderiler gonderi = findGonderi(gonderiId);
 
         if(gonderi.getKullaniciId().getKullaniciId() != (getUserByToken.getUser().getKullaniciId())) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Gonderi bulunamadi");
+            throw new CustomException(HttpStatus.NOT_FOUND,"Bu gönderiyi silme yetkiniz yok.");
         }
 
         gonderilerRepository.deleteById(gonderi.getGonderiId());
@@ -65,11 +64,12 @@ public class GonderilerService implements IGonderilerService {
     public void gonderiGuncelle(int gonderiId, String yeniIcerik) {
         Gonderiler gonderi = findGonderi(gonderiId);
 
-        if (yeniIcerik.isEmpty()){
-            throw new CustomException(HttpStatus.NOT_FOUND,"İçerik boş olamaz");
+        if (yeniIcerik.isBlank()) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "İçerik boş olamaz.");
         }
         User user = getUserByToken.getUser();
 
+        // Sadece kendine ait olan gönderileri güncelleyebilsin.
         if(gonderi.getKullaniciId().getKullaniciId() != user.getKullaniciId()){
             throw new CustomException(HttpStatus.NOT_FOUND,"Gönderi Bulunamadi");
         }

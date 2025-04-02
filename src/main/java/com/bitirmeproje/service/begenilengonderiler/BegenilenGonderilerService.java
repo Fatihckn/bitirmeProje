@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.bitirmeproje.dto.begenilengonderiler.BegenilenGonderilerDto;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,9 +43,9 @@ public class BegenilenGonderilerService implements IBegenilenGonderilerService {
         Gonderiler gonderi = getGonderiById(gonderiId);
 
         // Kullanıcının bu gönderiyi daha önce beğenip beğenmediğini kontrol et
-        if (begenilenGonderilerRepository.existsByGonderiIdAndKullaniciId(gonderi, kullanici)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu gönderiyi zaten beğendiniz!");
-        }
+//        if (begenilenGonderilerRepository.existsByGonderiIdAndKullaniciId(gonderi, kullanici)) {
+//            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu gönderiyi zaten beğendiniz!");
+//        }  BURADA EĞER GÖNDERİ ZATEN BEĞENİLMİŞ İSE BEĞENİ ÇEKİLECEK O YÜZDEN BU HATA FIRLATILMAMALI
 
         // Yeni beğeni kaydı oluştur
         BegenilenGonderiler begeni = createBegeni(gonderi, kullanici);
@@ -85,7 +86,7 @@ public class BegenilenGonderilerService implements IBegenilenGonderilerService {
         List<GonderilerAllDto> allGonderiler = begenilenGonderilerRepository.findAllBegeniler();
 
         if(allGonderiler.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Begenilen gonderi bulunamadi");
+            return Collections.emptyMap();
         }
 
         // DTO listesini Map'e çeviriyoruz
@@ -103,10 +104,13 @@ public class BegenilenGonderilerService implements IBegenilenGonderilerService {
         User kullanici = getUserByToken.getUser();
 
         List<BegenilenGonderiler> begenilenGonderilers = begenilenGonderilerRepository.findByKullaniciId(kullanici);
-        if (begenilenGonderilers.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Kullanıcının Beğendiği Gönderi Yok.");
-        }
-        return begenilenGonderilers.stream().map(begeni->new BegenilenGonderilerDto(begeni.getGonderiId().getGonderiId(), begeni.getBegenilenGonderilerId(), begeni.getBegenmeZamani()))
+
+        return begenilenGonderilers.stream()
+                .map(begeni->new BegenilenGonderilerDto
+                        (begeni.getGonderiId().getGonderiId(),
+                                begeni.getBegenilenGonderilerId(),
+                                begeni.getBegenmeZamani()
+                        ))
                 .toList();
     }
 

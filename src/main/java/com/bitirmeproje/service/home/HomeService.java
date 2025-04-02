@@ -33,10 +33,6 @@ public class HomeService implements IHomeService {
 
         List<HomeDto> gonderiler = homeRepository.getGonderiler(user.getKullaniciId());
 
-        if(gonderiler.isEmpty()){
-            //throw new CustomException(HttpStatus.NOT_FOUND,"Gonderi Bulunamadi");
-            new ArrayList<>();
-        }
         gonderiler.forEach(homeDto -> {
             homeDto.setKullaniciResim(uploadFolder + homeDto.getKullaniciResim());
         });

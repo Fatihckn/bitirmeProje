@@ -80,6 +80,7 @@ public class MesajService implements IMesajService {
 
         User user = getUserByToken.getUser();
 
+        // Birbiri ile takipleşen kullanıcılar mesajlarını getirebilsin.
         if (!mesaj.getMesajGonderenKullaniciId().equals(user) && !mesaj.getMesajGonderilenKullaniciId().equals(user)) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Mesaj Bulunamadi");
         }
@@ -92,18 +93,12 @@ public class MesajService implements IMesajService {
     @Override
     public List<MesajDto> sohbetGecmisiGetir(int kullaniciId) {
         User kullanici1 = getUserByToken.getUser(); // Giriş yapan kullanıcı
-
         User kullanici2 = findUser.findUser(kullaniciId); // Mesajlaştığı kişi
 
-        List<MesajDto> mesaj = mesajRepository.findSohbetGecmisi(kullanici1, kullanici2)
+        return mesajRepository.findSohbetGecmisi(kullanici1, kullanici2)
                 .stream()
                 .map(MesajDto::new)
                 .collect(Collectors.toList());
-
-        if (mesaj.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND, "Sohbet Gecmisi Bulunamadi");
-        }
-        return mesaj;
     }
 
     // Mesaj içeriğini güncelle
@@ -111,6 +106,7 @@ public class MesajService implements IMesajService {
     public void mesajGuncelle(int mesajId, MesajDto mesajDto) {
         Mesaj mesaj = getMesaj(mesajId);
 
+        // Kendi attığı mesaj değilse bulunamadı fırlatılsın.
         if(!mesaj.getMesajGonderenKullaniciId().equals(getUserByToken.getUser())) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Mesaj Bulunamadi");
         }
@@ -125,6 +121,7 @@ public class MesajService implements IMesajService {
     public void mesajSil(int mesajId) {
         Mesaj mesaj = getMesaj(mesajId);
 
+        // Kendi attığı mesaj değilse bulunamadı fırlatılsın.
         if(!mesaj.getMesajGonderenKullaniciId().equals(getUserByToken.getUser())) {
             throw new CustomException(HttpStatus.NOT_FOUND, "Mesaj Bulunamadi");
         }

@@ -66,11 +66,6 @@ public class AramaGecmisiService implements IAramaGecmisiService {
         // Veritabanından tarih aralığına göre arama geçmişini çek
         List<AramaGecmisi> aramaGecmisiList = aramaGecmisiRepository.findByKullaniciIdAndDateRange(kullanici, baslangic, bitis);
 
-        // Eğer arama geçmişi bulunamazsa hata fırlat
-        if (aramaGecmisiList.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Belirtilen tarih aralığında arama geçmişi bulunamadı!");
-        }
-
         // DTO'ya dönüştür ve döndür
         return aramaGecmisiList.stream()
                 .map(arama -> new AramaGecmisiDto(
@@ -83,19 +78,18 @@ public class AramaGecmisiService implements IAramaGecmisiService {
 
     // Arama geçmişinden belirli bir kaydı sil
     public void deleteArama(int aramaGecmisiId) {
-        // 1️⃣ Kullanıcıyı JWT token içindeki email'den bul
+        // Kullanıcıyı JWT token içindeki email'den bul
         User kullanici = getUserByToken.getUser();
 
-        // 2️⃣ Arama geçmişini veritabanından çek
-        AramaGecmisi aramaGecmisi = aramaGecmisiRepository.findById(aramaGecmisiId)
-                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Arama geçmişi bulunamadı!"));
+        // Arama geçmişini veritabanından çek
+        AramaGecmisi aramaGecmisi = aramaGecmisiRepository.findAramaGecmisiByAramaGecmisiId(aramaGecmisiId);
 
-        // 3️⃣ Silme yetkisi var mı kontrol et (Arama geçmişi bu kullanıcıya mı ait?)
+        // Silme yetkisi var mı kontrol et (Arama geçmişi bu kullanıcıya mı ait?)!!! Bu kısımlar değiştirilebilir şuanlık kontrol kalsın.
         if (!aramaGecmisi.getKullaniciId().equals(kullanici)) {
-            throw new CustomException(HttpStatus.FORBIDDEN, "Arama geçmişi Bulunamadı!");
+            throw new CustomException(HttpStatus.FORBIDDEN, "Bu gönderiyi silme yetkiniz yok.");
         }
 
-        // 4️⃣ Arama geçmişini sil
+        // Arama geçmişini sil
         aramaGecmisiRepository.deleteById(aramaGecmisiId);
     }
 

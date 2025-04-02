@@ -12,6 +12,7 @@ import com.bitirmeproje.repository.YeniYorumRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,7 @@ public class YeniYorumBegenilerService implements IYeniYorumBegenilerService{
         this.getUserByToken = getUserByToken;
     }
 
+    @Transactional
     public void yorumBegen(int yorumId) {
         User user = getUserByToken.getUser();
 
@@ -81,12 +83,7 @@ public class YeniYorumBegenilerService implements IYeniYorumBegenilerService{
     public int getBegeniSayisi(int yorumId) {
         YeniYorum yeniYorum = getYeniYorum(yorumId);
 
-        int begeniSayisi = yeniYorumBegenilerRepository.countByYeniYorum(yeniYorum);
-
-        if (begeniSayisi == 0) {
-            throw new CustomException(HttpStatus.NOT_FOUND,"Yorumun begeni sayisi yoktur");
-        }
-        return begeniSayisi;
+        return yeniYorumBegenilerRepository.countByYeniYorum(yeniYorum);
     }
 
     public List<YeniYorumDto> getBegenilenYorumlar(int kullaniciId) {

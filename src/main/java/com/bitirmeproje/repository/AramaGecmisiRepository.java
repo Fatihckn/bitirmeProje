@@ -25,4 +25,6 @@ public interface AramaGecmisiRepository extends JpaRepository<AramaGecmisi, Inte
     @Query("SELECT a.aramaIcerigi, COUNT(a) FROM AramaGecmisi a GROUP BY a.aramaIcerigi ORDER BY COUNT(a) DESC")
     List<Object[]> findMostPopularSearches();//En çok yapılan aramaları listeleme.
 
+    AramaGecmisi findAramaGecmisiByAramaGecmisiId(int id);
+
 }

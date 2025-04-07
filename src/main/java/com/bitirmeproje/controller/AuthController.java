@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:8080") // Doğru kullanım
 public class AuthController {
 
     private final IAuthService authService;
@@ -47,8 +46,12 @@ public class AuthController {
         Cookie cookie = new Cookie("JSESSION", token);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        response.addCookie(cookie);
+        cookie.setSecure(true); // ✅ HTTPS zorunlu
+        cookie.setDomain("bitirmeproje.xyz");// ✅ Cross-origin için gerekli
+
+        response.addHeader("Set-Cookie",
+                "JSESSION=" + token +
+                        "; Path=/; HttpOnly; Secure; SameSite=None; Domain=bitirmeproje.xyz");
 
         return ResponseEntity.ok(token);
     }
@@ -56,11 +59,9 @@ public class AuthController {
     // Çıkış yapacak kullanıcının da doğru kullanıcı olup olmadığı denenip dönüş yapılıyor.
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {
-        Cookie cookie = new Cookie("JSESSION", null);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        response.addHeader("Set-Cookie",
+                "JSESSION=; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=0; Domain=bitirmeproje.xyz");
+
         return ResponseEntity.ok("Çıkış Yapıldı.");
     }
 }

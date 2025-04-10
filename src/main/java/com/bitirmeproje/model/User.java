@@ -1,17 +1,14 @@
 package com.bitirmeproje.model;
 
-import com.bitirmeproje.exception.CustomException;
-import com.bitirmeproje.helper.password.PasswordHasher;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Entity
 @Table(name = "kullanicilar")
-public class User {
+public class User{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

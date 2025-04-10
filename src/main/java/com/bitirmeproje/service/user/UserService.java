@@ -47,8 +47,7 @@ public class UserService implements IUserService {
                 GetUserByToken getUserByToken,
                 @Qualifier("userConverterer") IEntityDtoConverter<User, UserDto> entityDtoConvert,
                 @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
-                FindUser<String> findUser,
-                OtpStorage otpStorage) {
+                FindUser<String> findUser, OtpStorage otpStorage) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
         this.getUserByToken = getUserByToken;

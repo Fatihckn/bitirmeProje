@@ -27,10 +27,7 @@ public class OtpStorage {
 
         long currentTime = System.currentTimeMillis();
         long otpGeneratedTime = storedOtpEntry.timestamp();
-        System.out.println("generatedTime= "+otpGeneratedTime);
-        System.out.println("currentTime= "+currentTime);
-        System.out.println("Fark= "+(currentTime-otpGeneratedTime));
-        System.out.println("Otp Validation Duration= "+OTP_VALIDITY_DURATION);
+
         // 1 dakikalık süreyi kontrol et
         if ((currentTime - otpGeneratedTime) > OTP_VALIDITY_DURATION) {
             otpMap.remove(email); // Süresi doldu, OTP'yi kaldır

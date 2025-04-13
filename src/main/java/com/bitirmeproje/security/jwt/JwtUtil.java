@@ -4,7 +4,6 @@ import com.bitirmeproje.exception.CustomException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -68,34 +67,22 @@ public class JwtUtil {
     }
 
     public Integer extractUserId() {
+        String token = request.getHeader("Authorization");
 
-        String jwt = null;
-        if(request.getCookies()!=null){
-            for(Cookie cookie:request.getCookies()){
-                if(cookie.getName().equals("JSESSION")){
-                    jwt = cookie.getValue();
-                }
-            }
-        }
-        System.out.println("JU: calisti1");
-
-        if(jwt==null){
-            System.out.println("JU: calisti2");
+        if(token != null && !token.startsWith("Bearer ")) {
             throw new CustomException(HttpStatus.UNAUTHORIZED, "JWT bulunamadı veya geçersiz!");
         }
 
-        try{
-            System.out.println("JU: calisti2");
-            System.out.println("gelen jwt degeri="+extractAllClaims(jwt).get("userId", Integer.class));
+        String jwt = token.substring(7); // "Bearer " kısmını çıkar
+
+        try {
             return extractAllClaims(jwt).get("userId", Integer.class);
         }
-        catch (Exception e){
-            System.out.println("JU: calisti3");
+        catch(Exception e) {
             throw new CustomException(HttpStatus.FORBIDDEN, "Geçersiz veya süresi dolmuş JWT!");
         }
+
     }
-
-
 
     // Token içinden Expiration bilgisini çek
     public Date extractExpiration(String token) {

@@ -76,8 +76,6 @@ public class AuthController {
         return ResponseEntity.ok(token);
     }
 
-
-
     // Çıkış yapacak kullanıcının da doğru kullanıcı olup olmadığı denenip dönüş yapılıyor.
     @PostMapping("/logout")
     public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) {

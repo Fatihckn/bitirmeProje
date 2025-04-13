@@ -35,21 +35,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
-        String jwt = null;
-        if(request.getCookies()!=null){
-            for(Cookie cookie:request.getCookies()){
-                if(cookie.getName().equals("JSESSION")){
-                    jwt = cookie.getValue();
-                }
-            }
-        }
-
-        System.out.println("JAF: calisti1");
+        String authHeader = request.getHeader("Authorization");
 
         // "Bearer " ile başlayan token var mı?
-        if (jwt != null) {
-            String token = jwt;
-            System.out.println("token= "+token);
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+
+        // "Bearer " ile başlayan token var mı?
             try {
                 // Token'ı parse edelim
                 Claims claims = Jwts.parser()

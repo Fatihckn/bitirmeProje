@@ -6,7 +6,9 @@ import com.bitirmeproje.service.auth.IAuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,24 +39,44 @@ public class AuthController {
                  .body("Kayıt Başarılı");
     }
 
-    //Kullanıcı oturumunu kontrol edip token döndürüyoruz
+//    //Kullanıcı oturumunu kontrol edip token döndürüyoruz
+//    @PostMapping("/login")
+//    public ResponseEntity<String> login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+//
+//        String token = authService.login(loginDto);
+//
+////        Cookie cookie = new Cookie("JSESSION", token);
+////        cookie.setPath("/");
+////        cookie.setHttpOnly(true);
+////        cookie.setSecure(true); // ✅ HTTPS zorunlu
+////        cookie.setDomain("bitirmeproje.xyz");// ✅ Cross-origin için gerekli
+//
+//        response.addHeader("Set-Cookie",
+//                "JSESSION=" + token +
+//                        "; Path=/; HttpOnly; Secure; SameSite=None;");
+//
+//        return ResponseEntity.ok(token);
+//    }
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<String> login(@RequestBody LoginDto dto,
+                                    HttpServletResponse resp) {
+        String token = authService.login(dto);
 
-        String token = authService.login(loginDto);
+        ResponseCookie cookie = ResponseCookie.from("JSESSION", token)
+                .httpOnly(true)
+                .secure(true)           // HTTPS zorunlu
+                .sameSite("None")       // cross‑site için şart
+                .path("/")
+                // .domain("bitirmeproje.xyz")  // Şimdilik yazma → CF testini sade yap
+                .build();
 
-//        Cookie cookie = new Cookie("JSESSION", token);
-//        cookie.setPath("/");
-//        cookie.setHttpOnly(true);
-//        cookie.setSecure(true); // ✅ HTTPS zorunlu
-//        cookie.setDomain("bitirmeproje.xyz");// ✅ Cross-origin için gerekli
-
-        response.addHeader("Set-Cookie",
-                "JSESSION=" + token +
-                        "; Path=/; HttpOnly; SameSite=Lax;");
+        resp.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        System.out.println(">>> Set‑Cookie sent: " + cookie);  // sunucu logu
 
         return ResponseEntity.ok(token);
     }
+
+
 
     // Çıkış yapacak kullanıcının da doğru kullanıcı olup olmadığı denenip dönüş yapılıyor.
     @PostMapping("/logout")

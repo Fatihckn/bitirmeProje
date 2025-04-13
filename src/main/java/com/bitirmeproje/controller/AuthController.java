@@ -51,7 +51,7 @@ public class AuthController {
 
         response.addHeader("Set-Cookie",
                 "JSESSION=" + token +
-                        "; Path=/; HttpOnly; Secure; SameSite=None; Domain=bitirmeproje.xyz");
+                        "; Path=/; HttpOnly; Secure; SameSite=None;");
 
         return ResponseEntity.ok(token);
     }

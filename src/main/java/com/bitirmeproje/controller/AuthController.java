@@ -43,11 +43,11 @@ public class AuthController {
 
         String token = authService.login(loginDto);
 
-        Cookie cookie = new Cookie("JSESSION", token);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true); // ✅ HTTPS zorunlu
-        cookie.setDomain("bitirmeproje.xyz");// ✅ Cross-origin için gerekli
+//        Cookie cookie = new Cookie("JSESSION", token);
+//        cookie.setPath("/");
+//        cookie.setHttpOnly(true);
+//        cookie.setSecure(true); // ✅ HTTPS zorunlu
+//        cookie.setDomain("bitirmeproje.xyz");// ✅ Cross-origin için gerekli
 
         response.addHeader("Set-Cookie",
                 "JSESSION=" + token +

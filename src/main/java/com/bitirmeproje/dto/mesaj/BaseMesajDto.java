@@ -3,13 +3,14 @@ package com.bitirmeproje.dto.mesaj;
 import com.bitirmeproje.model.Mesaj;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public abstract class BaseMesajDto {
     protected int mesajId;
     protected int gonderenKullaniciId;
     protected int aliciKullaniciId;
     protected String mesajIcerigi;
-    protected LocalDate mesajGonderilmeZamani;
+    protected LocalDateTime mesajGonderilmeZamani;
 
     public BaseMesajDto() {}
 
@@ -55,11 +56,11 @@ public abstract class BaseMesajDto {
         this.mesajIcerigi = mesajIcerigi;
     }
 
-    public LocalDate getMesajGonderilmeZamani() {
+    public LocalDateTime getMesajGonderilmeZamani() {
         return mesajGonderilmeZamani;
     }
 
-    public void setMesajGonderilmeZamani(LocalDate mesajGonderilmeZamani) {
+    public void setMesajGonderilmeZamani(LocalDateTime mesajGonderilmeZamani) {
         this.mesajGonderilmeZamani = mesajGonderilmeZamani;
     }
 

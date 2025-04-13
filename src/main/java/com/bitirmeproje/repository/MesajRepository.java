@@ -1,5 +1,6 @@
 package com.bitirmeproje.repository;
 
+import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
 import com.bitirmeproje.model.Mesaj;
 import com.bitirmeproje.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,4 +34,43 @@ public interface MesajRepository extends JpaRepository<Mesaj, Integer> {
     @Modifying
     @Query("DELETE FROM Mesaj m WHERE (m.mesajGonderenKullaniciId = :k1 AND m.mesajGonderilenKullaniciId = :k2) OR (m.mesajGonderenKullaniciId = :k2 AND m.mesajGonderilenKullaniciId = :k1)")
     void deleteByMesajGonderenKullaniciIdOrMesajGonderilenKullaniciId(@Param("k1") User kullanici1, @Param("k2") User kullanici2);
+
+    @Query("""
+    SELECT new com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari(
+        m.mesajId,
+        m.mesajIcerigi,
+        m.mesajGonderilmeZamani,
+        CASE 
+            WHEN m.mesajGonderenKullaniciId.kullaniciId = :currentUserId THEN m.mesajGonderilenKullaniciId.kullaniciTakmaAd
+            ELSE m.mesajGonderenKullaniciId.kullaniciTakmaAd
+        END,
+        CASE 
+            WHEN m.mesajGonderenKullaniciId.kullaniciId = :currentUserId THEN m.mesajGonderilenKullaniciId.kullaniciProfilResmi
+            ELSE m.mesajGonderenKullaniciId.kullaniciProfilResmi
+        END,
+        CASE 
+            WHEN m.mesajGonderenKullaniciId.kullaniciId = :currentUserId THEN m.mesajGonderilenKullaniciId.kullaniciId
+            ELSE m.mesajGonderenKullaniciId.kullaniciId
+        END
+    )
+    FROM Mesaj m
+    WHERE m.mesajId IN (
+        SELECT MAX(m2.mesajId)
+        FROM Mesaj m2
+        WHERE m2.mesajGonderenKullaniciId.kullaniciId = :currentUserId 
+           OR m2.mesajGonderilenKullaniciId.kullaniciId = :currentUserId
+        GROUP BY 
+            CASE WHEN m2.mesajGonderenKullaniciId.kullaniciId < m2.mesajGonderilenKullaniciId.kullaniciId 
+                 THEN m2.mesajGonderenKullaniciId.kullaniciId 
+                 ELSE m2.mesajGonderilenKullaniciId.kullaniciId 
+            END,
+            CASE WHEN m2.mesajGonderenKullaniciId.kullaniciId > m2.mesajGonderilenKullaniciId.kullaniciId 
+                 THEN m2.mesajGonderenKullaniciId.kullaniciId 
+                 ELSE m2.mesajGonderilenKullaniciId.kullaniciId 
+            END
+    )
+    ORDER BY m.mesajGonderilmeZamani DESC
+""")
+    List<KullanicininSonGelenMesajlari> findSonKonusmalar(@Param("currentUserId") int currentUserId);
+
 }

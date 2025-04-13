@@ -1,5 +1,6 @@
 package com.bitirmeproje.service.mesaj;
 
+import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
 import com.bitirmeproje.dto.mesaj.MesajCreateDto;
 import com.bitirmeproje.dto.mesaj.MesajDto;
 
@@ -31,4 +32,6 @@ public interface IMesajService {
 
     // Belirli bir kullanıcı ile olan tüm mesajları sil
     void tumMesajlariSil(int kullaniciId);
+
+    List<KullanicininSonGelenMesajlari> getKullanicininSonGelenMesajlari();
 }

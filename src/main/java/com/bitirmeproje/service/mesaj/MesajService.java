@@ -1,5 +1,6 @@
 package com.bitirmeproje.service.mesaj;
 
+import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
 import com.bitirmeproje.dto.mesaj.MesajCreateDto;
 import com.bitirmeproje.dto.mesaj.MesajDto;
 import com.bitirmeproje.exception.CustomException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,7 +46,7 @@ public class MesajService implements IMesajService {
         mesaj.setMesajGonderenKullaniciId(gonderen);
         mesaj.setMesajGonderilenKullaniciId(alici);
         mesaj.setMesajIcerigi(mesajCreateDto.getMesajIcerigi());
-        mesaj.setMesajGonderilmeZamani(LocalDate.now());
+        mesaj.setMesajGonderilmeZamani(LocalDateTime.now());
 
         mesajRepository.save(mesaj);
 
@@ -138,6 +140,12 @@ public class MesajService implements IMesajService {
         User kullanici2 = findUser.findUser(kullaniciId);
 
         mesajRepository.deleteByMesajGonderenKullaniciIdOrMesajGonderilenKullaniciId(kullanici1, kullanici2);
+    }
+
+    public List<KullanicininSonGelenMesajlari> getKullanicininSonGelenMesajlari() {
+        User user = getUserByToken.getUser();
+
+        return mesajRepository.findSonKonusmalar(user.getKullaniciId());
     }
 
     private Mesaj getMesaj(int mesajId){

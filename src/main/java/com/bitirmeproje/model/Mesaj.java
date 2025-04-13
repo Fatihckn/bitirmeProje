@@ -4,6 +4,7 @@ package com.bitirmeproje.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "mesaj")
@@ -26,7 +27,7 @@ public class Mesaj {
     private String mesajIcerigi;
 
     @Column(name = "mesaj_gonderilme_zamani")
-    private LocalDate mesajGonderilmeZamani;
+    private LocalDateTime mesajGonderilmeZamani;
 
     public int getMesajId() {
         return mesajId;
@@ -60,11 +61,11 @@ public class Mesaj {
         this.mesajIcerigi = mesajIcerigi;
     }
 
-    public LocalDate getMesajGonderilmeZamani() {
+    public LocalDateTime getMesajGonderilmeZamani() {
         return mesajGonderilmeZamani;
     }
 
-    public void setMesajGonderilmeZamani(LocalDate mesajGonderilmeZamani) {
+    public void setMesajGonderilmeZamani(LocalDateTime mesajGonderilmeZamani) {
         this.mesajGonderilmeZamani = mesajGonderilmeZamani;
     }
 }

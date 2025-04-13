@@ -1,5 +1,6 @@
 package com.bitirmeproje.controller;
 
+import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
 import com.bitirmeproje.dto.mesaj.MesajCreateDto;
 import com.bitirmeproje.dto.mesaj.MesajDto;
 import com.bitirmeproje.service.mesaj.IMesajService;
@@ -70,5 +71,10 @@ public class MesajController {
     public ResponseEntity<String> tumMesajlariSil(@PathVariable int kullaniciId) {
         mesajService.tumMesajlariSil(kullaniciId);
         return ResponseEntity.ok("Belirtilen iki kullanıcı arasındaki tüm mesajlar silindi.");
+    }
+
+    @GetMapping("/kullanici-son-sohbetler")
+    public ResponseEntity<List<KullanicininSonGelenMesajlari>> kullaniciSonSohbetler() {
+        return ResponseEntity.ok(mesajService.getKullanicininSonGelenMesajlari());
     }
 }

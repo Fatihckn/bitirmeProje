@@ -88,6 +88,13 @@ public class UserService implements IUserService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Profil resmi boş olamaz");
         }
 
+        String oncekiUrl = user.getKullaniciProfilResmi();
+        if (oncekiUrl != null && oncekiUrl.contains("profile-pics/")) {
+            // sadece R2'deki dosya yolunu al
+            String eskiPath = oncekiUrl.substring(oncekiUrl.indexOf("profile-pics/"));
+            r2StorageService.deleteFile(eskiPath);
+        }
+
         // Benzersiz dosya adı
         String fileName = "profile-pics/user_" + user.getKullaniciId() + "_" + UUID.randomUUID() + ".jpg";
 

@@ -36,7 +36,7 @@ public class R2Config {
                 .endpointOverride(URI.create(endpoint)) // bucket is not in host
                 .region(Region.US_EAST_1)
                 .serviceConfiguration(S3Configuration.builder()
-                        .pathStyleAccessEnabled(true) // BU ŞART
+                        .pathStyleAccessEnabled(true)
                         .chunkedEncodingEnabled(false) // Chunking'i kapattık
                         .build())
                 .build();

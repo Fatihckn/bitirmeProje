@@ -25,7 +25,7 @@ public class R2StorageService {
 
     public String uploadFile(MultipartFile file, String filePath) {
         try {
-            byte[] fileBytes = file.getBytes(); // inputStream yerine byte[]
+            byte[] fileBytes = file.getBytes();
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
@@ -46,7 +46,17 @@ public class R2StorageService {
         }
     }
 
-
-
+    public void deleteFile(String filePath) {
+        try {
+            s3Client.deleteObject(builder -> builder
+                    .bucket(bucketName)
+                    .key(filePath)
+                    .build()
+            );
+        } catch (S3Exception e) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Dosya silinirken hata oluştu: " + e.awsErrorDetails().errorMessage());
+        }
+    }
 }
 

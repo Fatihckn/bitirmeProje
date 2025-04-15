@@ -43,9 +43,9 @@ public class BegenilenGonderilerService implements IBegenilenGonderilerService {
         Gonderiler gonderi = getGonderiById(gonderiId);
 
         // Kullanıcının bu gönderiyi daha önce beğenip beğenmediğini kontrol et
-//        if (begenilenGonderilerRepository.existsByGonderiIdAndKullaniciId(gonderi, kullanici)) {
-//            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu gönderiyi zaten beğendiniz!");
-//        }  BURADA EĞER GÖNDERİ ZATEN BEĞENİLMİŞ İSE BEĞENİ ÇEKİLECEK O YÜZDEN BU HATA FIRLATILMAMALI
+        if (begenilenGonderilerRepository.existsByGonderiIdAndKullaniciId(gonderi, kullanici)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu gönderiyi zaten beğendiniz!");
+        }
 
         // Yeni beğeni kaydı oluştur
         BegenilenGonderiler begeni = createBegeni(gonderi, kullanici);

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserAllDtoConverter implements IEntityDtoConverter<User, UserAllDto> {
-    String baseUrl = "http://localhost:8080";
 
     @Override
     public UserAllDto convertToDTO(User user) {
@@ -15,7 +14,7 @@ public class UserAllDtoConverter implements IEntityDtoConverter<User, UserAllDto
                 user.getKullaniciTakmaAd(),
                 user.getePosta(),
                 user.getKullaniciBio(),
-                user.getKullaniciProfilResmi() != null ? baseUrl + user.getKullaniciProfilResmi() : null,
+                user.getKullaniciProfilResmi() != null ? user.getKullaniciProfilResmi() : null,
                 user.getKullaniciTelefonNo(),
                 user.getKullaniciDogumTarihi(),
                 user.getKullaniciUyeOlmaTarihi(),

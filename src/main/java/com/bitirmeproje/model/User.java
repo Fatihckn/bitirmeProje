@@ -72,14 +72,13 @@ public class User{
     private List<Mesaj> mesajGonderenKullaniciId;
 
     public User() {}
+
     public User(int kullaniciId) {
         this.kullaniciId = kullaniciId;
     }
 
-
     public <T> User(String email, String s, List<T> ts) {
     }
-
 
     public int getKullaniciId() {
         return kullaniciId;

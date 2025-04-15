@@ -12,18 +12,13 @@ import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
+import com.bitirmeproje.service.r2storage.R2StorageService;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,17 +32,18 @@ public class UserService implements IUserService {
     private final FindUser<String> findUser;
     private final SendEmail emailService;
     private final OtpStorage otpStorage;
+    private final R2StorageService r2StorageService;
 
     private final Map<String, String> sifremiUnuttumOtp = new ConcurrentHashMap<>();
 
-    @Value("${upload.folder}") // application.properties’ten okunacak
-    private String uploadFolder;
+    private final static String r2PublicBaseUrl = "https://media.bitirmeproje.xyz";
 
     UserService(UserRepository userRepository, PasswordHasher passwordHasher,
                 GetUserByToken getUserByToken,
                 @Qualifier("userConverterer") IEntityDtoConverter<User, UserDto> entityDtoConvert,
                 @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
-                FindUser<String> findUser, OtpStorage otpStorage) {
+                FindUser<String> findUser, OtpStorage otpStorage,
+                R2StorageService r2StorageService) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
         this.getUserByToken = getUserByToken;
@@ -55,6 +51,7 @@ public class UserService implements IUserService {
         this.findUser = findUser;
         this.emailService = emailService;
         this.otpStorage = otpStorage;
+        this.r2StorageService = r2StorageService;
     }
 
     // Kullanıcnın şifresini değiştiriyoruz(Şifremi unuttum değil)
@@ -85,37 +82,22 @@ public class UserService implements IUserService {
 
     public void profilResmiGuncelle(ProfilResmiGuncelleDto profilResmiGuncelle) {
         User user = getUserByToken.getUser();
-
         MultipartFile profilResmi = profilResmiGuncelle.getProfilResmi();
 
         if (profilResmi == null || profilResmi.isEmpty()) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Profil resmi boş olamaz");
         }
 
-        try {
-            // Klasörü oluştur (eğer yoksa)
-            File uploadDir = new File(uploadFolder + "/profile-pics/");
-            if (!uploadDir.exists()) {
-                boolean isCreated = uploadDir.mkdirs();
-                if (!isCreated) {
-                    throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Profil resmi klasörü oluşturulamadı!");
-                }
-            }
+        // Benzersiz dosya adı
+        String fileName = "profile-pics/user_" + user.getKullaniciId() + "_" + UUID.randomUUID() + ".jpg";
 
-            // Dosya adını belirle (örn: user_12.jpg)
-            String fileName = "user_" + user.getKullaniciId() + ".jpg";
-            Path filePath = Paths.get(uploadFolder + "/profile-pics/" + fileName);
+        // R2’ye dosyayı yükle
+        String imageUrl = r2StorageService.uploadFile(profilResmi, fileName);
 
-            // Dosyayı kaydet
-            Files.write(filePath, profilResmi.getBytes());
+        // DB’ye public URL kaydet
+        user.setKullaniciProfilResmi(r2PublicBaseUrl + "/" + imageUrl);
+        userRepository.save(user);
 
-            // DB'ye yolu kaydet
-            user.setKullaniciProfilResmi("/uploads/profile-pics/" + fileName);
-            userRepository.save(user);
-
-        } catch (IOException e) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Profil resmi kaydedilirken hata oluştu");
-        }
     }
 
     // Sifre sifirlamak icin maile kod gonderilir

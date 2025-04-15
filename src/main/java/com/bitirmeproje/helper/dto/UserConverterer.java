@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserConverterer implements IEntityDtoConverter<User,UserDto> {
-    String baseUrl = "C:/Users/User/OneDrive/Belgeler/GitHub/bitirmeProje";
 
     @Override
     public UserDto convertToDTO(User user) {
@@ -15,7 +14,7 @@ public class UserConverterer implements IEntityDtoConverter<User,UserDto> {
                 user.getKullaniciTakmaAd(),
                 user.getePosta(),
                 user.getKullaniciBio(),
-                user.getKullaniciProfilResmi() != null ? baseUrl + user.getKullaniciProfilResmi() : null,
+                user.getKullaniciProfilResmi() != null ? user.getKullaniciProfilResmi() : null,
                 user.getKullaniciTelefonNo(),
                 user.getKullaniciDogumTarihi(),
                 user.getKullaniciUyeOlmaTarihi()

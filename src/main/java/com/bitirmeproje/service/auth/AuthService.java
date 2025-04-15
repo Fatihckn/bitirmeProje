@@ -29,6 +29,8 @@ public class AuthService implements IAuthService {
     private final SendEmail sendEmail;
     private final Map<String, User> pendingUsers = new ConcurrentHashMap<>();
 
+    private final static String r2PublicBaseUrl = "https://media.bitirmeproje.xyz";
+
     AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                 JwtUtil jwtUtil,@Qualifier("findUserByEmail") FindUser<String> findUser,
                 OtpStorage otpStorage,@Qualifier("sendEmailForRegister") SendEmail sendEmail) {
@@ -76,7 +78,7 @@ public class AuthService implements IAuthService {
         user.setKullaniciRole(Role.USER);
 
         // Varsayılan profil resmi ata
-        user.setKullaniciProfilResmi("/uploads/profile-pics/empty.png");
+        user.setKullaniciProfilResmi(r2PublicBaseUrl + "/profile-pics/empty.png");
 
         // Şifreyi hashle
         user.setSifre(passwordEncoder.encode(user.getSifre()));

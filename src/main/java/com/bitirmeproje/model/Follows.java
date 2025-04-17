@@ -2,7 +2,7 @@ package com.bitirmeproje.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "follows")
@@ -22,7 +22,7 @@ public class Follows {
     private User takipEdilenKullaniciId;
 
     @Column (name = "takip_etme_tarihi")
-    private LocalDate takipEtmeTarihi;
+    private LocalDateTime takipEtmeTarihi;
 
     public int getFollowsId() {
         return followsId;
@@ -48,11 +48,11 @@ public class Follows {
         this.takipEdilenKullaniciId = takipEdilenKullaniciId;
     }
 
-    public LocalDate getTakipEtmeTarihi() {
+    public LocalDateTime getTakipEtmeTarihi() {
         return takipEtmeTarihi;
     }
 
-    public void setTakipEtmeTarihi(LocalDate takipEtmeTarihi) {
+    public void setTakipEtmeTarihi(LocalDateTime takipEtmeTarihi) {
         this.takipEtmeTarihi = takipEtmeTarihi;
     }
 }

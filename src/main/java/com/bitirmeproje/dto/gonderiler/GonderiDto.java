@@ -1,26 +1,23 @@
 package com.bitirmeproje.dto.gonderiler;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class GonderiDto {
     private int gonderiId;
     private String gonderiIcerigi;
-    private LocalDate gonderiTarihi;
+    private LocalDateTime gonderiTarihi;
     private int gonderiBegeniSayisi;
+    private String kullaniciTakmaAd;
 
     public GonderiDto() {}
 
-    public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDate gonderiTarihi,
-                      Number gonderiBegeniSayisi) {
+    public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDateTime gonderiTarihi,
+                      Number gonderiBegeniSayisi, String kullaniciTakmaAd) {
         this.gonderiId = gonderiId; // Number → int dönüşümü
         this.gonderiIcerigi = gonderiIcerigi;
         this.gonderiTarihi = gonderiTarihi;
         this.gonderiBegeniSayisi = gonderiBegeniSayisi != null ? gonderiBegeniSayisi.intValue() : 0;
-    }
-
-    public GonderiDto(int gonderiId, Number gonderiBegeniSayisi) {
-        this.gonderiId = gonderiId; // Number → int dönüşümü
-        this.gonderiBegeniSayisi = gonderiBegeniSayisi != null ? gonderiBegeniSayisi.intValue() : 0;
+        this.kullaniciTakmaAd = kullaniciTakmaAd;
     }
 
     // Getter ve Setter metotları...
@@ -40,11 +37,11 @@ public class GonderiDto {
         this.gonderiIcerigi = gonderiIcerigi;
     }
 
-    public LocalDate getGonderiTarihi() {
+    public LocalDateTime getGonderiTarihi() {
         return gonderiTarihi;
     }
 
-    public void setGonderiTarihi(LocalDate gonderiTarihi) {
+    public void setGonderiTarihi(LocalDateTime gonderiTarihi) {
         this.gonderiTarihi = gonderiTarihi;
     }
 
@@ -54,5 +51,13 @@ public class GonderiDto {
 
     public void setGonderiBegeniSayisi(int gonderiBegeniSayisi) {
         this.gonderiBegeniSayisi = gonderiBegeniSayisi;
+    }
+
+    public String getKullaniciTakmaAd() {
+        return kullaniciTakmaAd;
+    }
+
+    public void setKullaniciTakmaAd(String kullaniciTakmaAd) {
+        this.kullaniciTakmaAd = kullaniciTakmaAd;
     }
 }

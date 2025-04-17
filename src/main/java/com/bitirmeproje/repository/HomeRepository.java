@@ -14,9 +14,9 @@ public interface HomeRepository extends JpaRepository<User, Integer> {
 
     @Query("""
     SELECT NEW com.bitirmeproje.dto.home.HomeDto(
-        g.gonderiId, g.kullaniciId.kullaniciId, g.gonderiIcerigi, g.gonderiBegeniSayisi, g.gonderiTarihi,
-        f.takipEdilenKullaniciId.kullaniciTakmaAd,f.takipEdilenKullaniciId.kullaniciProfilResmi,
-        CASE WHEN bg.gonderiId IS NOT NULL THEN true ELSE false END
+        g.gonderiId, g.kullaniciId.kullaniciId, g.gonderiIcerigi, COALESCE(g.gonderiBegeniSayisi, 0), g.gonderiTarihi,
+        f.takipEdilenKullaniciId.kullaniciTakmaAd,COALESCE(f.takipEdilenKullaniciId.kullaniciProfilResmi, ''),
+        CASE WHEN bg.gonderiId IS NOT NULL THEN TRUE ELSE FALSE END
     )
     FROM User k
     INNER JOIN Follows f ON k.kullaniciId = f.takipEdenKullaniciId.kullaniciId
@@ -26,5 +26,4 @@ public interface HomeRepository extends JpaRepository<User, Integer> {
     ORDER BY g.gonderiTarihi DESC
 """)
     List<HomeDto> getGonderiler(@Param("kullaniciId") int kullaniciId);
-
 }

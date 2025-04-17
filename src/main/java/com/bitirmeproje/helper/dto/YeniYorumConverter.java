@@ -1,12 +1,11 @@
 package com.bitirmeproje.helper.dto;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
-import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.model.YeniYorum;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class YeniYorumConverter implements IEntityDtoConverter<YeniYorum, YeniYorumDto> {
@@ -27,7 +26,7 @@ public class YeniYorumConverter implements IEntityDtoConverter<YeniYorum, YeniYo
         yeniYorum.setKullaniciId(user);  // Sadece ID set ediliyor
         yeniYorum.setGonderiId(parentYorum.getGonderiId());  // Sadece ID set ediliyor
         yeniYorum.setYeniYorumIcerigi(dto.getYorumIcerigi());
-        yeniYorum.setYeniYorumOlusturulmaTarihi(LocalDate.now());
+        yeniYorum.setYeniYorumOlusturulmaTarihi(LocalDateTime.now());
         yeniYorum.setYeniYorumBegeniSayisi(0);
         yeniYorum.setParentYorum(parentYorum); // Parent yorum set ediliyor
         return yeniYorum;

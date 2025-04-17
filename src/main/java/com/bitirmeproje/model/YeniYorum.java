@@ -2,7 +2,7 @@ package com.bitirmeproje.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -28,7 +28,7 @@ public class YeniYorum {
     private String yeniYorumIcerigi;
 
     @Column(name = "yorum_tarihi", nullable = false)
-    private LocalDate yeniYorumOlusturulmaTarihi;
+    private LocalDateTime yeniYorumOlusturulmaTarihi;
 
     @Column(name = "begeni_sayisi", nullable = false)
     private int yeniYorumBegeniSayisi = 0; // Varsayılan değer sıfır olsun
@@ -78,11 +78,11 @@ public class YeniYorum {
         this.yeniYorumIcerigi = yeniYorumIcerigi;
     }
 
-    public LocalDate getYeniYorumOlusturulmaTarihi() {
+    public LocalDateTime getYeniYorumOlusturulmaTarihi() {
         return yeniYorumOlusturulmaTarihi;
     }
 
-    public void setYeniYorumOlusturulmaTarihi(LocalDate yeniYorumOlusturulmaTarihi) {
+    public void setYeniYorumOlusturulmaTarihi(LocalDateTime yeniYorumOlusturulmaTarihi) {
         this.yeniYorumOlusturulmaTarihi = yeniYorumOlusturulmaTarihi;
     }
 

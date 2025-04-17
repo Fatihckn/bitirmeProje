@@ -5,7 +5,7 @@ import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Component
 public class GonderiConverter implements IEntityDtoConverter<Gonderiler, GonderiDto> {
@@ -21,7 +21,8 @@ public class GonderiConverter implements IEntityDtoConverter<Gonderiler, Gonderi
                 gonderiler.getGonderiId(),
                 gonderiler.getGonderiIcerigi(),
                 gonderiler.getGonderiTarihi(),
-                gonderiler.getGonderiBegeniSayisi()
+                gonderiler.getGonderiBegeniSayisi(),
+                gonderiler.getKullaniciId().getKullaniciTakmaAd()
         );
     }
 
@@ -30,7 +31,7 @@ public class GonderiConverter implements IEntityDtoConverter<Gonderiler, Gonderi
         Gonderiler gonderi = new Gonderiler();
         gonderi.setGonderiIcerigi(gonderiDto.getGonderiIcerigi());
         gonderi.setGonderiBegeniSayisi(0);
-        gonderi.setGonderiTarihi(LocalDate.now());
+        gonderi.setGonderiTarihi(LocalDateTime.now());
         gonderi.setKullaniciId(getUserByToken.getUser());
         return gonderi;
     }

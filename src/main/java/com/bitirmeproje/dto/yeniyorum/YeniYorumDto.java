@@ -1,7 +1,5 @@
 package com.bitirmeproje.dto.yeniyorum;
 
-import com.bitirmeproje.model.YeniYorum;
-
 public class YeniYorumDto {
     protected int yeniYorumId;
     protected int kullaniciId;
@@ -9,17 +7,6 @@ public class YeniYorumDto {
     protected String yorumIcerigi;
     protected Integer parentYorumId; // Alt yorumsa parent yorum ID
 
-    public YeniYorumDto() {}
-
-    public YeniYorumDto(YeniYorum yeniYorum) {
-        this.yeniYorumId = yeniYorum.getYorumId();
-        this.kullaniciId = yeniYorum.getKullaniciId().getKullaniciId();
-        this.gonderiId = yeniYorum.getGonderiId().getGonderiId();
-        this.yorumIcerigi = yeniYorum.getYeniYorumIcerigi();
-        this.parentYorumId = yeniYorum.getParentYorum().getYorumId();
-    }
-
-    // Getter ve Setter metodları
     public int getKullaniciId() {
         return kullaniciId;
     }

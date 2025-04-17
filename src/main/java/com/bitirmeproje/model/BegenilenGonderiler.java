@@ -1,8 +1,7 @@
 package com.bitirmeproje.model;
 
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "begenilen_gonderiler")
@@ -22,7 +21,7 @@ public class BegenilenGonderiler {
     private User kullaniciId;
 
     @Column(name = "begenme_zamani")
-    private LocalDate begenmeZamani;
+    private LocalDateTime begenmeZamani;
 
     public int getBegenilenGonderilerId() {
         return begenilenGonderilerId;
@@ -48,18 +47,18 @@ public class BegenilenGonderiler {
         this.kullaniciId = kullaniciId;
     }
 
-    public LocalDate getBegenmeZamani() {
+    public LocalDateTime getBegenmeZamani() {
         return begenmeZamani;
     }
 
-    public void setBegenmeZamani(LocalDate begenmeZamani) {
+    public void setBegenmeZamani(LocalDateTime begenmeZamani) {
         this.begenmeZamani = begenmeZamani;
     }
 
     @PrePersist
     protected void onCreate() {
         if (this.begenmeZamani == null) {
-            this.begenmeZamani = LocalDate.now();
+            this.begenmeZamani = LocalDateTime.now();
         }
     }
 }

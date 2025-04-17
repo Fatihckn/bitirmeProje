@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +51,7 @@ public class YeniYorumService implements IYeniYorumService{
         yeniYorum.setKullaniciId(user);
         yeniYorum.setGonderiId(gonderi);
         yeniYorum.setYeniYorumIcerigi(yeniYorumDto.getYorumIcerigi());
-        yeniYorum.setYeniYorumOlusturulmaTarihi(LocalDate.now());
+        yeniYorum.setYeniYorumOlusturulmaTarihi(LocalDateTime.now());
         yeniYorum.setYeniYorumBegeniSayisi(0);
 
         // Eğer parent yorum ID varsa alt yorum olarak ata

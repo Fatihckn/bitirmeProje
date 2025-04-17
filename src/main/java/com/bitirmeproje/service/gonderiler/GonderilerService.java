@@ -31,7 +31,7 @@ public class GonderilerService implements IGonderilerService {
     public List<GonderiDto> kullaniciGonderileriniGetir() {
         User user = getUserByToken.getUser();
 
-        List<Gonderiler> gonderilerList = gonderilerRepository.findByKullaniciId_KullaniciId(user.getKullaniciId());
+        List<Gonderiler> gonderilerList = gonderilerRepository.findByKullaniciId_KullaniciIdOrderByGonderiTarihiDesc(user.getKullaniciId());
 
         return gonderilerList.stream()
                 .map(entityDtoConvert::convertToDTO)

@@ -2,7 +2,7 @@ package com.bitirmeproje.dto.begenilengonderiler;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class BegenilenGonderilerDto {
     @JsonProperty("gonderiId") // JSON dönüşümü için gerekli
@@ -10,14 +10,11 @@ public class BegenilenGonderilerDto {
 
     private int begenilenGonderiId;
 
-    private LocalDate begenmeZamani;
+    private LocalDateTime begenmeZamani;
 
-    // 📌 Boş Constructor (Spring Boot JSON dönüşümü için şart!)
-    public BegenilenGonderilerDto() {
-    }
+    public BegenilenGonderilerDto() {}
 
-    // 📌 Parametreli Constructor
-    public BegenilenGonderilerDto(int gonderiId, int begenilenGonderiId, LocalDate begenmeZamani) {
+    public BegenilenGonderilerDto(int gonderiId, int begenilenGonderiId, LocalDateTime begenmeZamani) {
         this.gonderiId = gonderiId;
         this.begenilenGonderiId = begenilenGonderiId;
         this.begenmeZamani = begenmeZamani;
@@ -39,11 +36,11 @@ public class BegenilenGonderilerDto {
         this.begenilenGonderiId = begenilenGonderiId;
     }
 
-    public LocalDate getBegenmeZamani() {
+    public LocalDateTime getBegenmeZamani() {
         return begenmeZamani;
     }
 
-    public void setBegenmeZamani(LocalDate begenmeZamani) {
+    public void setBegenmeZamani(LocalDateTime begenmeZamani) {
         this.begenmeZamani = begenmeZamani;
     }
 }

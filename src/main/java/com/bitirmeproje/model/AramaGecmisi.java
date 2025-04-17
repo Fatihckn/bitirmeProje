@@ -2,7 +2,7 @@ package com.bitirmeproje.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "arama_gecmisi")
@@ -17,7 +17,7 @@ public class AramaGecmisi {
     private String aramaIcerigi;
 
     @Column(name = "arama_zamani")
-    private LocalDate aramaZamani;
+    private LocalDateTime aramaZamani;
 
     @ManyToOne
     @JoinColumn(name = "kullanici_id")
@@ -39,11 +39,11 @@ public class AramaGecmisi {
         this.aramaIcerigi = aramaIcerigi;
     }
 
-    public LocalDate getAramaZamani() {
+    public LocalDateTime getAramaZamani() {
         return aramaZamani;
     }
 
-    public void setAramaZamani(LocalDate aramaZamani) {
+    public void setAramaZamani(LocalDateTime aramaZamani) {
         this.aramaZamani = aramaZamani;
     }
 
@@ -58,7 +58,7 @@ public class AramaGecmisi {
     @PrePersist
     protected void onCreate() {
         if (this.aramaZamani == null) {
-            this.aramaZamani = LocalDate.now();
+            this.aramaZamani = LocalDateTime.now();
         }
     }
 }

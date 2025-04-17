@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,8 +32,8 @@ public class AramaGecmisiService implements IAramaGecmisiService {
 
         // DTO'yu Entity'ye çeviriyoruz
         AramaGecmisi yeniArama = new AramaGecmisi();
-        yeniArama.setAramaIcerigi(aramaGecmisiDto.getAramaIcerigi());
-        yeniArama.setAramaZamani(LocalDate.now()); // Arama zamanını sistem zamanı olarak al
+        yeniArama.setAramaIcerigi(aramaGecmisiDto.aramaIcerigi());
+        yeniArama.setAramaZamani(LocalDateTime.now()); // Arama zamanını sistem zamanı olarak al
         yeniArama.setKullaniciId(kullanici); // ManyToOne ilişkisini set ettik
 
         aramaGecmisiRepository.save(yeniArama);

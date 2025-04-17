@@ -16,19 +16,18 @@ import java.util.Optional;
 public interface GonderilerRepository extends JpaRepository<Gonderiler, Integer> {
 
     // Belirli bir kullanıcının tüm gönderilerini getir
-    List<Gonderiler> findByKullaniciId_KullaniciId(int kullaniciId);
+    List<Gonderiler> findByKullaniciId_KullaniciIdOrderByGonderiTarihiDesc(int kullaniciId);
 
     @Query("SELECT new com.bitirmeproje.dto.gonderiler.GonderiDto(" +
             "g.gonderiId, " +
             "g.gonderiIcerigi, " +
             "g.gonderiTarihi, " +
-            "COALESCE(g.gonderiBegeniSayisi, 0) " + // NULL değerleri 0 yap// NULL önleme
+            "COALESCE(g.gonderiBegeniSayisi, 0), " + // NULL değerleri 0 yap// NULL önleme
+            "g.kullaniciId.kullaniciTakmaAd" +
             ") FROM Gonderiler g " +
             "LEFT JOIN g.kullaniciId u " + // Kullanıcı ilişkisinin boş olup olmadığını kontrol et
             "ORDER BY g.gonderiBegeniSayisi DESC")
     List<GonderiDto> findPopularPosts();
-
-
 
     // Gönderiyi ID'ye göre bul
     Optional<Gonderiler> findById(int id);

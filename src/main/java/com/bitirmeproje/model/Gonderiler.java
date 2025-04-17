@@ -3,7 +3,7 @@ package com.bitirmeproje.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,7 +19,7 @@ public class Gonderiler {
     private String gonderiIcerigi;
 
     @Column(name = "gonderi_tarihi")
-    private LocalDate gonderiTarihi;
+    private LocalDateTime gonderiTarihi;
 
     @Column(name = "gonderi_begeni_sayisi", nullable = false)
     private Integer gonderiBegeniSayisi = 0;
@@ -56,11 +56,11 @@ public class Gonderiler {
         this.gonderiIcerigi = gonderiIcerigi;
     }
 
-    public LocalDate getGonderiTarihi() {
+    public LocalDateTime getGonderiTarihi() {
         return gonderiTarihi;
     }
 
-    public void setGonderiTarihi(LocalDate gonderiTarihi) {
+    public void setGonderiTarihi(LocalDateTime gonderiTarihi) {
         this.gonderiTarihi = gonderiTarihi;
     }
 

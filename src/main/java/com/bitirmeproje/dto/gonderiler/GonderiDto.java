@@ -8,12 +8,23 @@ public class GonderiDto {
     private LocalDateTime gonderiTarihi;
     private int gonderiBegeniSayisi;
     private String kullaniciTakmaAd;
+    private Boolean begenildiMi;
 
     public GonderiDto() {}
 
     public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDateTime gonderiTarihi,
+                      Number gonderiBegeniSayisi, String kullaniciTakmaAd, Boolean begenildiMi) {
+        this.gonderiId = gonderiId;
+        this.gonderiIcerigi = gonderiIcerigi;
+        this.gonderiTarihi = gonderiTarihi;
+        this.gonderiBegeniSayisi = gonderiBegeniSayisi != null ? gonderiBegeniSayisi.intValue() : 0;
+        this.kullaniciTakmaAd = kullaniciTakmaAd;
+        this.begenildiMi = begenildiMi;
+    }
+
+    public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDateTime gonderiTarihi,
                       Number gonderiBegeniSayisi, String kullaniciTakmaAd) {
-        this.gonderiId = gonderiId; // Number → int dönüşümü
+        this.gonderiId = gonderiId;
         this.gonderiIcerigi = gonderiIcerigi;
         this.gonderiTarihi = gonderiTarihi;
         this.gonderiBegeniSayisi = gonderiBegeniSayisi != null ? gonderiBegeniSayisi.intValue() : 0;
@@ -59,5 +70,13 @@ public class GonderiDto {
 
     public void setKullaniciTakmaAd(String kullaniciTakmaAd) {
         this.kullaniciTakmaAd = kullaniciTakmaAd;
+    }
+
+    public Boolean getBegenildiMi() {
+        return begenildiMi;
+    }
+
+    public void setBegenildiMi(Boolean begenildiMi) {
+        this.begenildiMi = begenildiMi;
     }
 }

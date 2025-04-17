@@ -16,7 +16,21 @@ import java.util.Optional;
 public interface GonderilerRepository extends JpaRepository<Gonderiler, Integer> {
 
     // Belirli bir kullanıcının tüm gönderilerini getir
-    List<Gonderiler> findByKullaniciId_KullaniciIdOrderByGonderiTarihiDesc(int kullaniciId);
+    @Query("""
+    SELECT new com.bitirmeproje.dto.gonderiler.GonderiDto(
+        g.gonderiId,
+        g.gonderiIcerigi,
+        g.gonderiTarihi,
+        COALESCE(g.gonderiBegeniSayisi, 0),
+        g.kullaniciId.kullaniciTakmaAd,
+        CASE WHEN bg IS NOT NULL THEN TRUE ELSE FALSE END
+    )
+    FROM Gonderiler g
+    LEFT JOIN BegenilenGonderiler bg ON g.gonderiId = bg.gonderiId.gonderiId AND bg.kullaniciId.kullaniciId = :kullaniciId
+    WHERE g.kullaniciId.kullaniciId = :kullaniciId
+    ORDER BY g.gonderiTarihi DESC
+    """)
+    List<GonderiDto> findByKullaniciId_KullaniciIdOrderByGonderiTarihiDesc(int kullaniciId);
 
     @Query("SELECT new com.bitirmeproje.dto.gonderiler.GonderiDto(" +
             "g.gonderiId, " +

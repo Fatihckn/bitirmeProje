@@ -4,7 +4,6 @@ import com.bitirmeproje.dto.user.*;
 import com.bitirmeproje.model.User;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IUserService {
 
@@ -24,9 +23,9 @@ public interface IUserService {
 
     UserDto findUserById();
 
-    void passwordSave(User user, String yeniSifre);
+    UserGonderilerDto findUserByIdAranan(String takmaAd);
 
-    Optional<User> findByEposta (String ePosta);
+    void passwordSave(User user, String yeniSifre);
 
     void changeUserEmail(ChangeEmailDto changeEmailDto);
 

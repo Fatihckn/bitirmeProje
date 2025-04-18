@@ -84,6 +84,13 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
 
+    @GetMapping("/profil/{takmaAd}")
+    public ResponseEntity<UserGonderilerDto> findProfilAranan(@PathVariable String takmaAd) {
+
+        UserGonderilerDto currentUser = userService.findUserByIdAranan(takmaAd);
+        return ResponseEntity.ok(currentUser);
+    }
+
     // Kullanıcı e-posta değiştiriyoruz
     @PostMapping("/eposta-degistir")
     public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailDto changeEmailDto) {

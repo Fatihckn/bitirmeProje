@@ -24,5 +24,5 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             "OR CAST(u.kullaniciId AS string) LIKE CONCAT('%', :query, '%')")
     List<User> searchByQuery(@Param("query") String query);
 
-
+    User getUserByKullaniciTakmaAd(String kullaniciTakmaAd);
 }

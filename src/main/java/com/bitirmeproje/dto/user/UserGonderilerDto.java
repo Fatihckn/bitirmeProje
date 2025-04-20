@@ -7,9 +7,16 @@ import java.util.List;
 public class UserGonderilerDto extends BaseUserDto{
     private List<GonderiDto> gonderiler;
 
-    public UserGonderilerDto(List<GonderiDto> gonderiler) {
+    private int takipcisiKisiSayisi;
+
+    private int takipEttigiKisiSayisi;
+
+    public UserGonderilerDto(List<GonderiDto> gonderiler, int takipcisiKisiSayisi,
+                             Integer takipEttigiKisiSayisi) {
         super();
         this.gonderiler = gonderiler;
+        this.takipcisiKisiSayisi = takipcisiKisiSayisi;
+        this.takipEttigiKisiSayisi = takipEttigiKisiSayisi;
     }
 
     public List<GonderiDto> getGonderiler() {
@@ -18,5 +25,21 @@ public class UserGonderilerDto extends BaseUserDto{
 
     public void setGonderiler(List<GonderiDto> gonderiler) {
         this.gonderiler = gonderiler;
+    }
+
+    public int getTakipcisiKisiSayisi() {
+        return takipcisiKisiSayisi;
+    }
+
+    public void setTakipcisiKisiSayisi(int takipcisiKisiSayisi) {
+        this.takipcisiKisiSayisi = takipcisiKisiSayisi;
+    }
+
+    public int getTakipEttigiKisiSayisi() {
+        return takipEttigiKisiSayisi;
+    }
+
+    public void setTakipEttigiKisiSayisi(int takipEttigiKisiSayisi) {
+        this.takipEttigiKisiSayisi = takipEttigiKisiSayisi;
     }
 }

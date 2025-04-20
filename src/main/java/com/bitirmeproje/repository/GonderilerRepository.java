@@ -32,6 +32,27 @@ public interface GonderilerRepository extends JpaRepository<Gonderiler, Integer>
     """)
     List<GonderiDto> findByKullaniciId_KullaniciIdOrderByGonderiTarihiDesc(int kullaniciId);
 
+    @Query("""
+    SELECT new com.bitirmeproje.dto.gonderiler.GonderiDto(
+        g.gonderiId,
+        g.gonderiIcerigi,
+        g.gonderiTarihi,
+        COALESCE(g.gonderiBegeniSayisi, 0),
+        g.kullaniciId.kullaniciTakmaAd,
+        CASE WHEN bg IS NOT NULL THEN TRUE ELSE FALSE END
+    )
+    FROM Gonderiler g
+    LEFT JOIN BegenilenGonderiler bg\s
+        ON g.gonderiId = bg.gonderiId.gonderiId\s
+        AND bg.kullaniciId.kullaniciId = :girenKullanici
+    WHERE g.kullaniciId.kullaniciId = :girilenKullanici
+    ORDER BY g.gonderiTarihi DESC
+""")
+    List<GonderiDto> findProfilGonderileriWithBegeniDurumu(
+            @Param("girilenKullanici") int girilenKullanici,
+            @Param("girenKullanici") int girenKullanici
+    );
+
     @Query("SELECT new com.bitirmeproje.dto.gonderiler.GonderiDto(" +
             "g.gonderiId, " +
             "g.gonderiIcerigi, " +

@@ -12,6 +12,7 @@ import com.bitirmeproje.helper.password.PasswordHasher;
 import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.User;
+import com.bitirmeproje.repository.FollowsRepository;
 import com.bitirmeproje.repository.GonderilerRepository;
 import com.bitirmeproje.repository.UserRepository;
 import com.bitirmeproje.service.r2storage.R2StorageService;
@@ -36,6 +37,7 @@ public class UserService implements IUserService {
     private final OtpStorage otpStorage;
     private final R2StorageService r2StorageService;
     private final GonderilerRepository gonderilerRepository;
+    private final FollowsRepository followsRepository;
 
     private final Map<String, String> sifremiUnuttumOtp = new ConcurrentHashMap<>();
 
@@ -46,7 +48,8 @@ public class UserService implements IUserService {
                 @Qualifier("userConverterer") IEntityDtoConverter<User, UserDto> entityDtoConvert,
                 @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
                 FindUser<String> findUser, OtpStorage otpStorage,
-                R2StorageService r2StorageService, GonderilerRepository gonderilerRepository) {
+                R2StorageService r2StorageService, GonderilerRepository gonderilerRepository,
+                FollowsRepository followsRepository) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
         this.getUserByToken = getUserByToken;
@@ -56,6 +59,7 @@ public class UserService implements IUserService {
         this.otpStorage = otpStorage;
         this.r2StorageService = r2StorageService;
         this.gonderilerRepository = gonderilerRepository;
+        this.followsRepository = followsRepository;
     }
 
     // Kullanıcnın şifresini değiştiriyoruz(Şifremi unuttum değil)
@@ -199,10 +203,13 @@ public class UserService implements IUserService {
             throw new CustomException(HttpStatus.NOT_FOUND,"Kullanici Bulunamadi");
         }
 
-        List<GonderiDto> gonderiler = gonderilerRepository.findByKullaniciId_KullaniciIdOrderByGonderiTarihiDesc(users.getKullaniciId());
+        List<GonderiDto> gonderiler = gonderilerRepository.findProfilGonderileriWithBegeniDurumu(users.getKullaniciId(), getUserByToken.getUser().getKullaniciId());
 
-        UserGonderilerDto userDto = new UserGonderilerDto(gonderiler);
-        userDto.setGonderiler(gonderiler);
+        List<User> kullaniciTakipEttigi = followsRepository.findByFollowersUserId(users.getKullaniciId());
+
+        List<User> kullaniciyiTakipEden = followsRepository.findByFollowingUserId(users.getKullaniciId());
+
+        UserGonderilerDto userDto = new UserGonderilerDto(gonderiler, kullaniciTakipEttigi.size(), kullaniciyiTakipEden.size());
         userDto.setKullaniciTakmaAd(users.getKullaniciTakmaAd());
         userDto.setKullaniciBio(users.getKullaniciBio());
         userDto.setKullaniciId(users.getKullaniciId());
@@ -211,7 +218,6 @@ public class UserService implements IUserService {
         userDto.setKullaniciUyeOlmaTarihi(users.getKullaniciUyeOlmaTarihi());
         userDto.setePosta(users.getePosta());
         userDto.setKullaniciDogumTarihi(users.getKullaniciDogumTarihi());
-
         return userDto;
     }
 

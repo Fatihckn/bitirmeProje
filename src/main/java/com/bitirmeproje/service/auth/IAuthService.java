@@ -10,4 +10,6 @@ public interface IAuthService {
     String login(LoginDto loginDto);
 
     void verifyOtpAndRegister(String email, String otp);
+
+    void logout();
 }

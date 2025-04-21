@@ -45,6 +45,7 @@ public class SecurityConfig {
                 // Endpoint izinleri
                 .authorizeHttpRequests(auth -> auth
                         // Auth işlemleri (JWT olmadan erişilebilir)
+                        .requestMatchers("/api/auth/logout").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/auth/**").permitAll()
 
                         // Şifre sıfırlama işlemleri (JWT olmadan erişilebilir)

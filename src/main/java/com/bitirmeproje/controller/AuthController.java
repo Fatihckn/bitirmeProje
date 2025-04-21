@@ -43,6 +43,9 @@ public class AuthController {
 
     // Çıkış yapacak kullanıcının da doğru kullanıcı olup olmadığı denenip dönüş yapılıyor.
     @PostMapping("/logout")
-    public ResponseEntity<String> logout() {return ResponseEntity.ok("Çıkış Yapıldı.");}
+    public ResponseEntity<String> logout() {
+        authService.logout();
+        return ResponseEntity.ok("Çıkış Yapıldı.");
+    }
 }
 

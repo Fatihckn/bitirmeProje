@@ -10,11 +10,14 @@ import com.bitirmeproje.model.Role;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.UserRepository;
 import com.bitirmeproje.security.jwt.JwtUtil;
+import com.bitirmeproje.service.blacklistservice.TokenBlacklistService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,18 +31,23 @@ public class AuthService implements IAuthService {
     private final OtpStorage otpStorage;
     private final SendEmail sendEmail;
     private final Map<String, User> pendingUsers = new ConcurrentHashMap<>();
+    private final HttpServletRequest request;
+    private final TokenBlacklistService tokenBlacklistService;
 
     private final static String r2PublicBaseUrl = "https://media.bitirmeproje.xyz";
 
     AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                 JwtUtil jwtUtil,@Qualifier("findUserByEmail") FindUser<String> findUser,
-                OtpStorage otpStorage,@Qualifier("sendEmailForRegister") SendEmail sendEmail) {
+                OtpStorage otpStorage,@Qualifier("sendEmailForRegister") SendEmail sendEmail,
+                HttpServletRequest request, TokenBlacklistService tokenBlacklistService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.findUser = findUser;
         this.otpStorage = otpStorage;
         this.sendEmail = sendEmail;
+        this.request = request;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     // Kullanıcı kayıt servisi
@@ -96,5 +104,22 @@ public class AuthService implements IAuthService {
 
         // Başarılı giriş, token üret ve geri döndür
         return jwtUtil.generateToken(user.getePosta(), user.getKullaniciRole().name(), user.getKullaniciId());
+    }
+
+    public void logout() {
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new CustomException(HttpStatus.NOT_FOUND,"Token Bulunamadi");
+        }
+
+        String token = authHeader.substring(7);
+
+        Date expiration = jwtUtil.extractExpiration(token);
+        long now = System.currentTimeMillis();
+        long expMillis = expiration.getTime() - now;
+
+        // Redis'e token'ı blacklist'e at
+        tokenBlacklistService.blacklistToken(token, expMillis);
     }
 }

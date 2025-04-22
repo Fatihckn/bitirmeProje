@@ -11,6 +11,8 @@ public class UserGonderilerDto extends BaseUserDto{
 
     private int takipEttigiKisiSayisi;
 
+    public UserGonderilerDto() {}
+
     public UserGonderilerDto(List<GonderiDto> gonderiler, int takipcisiKisiSayisi,
                              Integer takipEttigiKisiSayisi) {
         super();

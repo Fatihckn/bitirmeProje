@@ -15,7 +15,7 @@ public class Gonderiler {
     @Column(name = "gonderi_id", nullable = false)
     private int gonderiId;
 
-    @Column(name = "gonderi_icerigi", nullable = false)
+    @Column(name = "gonderi_icerigi")
     private String gonderiIcerigi;
 
     @Column(name = "gonderi_tarihi")
@@ -23,6 +23,13 @@ public class Gonderiler {
 
     @Column(name = "gonderi_begeni_sayisi", nullable = false)
     private Integer gonderiBegeniSayisi = 0;
+
+    @Column(name = "gonderi_medya_url")
+    private String gonderiMedyaUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gonderi_medya_turu")
+    private MedyaTuru gonderiMedyaTuru;
 
     @JsonBackReference
     @ManyToOne // Bir kullanıcı birden fazla gönderi oluşturabilir
@@ -94,6 +101,26 @@ public class Gonderiler {
 
     public void setYeniYorum(List<YeniYorum> yeniYorum) {
         this.yeniYorum = yeniYorum;
+    }
+
+    public void setGonderiBegeniSayisi(Integer gonderiBegeniSayisi) {
+        this.gonderiBegeniSayisi = gonderiBegeniSayisi;
+    }
+
+    public String getGonderiMedyaUrl() {
+        return this.gonderiMedyaUrl;
+    }
+
+    public void setGonderiMedyaUrl(String gonderiMedyaUrl) {
+        this.gonderiMedyaUrl = gonderiMedyaUrl;
+    }
+
+    public MedyaTuru getGonderiMedyaTuru() {
+        return this.gonderiMedyaTuru;
+    }
+
+    public void setGonderiMedyaTuru(MedyaTuru gonderiMedyaTuru) {
+        this.gonderiMedyaTuru = gonderiMedyaTuru;
     }
 }
 

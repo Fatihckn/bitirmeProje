@@ -9,10 +9,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SendEmailForPasswordChange implements SendEmail {
+public class SendEmailForDeleteAccount implements SendEmail {
     private final JavaMailSender mailSender;
 
-    public SendEmailForPasswordChange(JavaMailSender mailSender) {
+    public SendEmailForDeleteAccount(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
@@ -22,7 +22,7 @@ public class SendEmailForPasswordChange implements SendEmail {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(to);
             helper.setSubject("Doğrulama Kodu");
-            helper.setText("Şifre sıfırlamak için doğrulama kodunuz: " + otp);
+            helper.setText("Hesabı kaldırmak için doğrulama kodunuz: " + otp);
 
             mailSender.send(message);
         } catch (MessagingException e) {

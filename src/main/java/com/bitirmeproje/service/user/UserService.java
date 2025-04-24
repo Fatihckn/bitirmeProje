@@ -7,6 +7,7 @@ import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.email.otp.OtpGenerator;
 import com.bitirmeproje.helper.email.otp.OtpStorage;
 import com.bitirmeproje.helper.email.sendemail.SendEmail;
+import com.bitirmeproje.helper.email.sendemail.SendEmailForDeleteAccount;
 import com.bitirmeproje.helper.email.sendemail.SendEmailForPasswordChange;
 import com.bitirmeproje.helper.password.PasswordHasher;
 import com.bitirmeproje.helper.user.FindUser;
@@ -17,6 +18,7 @@ import com.bitirmeproje.repository.GonderilerRepository;
 import com.bitirmeproje.repository.UserRepository;
 import com.bitirmeproje.service.r2storage.R2StorageService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +40,7 @@ public class UserService implements IUserService {
     private final R2StorageService r2StorageService;
     private final GonderilerRepository gonderilerRepository;
     private final FollowsRepository followsRepository;
+    private final SendEmail emailServiceDeleteAccount;
 
     private final Map<String, String> sifremiUnuttumOtp = new ConcurrentHashMap<>();
 
@@ -49,7 +52,7 @@ public class UserService implements IUserService {
                 @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
                 FindUser<String> findUser, OtpStorage otpStorage,
                 R2StorageService r2StorageService, GonderilerRepository gonderilerRepository,
-                FollowsRepository followsRepository) {
+                FollowsRepository followsRepository, @Qualifier("sendEmailForDeleteAccount") SendEmailForDeleteAccount emailServiceDeleteAccount) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
         this.getUserByToken = getUserByToken;
@@ -60,6 +63,7 @@ public class UserService implements IUserService {
         this.r2StorageService = r2StorageService;
         this.gonderilerRepository = gonderilerRepository;
         this.followsRepository = followsRepository;
+        this.emailServiceDeleteAccount = emailServiceDeleteAccount;
     }
 
     // Kullanıcnın şifresini değiştiriyoruz(Şifremi unuttum değil)
@@ -174,19 +178,29 @@ public class UserService implements IUserService {
 
         User user = getUserByToken.getUser();
 
-        // Güncellenen değerleri boş değilse ata, boşsa eski değerleri koru
-        if (userDto.getKullaniciTakmaAd() != null && !userDto.getKullaniciTakmaAd().isEmpty()) {
-            user.setKullaniciTakmaAd(userDto.getKullaniciTakmaAd());
+        try{
+            // Güncellenen değerleri boş değilse ata, boşsa eski değerleri koru
+            if (userDto.getKullaniciTakmaAd() != null && !userDto.getKullaniciTakmaAd().isEmpty()) {
+                user.setKullaniciTakmaAd(userDto.getKullaniciTakmaAd());
+            }
+            if (userDto.getKullaniciBio() != null && !userDto.getKullaniciBio().isEmpty()) {
+                user.setKullaniciBio(userDto.getKullaniciBio());
+            }
+            if (userDto.getKullaniciTelefonNo() != null && !userDto.getKullaniciTelefonNo().isEmpty()) {
+                user.setKullaniciTelefonNo(userDto.getKullaniciTelefonNo());
+            }
+            if (userDto.getKullaniciDogumTarihi() != null) {
+                user.setKullaniciDogumTarihi(userDto.getKullaniciDogumTarihi());
+            }
+
+            userRepository.save(user);
+        }catch (DataIntegrityViolationException e) {
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Bu bilgi daha önce alınmış, lütfen farklı bir bilgi giriniz.");
         }
-        if (userDto.getKullaniciBio() != null && !userDto.getKullaniciBio().isEmpty()) {
-            user.setKullaniciBio(userDto.getKullaniciBio());
-        }
-        if (userDto.getKullaniciTelefonNo() != null && !userDto.getKullaniciTelefonNo().isEmpty()) {
-            user.setKullaniciTelefonNo(userDto.getKullaniciTelefonNo());
+        catch (Exception e) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR, "Beklenmeyen bir hata oluştu.");
         }
 
-        // Güncellenmiş kullanıcıyı kaydet
-        userRepository.save(user);
     }
 
     // ID'ye göre kullanıcı bilgilerini getir.
@@ -252,11 +266,23 @@ public class UserService implements IUserService {
     }
 
     @Transactional
-    public void deleteUserAccount() {
+    public void deleteUserAccount(String otp) {
         User user = getUserByToken.getUser();
+
+        otpStorage.validateOtp(user.getePosta(), otp);
 
         // Kullanıcıyı ve tüm ilişkili verileri sil
         userRepository.delete(user);
+    }
+
+    public void deleteUserAccountValidation() {
+        User user = getUserByToken.getUser();
+
+        String otp = OtpGenerator.generateOtp();
+
+        otpStorage.putOtp(user.getePosta(), otp);
+
+        emailServiceDeleteAccount.sendOtpEmail(user.getePosta(), otp);
     }
 
     private void putOtpWithExpiry(String email, String otp) {

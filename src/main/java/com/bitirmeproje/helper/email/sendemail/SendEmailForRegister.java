@@ -22,7 +22,7 @@ public class SendEmailForRegister implements SendEmail {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(to);
-            helper.setSubject("Kayıt olma kodu");
+            helper.setSubject("Doğrulama Kodu");
             helper.setText("Kayıt olmak için doğrulama kodunuz: " + otp);
 
             mailSender.send(message);

@@ -99,9 +99,15 @@ public class UserController {
         return ResponseEntity.ok("E-posta başarıyla güncellendi.");
     }
 
+    @PostMapping("/delete-account-validation")
+    public ResponseEntity<String> deleteAccountValidation() {
+        userService.deleteUserAccountValidation();
+        return ResponseEntity.ok("Mailinize Kod Gönderildi.");
+    }
+
     @DeleteMapping("/delete-account")
-    public ResponseEntity<String> deleteAccount() {
-        userService.deleteUserAccount();
+    public ResponseEntity<String> deleteAccount(@RequestParam String otp) {
+        userService.deleteUserAccount(otp);
         return ResponseEntity.ok("Hesap Başarıyla Silindi");
     }
 

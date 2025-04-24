@@ -29,5 +29,7 @@ public interface IUserService {
 
     void changeUserEmail(ChangeEmailDto changeEmailDto);
 
-    void deleteUserAccount();
+    void deleteUserAccount(String otp);
+
+    void deleteUserAccountValidation();
 }

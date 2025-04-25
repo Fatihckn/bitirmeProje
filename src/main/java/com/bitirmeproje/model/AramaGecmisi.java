@@ -13,8 +13,8 @@ public class AramaGecmisi {
     @Column(name = "arama_gecmisi_id")
     private int aramaGecmisiId;
 
-    @Column(name = "arama_icerigi")
-    private String aramaIcerigi;
+    @Column(name = "aranan_kullanici_id")
+    private int aramananKullaniciId;
 
     @Column(name = "arama_zamani")
     private LocalDateTime aramaZamani;
@@ -31,12 +31,12 @@ public class AramaGecmisi {
         this.aramaGecmisiId = aramaGecmisiId;
     }
 
-    public String getAramaIcerigi() {
-        return aramaIcerigi;
+    public int getAramananKullaniciId() {
+        return aramananKullaniciId;
     }
 
-    public void setAramaIcerigi(String aramaIcerigi) {
-        this.aramaIcerigi = aramaIcerigi;
+    public void setAramananKullaniciId(int aramananKullaniciId) {
+        this.aramananKullaniciId = aramananKullaniciId;
     }
 
     public LocalDateTime getAramaZamani() {

@@ -2,6 +2,7 @@ package com.bitirmeproje.service.aramagecmisi;
 
 import com.bitirmeproje.dto.aramagecmisi.AramaGecmisiDto;
 import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.AramaGecmisi;
 import com.bitirmeproje.model.User;
@@ -9,7 +10,6 @@ import com.bitirmeproje.repository.AramaGecmisiRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,11 +18,13 @@ import java.util.stream.Collectors;
 public class AramaGecmisiService implements IAramaGecmisiService {
     private final AramaGecmisiRepository aramaGecmisiRepository;
     private final GetUserByToken getUserByToken;
+    private final FindUser<Integer> findUser;
 
     public AramaGecmisiService(AramaGecmisiRepository aramaGecmisiRepository,
-                               GetUserByToken getUserByToken) {
+                               GetUserByToken getUserByToken, FindUser<Integer> findUser) {
         this.aramaGecmisiRepository = aramaGecmisiRepository;
         this.getUserByToken = getUserByToken;
+        this.findUser = findUser;
     }
 
     // Kullanıcının yaptığı aramayı kaydet
@@ -32,7 +34,7 @@ public class AramaGecmisiService implements IAramaGecmisiService {
 
         // DTO'yu Entity'ye çeviriyoruz
         AramaGecmisi yeniArama = new AramaGecmisi();
-        yeniArama.setAramaIcerigi(aramaGecmisiDto.aramaIcerigi());
+        yeniArama.setAramananKullaniciId(aramaGecmisiDto.arananKullaniciId());
         yeniArama.setAramaZamani(LocalDateTime.now()); // Arama zamanını sistem zamanı olarak al
         yeniArama.setKullaniciId(kullanici); // ManyToOne ilişkisini set ettik
 
@@ -48,31 +50,10 @@ public class AramaGecmisiService implements IAramaGecmisiService {
                 .stream()
                 .map(arama -> new AramaGecmisiDto(
                         arama.getAramaGecmisiId(), // Arama geçmişi ID
-                        arama.getAramaIcerigi(), // Arama içeriği
-                        arama.getAramaZamani() // Arama zamanı
-                ))
-                .collect(Collectors.toList());
-    }
-
-    // Kullanıcının belirli tarih aralığındaki aramalarını getir
-    public List<AramaGecmisiDto> getKullaniciAramaGecmisiByDate(LocalDate baslangic, LocalDate bitis) {
-
-        User kullanici = getUserByToken.getUser();
-
-        // Tarih kontrolü: Başlangıç tarihi, bitiş tarihinden sonra olamaz
-        if (baslangic.isAfter(bitis)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST,"Başlangıç tarihi, bitiş tarihinden sonra olamaz!");
-        }
-
-        // Veritabanından tarih aralığına göre arama geçmişini çek
-        List<AramaGecmisi> aramaGecmisiList = aramaGecmisiRepository.findByKullaniciIdAndDateRange(kullanici, baslangic, bitis);
-
-        // DTO'ya dönüştür ve döndür
-        return aramaGecmisiList.stream()
-                .map(arama -> new AramaGecmisiDto(
-                        arama.getAramaGecmisiId(),
-                        arama.getAramaIcerigi(),
-                        arama.getAramaZamani()
+                        arama.getKullaniciId().getKullaniciId(), // Arama içeriği
+                        arama.getAramaZamani(), // Arama zamanı
+                        findUser.findUser(arama.getAramananKullaniciId()).getKullaniciProfilResmi(),
+                        findUser.findUser(arama.getAramananKullaniciId()).getKullaniciTakmaAd()
                 ))
                 .collect(Collectors.toList());
     }
@@ -92,10 +73,5 @@ public class AramaGecmisiService implements IAramaGecmisiService {
 
         // Arama geçmişini sil
         aramaGecmisiRepository.deleteById(aramaGecmisiId);
-    }
-
-    // En çok yapılan aramaları getir
-    public List<Object[]> getPopulerAramalar() {
-        return aramaGecmisiRepository.findMostPopularSearches();
     }
 }

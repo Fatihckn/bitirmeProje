@@ -84,6 +84,7 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
 
+    // Aranan kullanıcının profilini getir
     @GetMapping("/profil/{takmaAd}")
     public ResponseEntity<UserGonderilerDto> findProfilAranan(@PathVariable String takmaAd) {
 

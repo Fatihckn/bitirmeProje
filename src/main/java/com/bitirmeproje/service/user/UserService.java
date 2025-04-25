@@ -211,19 +211,29 @@ public class UserService implements IUserService {
     }
 
     public UserGonderilerDto findUserByIdAranan(String takmaAd) {
+        boolean flag = false;
+
         User users = userRepository.getUserByKullaniciTakmaAd(takmaAd);
 
         if(users == null) {
             throw new CustomException(HttpStatus.NOT_FOUND,"Kullanici Bulunamadi");
         }
 
+        // Aranan kullanıcının gönderileri(Gönderilerini beğenip beğenmediğimiz de dönüyor)
         List<GonderiDto> gonderiler = gonderilerRepository.findProfilGonderileriWithBegeniDurumu(users.getKullaniciId(), getUserByToken.getUser().getKullaniciId());
 
-        List<User> kullaniciTakipEttigi = followsRepository.findByFollowersUserId(users.getKullaniciId());
+        List<User> kullaniciTakipcisi = followsRepository.findByFollowersUserId(users.getKullaniciId());
 
-        List<User> kullaniciyiTakipEden = followsRepository.findByFollowingUserId(users.getKullaniciId());
+        List<User> kullaniciTakipEttigi = followsRepository.findByFollowingUserId(users.getKullaniciId());
 
-        UserGonderilerDto userDto = new UserGonderilerDto(gonderiler, kullaniciTakipEttigi.size(), kullaniciyiTakipEden.size());
+        // Aranan kullanıcıyı takip ediyor muyuz onu kontrol ediyoruz.
+        for(User user : kullaniciTakipcisi) {
+            if(user.getKullaniciId() == getUserByToken.getUser().getKullaniciId()) {
+                flag = true;
+            }
+        }
+
+        UserGonderilerDto userDto = new UserGonderilerDto(gonderiler, kullaniciTakipcisi.size(), kullaniciTakipEttigi.size(), flag);
         userDto.setKullaniciTakmaAd(users.getKullaniciTakmaAd());
         userDto.setKullaniciBio(users.getKullaniciBio());
         userDto.setKullaniciId(users.getKullaniciId());

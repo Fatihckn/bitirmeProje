@@ -20,10 +20,12 @@ public class HomeDto {
 
     private String kullaniciResim;
 
+    private String gonderiMedyaUrl;
+
     public HomeDto() {}
 
     public HomeDto(int gonderiId, int kullaniciId, String gonderiIcerigi, int begeniSayisi,
-                   LocalDateTime gonderiTarihi, String takipEdilenKullaniciTakmaAd, String kullaniciResim, boolean begenildiMi) {
+                   LocalDateTime gonderiTarihi, String takipEdilenKullaniciTakmaAd, String kullaniciResim,String gonderiMedyaUrl, boolean begenildiMi) {
         this.gonderiId = gonderiId;
         this.kullaniciId = kullaniciId;
         this.gonderiIcerigi = gonderiIcerigi;
@@ -31,6 +33,7 @@ public class HomeDto {
         this.gonderiTarihi = gonderiTarihi;
         this.takipEdilenKullaniciTakmaAd = takipEdilenKullaniciTakmaAd;
         this.begenildiMi = begenildiMi;
+        this.gonderiMedyaUrl = gonderiMedyaUrl;
         this.kullaniciResim = kullaniciResim;
     }
 
@@ -96,5 +99,13 @@ public class HomeDto {
 
     public void setKullaniciResim(String kullaniciResim) {
         this.kullaniciResim = kullaniciResim;
+    }
+
+    public String getGonderiMedyaUrl() {
+        return gonderiMedyaUrl;
+    }
+
+    public void setGonderiMedyaUrl(String gonderiMedyaUrl) {
+        this.gonderiMedyaUrl = gonderiMedyaUrl;
     }
 }

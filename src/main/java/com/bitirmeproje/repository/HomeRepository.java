@@ -15,7 +15,7 @@ public interface HomeRepository extends JpaRepository<User, Integer> {
     @Query("""
     SELECT NEW com.bitirmeproje.dto.home.HomeDto(
         g.gonderiId, g.kullaniciId.kullaniciId, g.gonderiIcerigi, COALESCE(g.gonderiBegeniSayisi, 0), g.gonderiTarihi,
-        f.takipEdilenKullaniciId.kullaniciTakmaAd,COALESCE(f.takipEdilenKullaniciId.kullaniciProfilResmi, ''),
+        f.takipEdilenKullaniciId.kullaniciTakmaAd,COALESCE(f.takipEdilenKullaniciId.kullaniciProfilResmi, ''), g.gonderiMedyaUrl,
         CASE WHEN bg.gonderiId IS NOT NULL THEN TRUE ELSE FALSE END
     )
     FROM User k

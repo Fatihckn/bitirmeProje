@@ -23,6 +23,7 @@ public interface GonderilerRepository extends JpaRepository<Gonderiler, Integer>
         g.gonderiTarihi,
         COALESCE(g.gonderiBegeniSayisi, 0),
         g.kullaniciId.kullaniciTakmaAd,
+        g.gonderiMedyaUrl,
         CASE WHEN bg IS NOT NULL THEN TRUE ELSE FALSE END
     )
     FROM Gonderiler g
@@ -39,6 +40,7 @@ public interface GonderilerRepository extends JpaRepository<Gonderiler, Integer>
         g.gonderiTarihi,
         COALESCE(g.gonderiBegeniSayisi, 0),
         g.kullaniciId.kullaniciTakmaAd,
+        g.gonderiMedyaUrl,
         CASE WHEN bg IS NOT NULL THEN TRUE ELSE FALSE END
     )
     FROM Gonderiler g

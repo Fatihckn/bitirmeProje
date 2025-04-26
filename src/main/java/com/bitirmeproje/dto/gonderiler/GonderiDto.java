@@ -9,17 +9,19 @@ public class GonderiDto {
     private int gonderiBegeniSayisi;
     private String kullaniciTakmaAd;
     private Boolean begenildiMi;
+    private String gonderiMedyaUrl;
 
     public GonderiDto() {}
 
     public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDateTime gonderiTarihi,
-                      Number gonderiBegeniSayisi, String kullaniciTakmaAd, Boolean begenildiMi) {
+                      Number gonderiBegeniSayisi, String kullaniciTakmaAd, String gonderiMedyaUrl, Boolean begenildiMi) {
         this.gonderiId = gonderiId;
         this.gonderiIcerigi = gonderiIcerigi;
         this.gonderiTarihi = gonderiTarihi;
         this.gonderiBegeniSayisi = gonderiBegeniSayisi != null ? gonderiBegeniSayisi.intValue() : 0;
         this.kullaniciTakmaAd = kullaniciTakmaAd;
         this.begenildiMi = begenildiMi;
+        this.gonderiMedyaUrl = gonderiMedyaUrl;
     }
 
     public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDateTime gonderiTarihi,
@@ -78,5 +80,13 @@ public class GonderiDto {
 
     public void setBegenildiMi(Boolean begenildiMi) {
         this.begenildiMi = begenildiMi;
+    }
+
+    public String getGonderiMedyaUrl() {
+        return gonderiMedyaUrl;
+    }
+
+    public void setGonderiMedyaUrl(String gonderiMedyaUrl) {
+        this.gonderiMedyaUrl = gonderiMedyaUrl;
     }
 }

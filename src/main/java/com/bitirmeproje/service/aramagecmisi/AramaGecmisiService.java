@@ -9,6 +9,7 @@ import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.AramaGecmisiRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,9 +33,11 @@ public class AramaGecmisiService implements IAramaGecmisiService {
         // Kullanıcıyı veritabanından çekiyoruz
         User kullanici = getUserByToken.getUser();
 
+        findUser.findUser(aramaGecmisiDto.arananKullaniciId());
+
         // DTO'yu Entity'ye çeviriyoruz
         AramaGecmisi yeniArama = new AramaGecmisi();
-        yeniArama.setAramananKullaniciId(aramaGecmisiDto.arananKullaniciId());
+        yeniArama.setArananKullaniciId(aramaGecmisiDto.arananKullaniciId());
         yeniArama.setAramaZamani(LocalDateTime.now()); // Arama zamanını sistem zamanı olarak al
         yeniArama.setKullaniciId(kullanici); // ManyToOne ilişkisini set ettik
 
@@ -46,14 +49,14 @@ public class AramaGecmisiService implements IAramaGecmisiService {
 
         User kullanici = getUserByToken.getUser();
 
-        return aramaGecmisiRepository.findByKullaniciId(kullanici)
+        return aramaGecmisiRepository.findByKullaniciIdOrderByAramaZamaniDesc(kullanici)
                 .stream()
                 .map(arama -> new AramaGecmisiDto(
                         arama.getAramaGecmisiId(), // Arama geçmişi ID
                         arama.getKullaniciId().getKullaniciId(), // Arama içeriği
                         arama.getAramaZamani(), // Arama zamanı
-                        findUser.findUser(arama.getAramananKullaniciId()).getKullaniciProfilResmi(),
-                        findUser.findUser(arama.getAramananKullaniciId()).getKullaniciTakmaAd()
+                        findUser.findUser(arama.getArananKullaniciId()).getKullaniciProfilResmi(),
+                        findUser.findUser(arama.getArananKullaniciId()).getKullaniciTakmaAd()
                 ))
                 .collect(Collectors.toList());
     }
@@ -74,4 +77,7 @@ public class AramaGecmisiService implements IAramaGecmisiService {
         // Arama geçmişini sil
         aramaGecmisiRepository.deleteById(aramaGecmisiId);
     }
+
+    @Transactional
+    public void deleteTumAramaGecmisi(){aramaGecmisiRepository.deleteByKullaniciId( getUserByToken.getUser());}
 }

@@ -38,4 +38,10 @@ public class AramaGecmisiController {
         aramaGecmisiService.deleteArama(aramaGecmisiId);
         return ResponseEntity.ok("Arama Gecmisi Silindi");
     }
+
+    @DeleteMapping("/tum-aramagecmisi-sil")
+    public ResponseEntity<String> deleteTumAramaGecmisi() {
+        aramaGecmisiService.deleteTumAramaGecmisi();
+        return ResponseEntity.ok("Tum Arama Gecmisi Silindi");
+    }
 }

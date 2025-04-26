@@ -11,4 +11,6 @@ public interface IAramaGecmisiService {
     List<AramaGecmisiDto> getKullaniciAramaGecmisi();
 
     void deleteArama(int aramaGecmisiId);
+
+    void deleteTumAramaGecmisi();
 }

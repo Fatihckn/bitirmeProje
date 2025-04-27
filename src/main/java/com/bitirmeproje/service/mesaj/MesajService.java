@@ -11,6 +11,7 @@ import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.MesajRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,13 +26,15 @@ public class MesajService implements IMesajService {
     private final MesajRepository mesajRepository;
     private final FindUser<Integer> findUser;
     private final GetUserByToken getUserByToken;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public MesajService(MesajRepository mesajRepository,
                         @Qualifier("findUserById") FindUser<Integer> findUser,
-                        GetUserByToken getUserByToken) {
+                        GetUserByToken getUserByToken, SimpMessagingTemplate messagingTemplate) {
         this.mesajRepository = mesajRepository;
         this.findUser = findUser;
         this.getUserByToken = getUserByToken;
+        this.messagingTemplate = messagingTemplate;
     }
 
     // Yeni mesaj gönderme
@@ -49,7 +52,16 @@ public class MesajService implements IMesajService {
 
         mesajRepository.save(mesaj);
 
-        return new MesajDto(mesaj);
+        MesajDto mesajDto = new MesajDto(mesaj);
+
+        // ✨ WebSocket ile sadece alıcıya mesaj gönder
+        messagingTemplate.convertAndSendToUser(
+                alici.getKullaniciTakmaAd(),   // User destination key (ID'yi string yapıyoruz)
+                "/queue/mesajlar",                   // Kendi kuyruğu
+                mesajDto
+        );
+
+        return mesajDto;
     }
 
     // Kullanıcının gelen mesajlarını listele

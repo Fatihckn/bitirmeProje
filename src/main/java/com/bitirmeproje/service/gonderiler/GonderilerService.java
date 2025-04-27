@@ -95,14 +95,14 @@ public class GonderilerService implements IGonderilerService {
     public void gonderiSil(int gonderiId) {
         Gonderiler gonderi = findGonderi(gonderiId);
 
-        String fullUrl = gonderi.getGonderiMedyaUrl();
-        String dosyaAdi = fullUrl.substring(fullUrl.indexOf("medyalar/"));
-
         if(gonderi.getKullaniciId().getKullaniciId() != (getUserByToken.getUser().getKullaniciId())) {
             throw new CustomException(HttpStatus.NOT_FOUND,"Bu gönderiyi silme yetkiniz yok.");
         }
 
-        if(gonderi.getGonderiMedyaTuru().equals(MedyaTuru.FOTO) || gonderi.getGonderiMedyaTuru().equals(MedyaTuru.VIDEO) ){
+        String fullUrl = gonderi.getGonderiMedyaUrl();
+
+        if (fullUrl != null) {
+            String dosyaAdi = fullUrl.substring(fullUrl.indexOf("medyalar/"));
             r2StorageService.deleteFile(dosyaAdi);
         }
 

@@ -3,6 +3,7 @@ package com.bitirmeproje.service.mesaj;
 import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
 import com.bitirmeproje.dto.mesaj.MesajCreateDto;
 import com.bitirmeproje.dto.mesaj.MesajDto;
+import com.bitirmeproje.dto.mesaj.MesajSohbetGecmisiGetirDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public interface IMesajService {
     Optional<MesajDto> mesajGetir(int mesajId);
 
     // İki kullanıcı arasındaki mesajları getir (sohbet geçmişi)
-    List<MesajDto> sohbetGecmisiGetir(int kullaniciId);
+    List<MesajSohbetGecmisiGetirDto> sohbetGecmisiGetir(int kullaniciId);
 
     // Mesaj içeriğini güncelle
     void mesajGuncelle(int mesajId, MesajDto mesajDto);

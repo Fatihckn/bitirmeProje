@@ -3,6 +3,7 @@ package com.bitirmeproje.controller;
 import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
 import com.bitirmeproje.dto.mesaj.MesajCreateDto;
 import com.bitirmeproje.dto.mesaj.MesajDto;
+import com.bitirmeproje.dto.mesaj.MesajSohbetGecmisiGetirDto;
 import com.bitirmeproje.service.mesaj.IMesajService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +48,7 @@ public class MesajController {
 
     // İki kullanıcı arasındaki sohbet geçmişini getir
     @GetMapping("/sohbet/{kullaniciId}")
-    public ResponseEntity<List<MesajDto>> sohbetGecmisiGetir(@PathVariable int kullaniciId) {
+    public ResponseEntity<List<MesajSohbetGecmisiGetirDto>> sohbetGecmisiGetir(@PathVariable int kullaniciId) {
         return ResponseEntity.ok(mesajService.sohbetGecmisiGetir(kullaniciId));
     }
 

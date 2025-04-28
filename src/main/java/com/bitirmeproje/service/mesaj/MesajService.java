@@ -3,6 +3,7 @@ package com.bitirmeproje.service.mesaj;
 import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
 import com.bitirmeproje.dto.mesaj.MesajCreateDto;
 import com.bitirmeproje.dto.mesaj.MesajDto;
+import com.bitirmeproje.dto.mesaj.MesajSohbetGecmisiGetirDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
@@ -104,13 +105,17 @@ public class MesajService implements IMesajService {
 
     // İki kullanıcı arasındaki sohbet geçmişini getir
     @Override
-    public List<MesajDto> sohbetGecmisiGetir(int kullaniciId) {
-        User kullanici1 = getUserByToken.getUser(); // Giriş yapan kullanıcı
-        User kullanici2 = findUser.findUser(kullaniciId); // Mesajlaştığı kişi
+    public List<MesajSohbetGecmisiGetirDto> sohbetGecmisiGetir(int kullaniciId) {
+        User kullanici1 = getUserByToken.getUser();
+        User kullanici2 = findUser.findUser(kullaniciId);
 
         return mesajRepository.findSohbetGecmisi(kullanici1, kullanici2)
                 .stream()
-                .map(MesajDto::new)
+                .map(mesaj -> new MesajSohbetGecmisiGetirDto(
+                        mesaj,
+                        kullanici2.getKullaniciTakmaAd(),
+                        kullanici2.getKullaniciProfilResmi()
+                ))
                 .collect(Collectors.toList());
     }
 

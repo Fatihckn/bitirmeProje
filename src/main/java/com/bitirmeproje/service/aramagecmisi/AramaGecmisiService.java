@@ -35,13 +35,20 @@ public class AramaGecmisiService implements IAramaGecmisiService {
 
         findUser.findUser(aramaGecmisiDto.arananKullaniciId());
 
-        // DTO'yu Entity'ye çeviriyoruz
-        AramaGecmisi yeniArama = new AramaGecmisi();
-        yeniArama.setArananKullaniciId(aramaGecmisiDto.arananKullaniciId());
-        yeniArama.setAramaZamani(LocalDateTime.now()); // Arama zamanını sistem zamanı olarak al
-        yeniArama.setKullaniciId(kullanici); // ManyToOne ilişkisini set ettik
+        if(aramaGecmisiRepository.arananKullaniciIdVarMi(aramaGecmisiDto.arananKullaniciId()) == 0){
+            AramaGecmisi yeniArama = new AramaGecmisi();
+            yeniArama.setArananKullaniciId(aramaGecmisiDto.arananKullaniciId());
+            yeniArama.setAramaZamani(LocalDateTime.now()); // Arama zamanını sistem zamanı olarak al
+            yeniArama.setKullaniciId(kullanici); // ManyToOne ilişkisini set ettik
 
-        aramaGecmisiRepository.save(yeniArama);
+            aramaGecmisiRepository.save(yeniArama);
+        }
+        else{
+            throw new CustomException(HttpStatus.BAD_REQUEST,"Zaten arama yapildi.");
+        }
+
+
+
     }
 
     // Kullanıcının tüm arama geçmişini getir (DTO formatında)

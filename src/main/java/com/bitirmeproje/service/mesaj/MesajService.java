@@ -114,7 +114,8 @@ public class MesajService implements IMesajService {
                 .map(mesaj -> new MesajSohbetGecmisiGetirDto(
                         mesaj,
                         kullanici2.getKullaniciTakmaAd(),
-                        kullanici2.getKullaniciProfilResmi()
+                        kullanici2.getKullaniciProfilResmi(),
+                        kullanici1.getKullaniciTakmaAd()
                 ))
                 .collect(Collectors.toList());
     }

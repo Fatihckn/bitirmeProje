@@ -35,4 +35,6 @@ public interface IMesajService {
     void tumMesajlariSil(int kullaniciId);
 
     List<KullanicininSonGelenMesajlari> getKullanicininSonGelenMesajlari();
+
+    void updateMesajOkunduMu(int kullaniciId);
 }

@@ -73,4 +73,14 @@ public interface MesajRepository extends JpaRepository<Mesaj, Integer> {
 """)
     List<KullanicininSonGelenMesajlari> findSonKonusmalar(@Param("currentUserId") int currentUserId);
 
+    @Modifying
+    @Query("""
+        UPDATE Mesaj m
+        SET m.mesajOkunduMu = true
+        WHERE m.mesajGonderenKullaniciId = :gonderen
+        AND m.mesajGonderilenKullaniciId = :alici
+        AND m.mesajOkunduMu = false
+""")
+        // Mesaj okundu mu bilgisini true yap
+    void updateOkunduByGonderenAndAlici(@Param("gonderen") User gonderen, @Param("alici") User alici);
 }

@@ -1,27 +1,35 @@
 package com.bitirmeproje.config;
 
+import com.bitirmeproje.security.jwt.JwtHandshakeInterceptor;
+import com.bitirmeproje.security.jwt.JwtUtil;
+import com.bitirmeproje.security.jwt.CustomHandshakeHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic", "/queue"); // queue ekledik
-        config.setApplicationDestinationPrefixes("/app");
-        config.setUserDestinationPrefix("/user"); // önemli: user-specific prefix
+    private final JwtUtil jwtUtil;
+
+    public WebSocketConfig(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
     }
 
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry config) {
+        config.enableSimpleBroker("/topic", "/queue"); // kullanıcıya özel "/queue"
+        config.setApplicationDestinationPrefixes("/app"); // client -> server
+        config.setUserDestinationPrefix("/user"); // server -> user
+    }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws") // ws://localhost:8080/ws
-                .setAllowedOriginPatterns("*") // Güvenlik için productionda kısıtlarsın
+        registry.addEndpoint("/ws")
+                .setAllowedOriginPatterns("*") // PROD için daralt
+                .addInterceptors(new JwtHandshakeInterceptor(jwtUtil)) // ✨ JWT doğrulama burada
+                .setHandshakeHandler(new CustomHandshakeHandler())     // ✨ Principal burada oluşturuluyor
                 .withSockJS();
     }
 }

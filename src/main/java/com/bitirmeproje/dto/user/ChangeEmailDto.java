@@ -4,6 +4,7 @@ public class ChangeEmailDto {
     private String eskiEposta;
     private String sifre;
     private String yeniEposta;
+    private String otp;
 
     public String getEskiEposta() {
         return eskiEposta;
@@ -28,4 +29,8 @@ public class ChangeEmailDto {
     public void setYeniEposta(String yeniEposta) {
         this.yeniEposta = yeniEposta;
     }
+
+    public String getOtp() {return otp;}
+
+    public void setOtp(String otp) {this.otp = otp;}
 }

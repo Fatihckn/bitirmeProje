@@ -35,12 +35,12 @@ public class UserService implements IUserService {
     private final GetUserByToken getUserByToken;
     private final IEntityDtoConverter<User, UserDto> entityDtoConvert;
     private final FindUser<String> findUser;
+    private final SendEmail emailServiceDeleteAccount;
     private final SendEmail emailService;
     private final OtpStorage otpStorage;
     private final R2StorageService r2StorageService;
     private final GonderilerRepository gonderilerRepository;
     private final FollowsRepository followsRepository;
-    private final SendEmail emailServiceDeleteAccount;
 
     private final Map<String, String> sifremiUnuttumOtp = new ConcurrentHashMap<>();
 
@@ -71,11 +71,9 @@ public class UserService implements IUserService {
         User user = getUserByToken.getUser();
 
         // Eski şifreyi doğrula
-//        System.out.println("satır 49 geldi");
         if (sifreDto == null || sifreDto.getEskiSifre() == null || sifreDto.getYeniSifre() == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Şifre alanları boş olamaz!");
         }
-//        System.out.println("satır 53 geldi, eski şifre ile yeni şifre aynı değil");
 
         if (!passwordHasher.matches(sifreDto.getEskiSifre(), user.getSifre())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Eski şifre hatalı!");
@@ -85,7 +83,6 @@ public class UserService implements IUserService {
         if (sifreDto.getEskiSifre().equals(sifreDto.getYeniSifre())) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Yeni şifre eski şifre ile aynı olamaz!");
         }
-//        System.out.println("satır 53 geldi, eski şifre ile yeni şifre aynı değil");
 
         // Yeni şifreyi hashle ve kaydet
         user.setSifre(passwordHasher.hashPassword(sifreDto.getYeniSifre()));
@@ -219,14 +216,12 @@ public class UserService implements IUserService {
             throw new CustomException(HttpStatus.NOT_FOUND,"Kullanici Bulunamadi");
         }
 
-        // Aranan kullanıcının gönderileri(Gönderilerini beğenip beğenmediğimiz de dönüyor)
         List<GonderiDto> gonderiler = gonderilerRepository.findProfilGonderileriWithBegeniDurumu(users.getKullaniciId(), getUserByToken.getUser().getKullaniciId());
 
         List<User> kullaniciTakipcisi = followsRepository.findByFollowersUserId(users.getKullaniciId());
 
         List<User> kullaniciTakipEttigi = followsRepository.findByFollowingUserId(users.getKullaniciId());
 
-        // Aranan kullanıcıyı takip ediyor muyuz onu kontrol ediyoruz.
         for(User user : kullaniciTakipcisi) {
             if(user.getKullaniciId() == getUserByToken.getUser().getKullaniciId()) {
                 flag = true;
@@ -254,6 +249,8 @@ public class UserService implements IUserService {
     // Kullanıcı e-posta değiştiriyoruz
     public void changeUserEmail(ChangeEmailDto changeEmailDto) {
         User user = getUserByToken.getUser();
+
+        otpStorage.validateOtp(changeEmailDto.getYeniEposta(), changeEmailDto.getOtp());
 
         // Eski e-posta eşleşiyor mu kontrol et
         if (!user.getePosta().equals(changeEmailDto.getEskiEposta())) {
@@ -285,7 +282,8 @@ public class UserService implements IUserService {
         userRepository.delete(user);
     }
 
-    public void deleteUserAccountValidation() {
+    // Genel validasyon(sadece login olan kullanıcının emailine)
+    public void validation() {
         User user = getUserByToken.getUser();
 
         String otp = OtpGenerator.generateOtp();
@@ -293,6 +291,15 @@ public class UserService implements IUserService {
         otpStorage.putOtp(user.getePosta(), otp);
 
         emailServiceDeleteAccount.sendOtpEmail(user.getePosta(), otp);
+    }
+
+    // E-mail değiştirmek için validasyon
+    public void validationForEmail(String email){
+        String otp = OtpGenerator.generateOtp();
+
+        otpStorage.putOtp(email, otp);
+
+        emailServiceDeleteAccount.sendOtpEmail(email, otp);
     }
 
     private void putOtpWithExpiry(String email, String otp) {

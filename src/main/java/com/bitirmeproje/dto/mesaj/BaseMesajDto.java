@@ -2,7 +2,6 @@ package com.bitirmeproje.dto.mesaj;
 
 import com.bitirmeproje.model.Mesaj;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public abstract class BaseMesajDto {
@@ -11,6 +10,7 @@ public abstract class BaseMesajDto {
     protected int aliciKullaniciId;
     protected String mesajIcerigi;
     protected LocalDateTime mesajGonderilmeZamani;
+    protected Boolean mesajOkunduMu;
 
     public BaseMesajDto() {}
 
@@ -21,6 +21,7 @@ public abstract class BaseMesajDto {
         this.aliciKullaniciId = mesaj.getMesajGonderilenKullaniciId().getKullaniciId();
         this.mesajIcerigi = mesaj.getMesajIcerigi();
         this.mesajGonderilmeZamani = mesaj.getMesajGonderilmeZamani();
+        this.mesajOkunduMu = mesaj.isMesajOkunduMu();
     }
 
     // Getter ve Setter metodları
@@ -64,4 +65,11 @@ public abstract class BaseMesajDto {
         this.mesajGonderilmeZamani = mesajGonderilmeZamani;
     }
 
+    public Boolean getMesajOkunduMu() {
+        return mesajOkunduMu;
+    }
+
+    public void setMesajOkunduMu(Boolean mesajOkunduMu) {
+        this.mesajOkunduMu = mesajOkunduMu;
+    }
 }

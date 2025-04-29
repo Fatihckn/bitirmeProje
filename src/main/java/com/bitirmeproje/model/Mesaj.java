@@ -27,6 +27,9 @@ public class Mesaj {
     @Column(name = "mesaj_gonderilme_zamani")
     private LocalDateTime mesajGonderilmeZamani;
 
+    @Column(name = "mesaj_okundu_mu")
+    private boolean mesajOkunduMu = false;
+
     public int getMesajId() {
         return mesajId;
     }
@@ -65,5 +68,13 @@ public class Mesaj {
 
     public void setMesajGonderilmeZamani(LocalDateTime mesajGonderilmeZamani) {
         this.mesajGonderilmeZamani = mesajGonderilmeZamani;
+    }
+
+    public boolean isMesajOkunduMu() {
+        return mesajOkunduMu;
+    }
+
+    public void setMesajOkunduMu(boolean mesajOkunduMu) {
+        this.mesajOkunduMu = mesajOkunduMu;
     }
 }

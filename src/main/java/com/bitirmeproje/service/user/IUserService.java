@@ -31,5 +31,7 @@ public interface IUserService {
 
     void deleteUserAccount(String otp);
 
-    void deleteUserAccountValidation();
+    void validation();
+
+    void validationForEmail(String email);
 }

@@ -84,7 +84,6 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
 
-    // Aranan kullanıcının profilini getir
     @GetMapping("/profil/{takmaAd}")
     public ResponseEntity<UserGonderilerDto> findProfilAranan(@PathVariable String takmaAd) {
 
@@ -100,16 +99,25 @@ public class UserController {
         return ResponseEntity.ok("E-posta başarıyla güncellendi.");
     }
 
-    @PostMapping("/delete-account-validation")
-    public ResponseEntity<String> deleteAccountValidation() {
-        userService.deleteUserAccountValidation();
-        return ResponseEntity.ok("Mailinize Kod Gönderildi.");
-    }
-
+    // Hesap silme
     @DeleteMapping("/delete-account")
     public ResponseEntity<String> deleteAccount(@RequestParam String otp) {
         userService.deleteUserAccount(otp);
         return ResponseEntity.ok("Hesap Başarıyla Silindi");
+    }
+
+    // Genel validasyon(sadece login olan kullanıcının emailine)
+    @PostMapping("/validation")
+    public ResponseEntity<String> validateEmail() {
+        userService.validation();
+        return ResponseEntity.ok("Mailinize Kod Gönderildi.");
+    }
+
+    // E-mail değiştirmek için validasyon
+    @PostMapping("/validation/email")
+    public ResponseEntity<String> validateEmail(@RequestParam String email) {
+        userService.validationForEmail(email);
+        return ResponseEntity.ok("Mailinize Kod Gönderildi.");
     }
 
     private ProfilResmiGuncelleDto convertToDto(MultipartFile profilResmi) {

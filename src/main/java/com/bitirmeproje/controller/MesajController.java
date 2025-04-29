@@ -78,4 +78,10 @@ public class MesajController {
     public ResponseEntity<List<KullanicininSonGelenMesajlari>> kullaniciSonSohbetler() {
         return ResponseEntity.ok(mesajService.getKullanicininSonGelenMesajlari());
     }
+
+    @PutMapping("/update-mesaj-okundu-mu/{kullaniciId}")
+    public ResponseEntity<String> mesajOkunduMu(@PathVariable int kullaniciId) {
+        mesajService.updateMesajOkunduMu(kullaniciId);
+        return ResponseEntity.ok("Mesaj Okundu Bilgisi Güncellendi.");
+    }
 }

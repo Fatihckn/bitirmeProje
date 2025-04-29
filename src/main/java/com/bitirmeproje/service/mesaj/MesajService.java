@@ -165,6 +165,9 @@ public class MesajService implements IMesajService {
         return mesajRepository.findSonKonusmalar(user.getKullaniciId());
     }
 
+    @Transactional
+    public void updateMesajOkunduMu(int kullaniciId) {mesajRepository.updateOkunduByGonderenAndAlici(findUser.findUser(kullaniciId), getUserByToken.getUser());}
+
     private Mesaj getMesaj(int mesajId){
         Mesaj mesaj = mesajRepository.findByMesajId(mesajId);
 

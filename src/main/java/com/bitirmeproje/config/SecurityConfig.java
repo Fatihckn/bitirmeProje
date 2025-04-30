@@ -48,6 +48,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/logout").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/auth/**").permitAll()
 
+                        .requestMatchers("/ws/**").permitAll() // 💥 SockJS info çağrıları için serbest
+
                         // Şifre sıfırlama işlemleri (JWT olmadan erişilebilir)
                         .requestMatchers("/api/user/sifre-sifirla").permitAll()
                         .requestMatchers("/api/user/sifre-dogrula").permitAll()

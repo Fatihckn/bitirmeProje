@@ -37,10 +37,11 @@ public class JwtUtil {
     }
 
     // Token üret
-    public String generateToken(String email,String role, int userId) {
+    public String generateToken(String email,String role, int userId, String takmaAd) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
         claims.put("userId", userId);
+        claims.put("takmaAd", takmaAd);
 
         return Jwts.builder()
                 .claims(claims)
@@ -92,6 +93,10 @@ public class JwtUtil {
     // Claims üzerinden istediğin alanı çekmek için
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         return claimsResolver.apply(extractAllClaims(token));
+    }
+
+    public String extractTakmaAd(String token) {
+        return extractAllClaims(token).get("takmaAd", String.class);
     }
 
     // Token'dan tüm Claims'i çek

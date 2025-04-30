@@ -8,11 +8,18 @@ import java.security.Principal;
 import java.util.Map;
 
 public class CustomHandshakeHandler extends DefaultHandshakeHandler {
+
     @Override
     protected Principal determineUser(ServerHttpRequest request,
                                       WebSocketHandler wsHandler,
                                       Map<String, Object> attributes) {
-        String username = (String) attributes.get("username"); // Interceptor'dan geldi
-        return () -> username; // Principal arayüzünü implement eden lambda
+        Object usernameObj = attributes.get("username");
+
+        if (usernameObj instanceof String username && username != null && !username.isBlank()) {
+            return () -> username;
+        }
+
+        // ❌ Eğer kullanıcı bilgisi yoksa, bağlantıyı reddet
+        return null;
     }
 }

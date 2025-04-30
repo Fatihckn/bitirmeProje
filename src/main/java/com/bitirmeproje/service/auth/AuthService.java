@@ -103,7 +103,7 @@ public class AuthService implements IAuthService {
         }
 
         // Başarılı giriş, token üret ve geri döndür
-        return jwtUtil.generateToken(user.getePosta(), user.getKullaniciRole().name(), user.getKullaniciId());
+        return jwtUtil.generateToken(user.getePosta(), user.getKullaniciRole().name(), user.getKullaniciId(), user.getKullaniciTakmaAd());
     }
 
     public void logout() {

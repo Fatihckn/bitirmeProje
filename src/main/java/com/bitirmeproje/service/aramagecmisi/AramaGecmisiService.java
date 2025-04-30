@@ -46,9 +46,6 @@ public class AramaGecmisiService implements IAramaGecmisiService {
         else{
             throw new CustomException(HttpStatus.BAD_REQUEST,"Zaten arama yapildi.");
         }
-
-
-
     }
 
     // Kullanıcının tüm arama geçmişini getir (DTO formatında)
@@ -75,6 +72,10 @@ public class AramaGecmisiService implements IAramaGecmisiService {
 
         // Arama geçmişini veritabanından çek
         AramaGecmisi aramaGecmisi = aramaGecmisiRepository.findAramaGecmisiByAramaGecmisiId(aramaGecmisiId);
+
+        if(aramaGecmisi == null){
+            throw new CustomException(HttpStatus.BAD_REQUEST,"Arama Gecmisi Bulunamadi.");
+        }
 
         // Silme yetkisi var mı kontrol et (Arama geçmişi bu kullanıcıya mı ait?)!!! Bu kısımlar değiştirilebilir şuanlık kontrol kalsın.
         if (!aramaGecmisi.getKullaniciId().equals(kullanici)) {

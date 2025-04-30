@@ -27,7 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*") // PROD için daralt
+                .setAllowedOriginPatterns("https://localhost:5173\", \"https://bitirmeproje.xyz") // PROD için daralt
                 .addInterceptors(new JwtHandshakeInterceptor(jwtUtil)) // ✨ JWT doğrulama burada
                 .setHandshakeHandler(new CustomHandshakeHandler())     // ✨ Principal burada oluşturuluyor
                 .withSockJS();

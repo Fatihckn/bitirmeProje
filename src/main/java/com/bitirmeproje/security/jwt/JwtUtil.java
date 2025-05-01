@@ -63,6 +63,18 @@ public class JwtUtil {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public String extractTakmaAd(String token) {
+        try {
+            String takmaAd = extractAllClaims(token).get("takmaAd", String.class);
+            System.out.println("extractTakmaAd -> " + takmaAd);
+            return takmaAd;
+        } catch (Exception e) {
+            System.out.println("extractTakmaAd exception: " + e.getMessage());
+            return null;
+        }
+    }
+
+
     public String extractRole(String token) {
         return extractAllClaims(token).get("role", String.class);
     }
@@ -93,10 +105,6 @@ public class JwtUtil {
     // Claims üzerinden istediğin alanı çekmek için
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         return claimsResolver.apply(extractAllClaims(token));
-    }
-
-    public String extractTakmaAd(String token) {
-        return extractAllClaims(token).get("takmaAd", String.class);
     }
 
     // Token'dan tüm Claims'i çek

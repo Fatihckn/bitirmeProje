@@ -62,6 +62,8 @@ public class MesajService implements IMesajService {
                 mesajDto
         );
 
+        System.out.println("✅ Mesaj " + alici.getKullaniciTakmaAd() + " kullanıcısına gönderildi.");
+
         return mesajDto;
     }
 

@@ -19,6 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
+        System.out.println("📡 WebSocketConfig -> Mesaj broker yapılandırması başlatıldı.");
         config.enableSimpleBroker("/topic", "/queue"); // kullanıcıya özel "/queue"
         config.setApplicationDestinationPrefixes("/app"); // client -> server
         config.setUserDestinationPrefix("/user"); // server -> user
@@ -26,6 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        System.out.println("🔗 WebSocketConfig -> STOMP endpoint kaydı yapılıyor (/ws)");
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
                 .addInterceptors(new JwtHandshakeInterceptor(jwtUtil))

@@ -23,11 +23,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
         URI uri = request.getURI();
         String path = uri.getPath();
 
-        // 🟡 SockJS info veya handshake endpoint'leri için doğrulama yapılmaz
-        if (path.contains("/ws/info") || path.endsWith("/ws")) {
-            System.out.println("🟡 SockJS ön bağlantı (/ws/info veya /ws) için token doğrulaması yapılmadı.");
-            return true;
-        }
+        System.out.println("🤝 Handshake başlatıldı. Path: " + path);
 
         // 🔐 Token'ı query parametresinden al
         String token = null;
@@ -48,6 +44,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
         try {
             String takmaAd = jwtUtil.extractTakmaAd(token);
+            System.out.println("🔍 Token'dan çıkarılan takmaAd: " + takmaAd);
             if (takmaAd != null && !takmaAd.isBlank()) {
                 attributes.put("username", takmaAd);
                 System.out.println("✅ Token geçerli. Kullanıcı: " + takmaAd);

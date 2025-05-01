@@ -14,12 +14,15 @@ public class CustomHandshakeHandler extends DefaultHandshakeHandler {
                                       WebSocketHandler wsHandler,
                                       Map<String, Object> attributes) {
         Object usernameObj = attributes.get("username");
+        System.out.println("🧩 CustomHandshakeHandler -> Kullanıcı atanıyor: " + usernameObj);
 
         if (usernameObj instanceof String username && username != null && !username.isBlank()) {
+            System.out.println("✅ Kullanıcı Principal olarak atandı: " + username);
             return () -> username;
         }
 
         // ❌ Eğer kullanıcı bilgisi yoksa, bağlantıyı reddet
+        System.out.println("❌ Kullanıcı atanamadı. Principal null.");
         return null;
     }
 }

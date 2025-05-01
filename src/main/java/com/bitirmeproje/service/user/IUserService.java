@@ -33,5 +33,5 @@ public interface IUserService {
 
     void validation();
 
-    void validationForEmail(String email);
+    void validationForEmail(ChangeEmailDto2 changeEmailDto);
 }

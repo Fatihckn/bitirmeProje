@@ -91,13 +91,8 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
 
-    // Kullanıcı e-posta değiştiriyoruz
-    @PostMapping("/eposta-degistir")
-    public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailDto changeEmailDto) {
 
-        userService.changeUserEmail(changeEmailDto);
-        return ResponseEntity.ok("E-posta başarıyla güncellendi.");
-    }
+
 
     // Hesap silme
     @DeleteMapping("/delete-account")
@@ -113,11 +108,22 @@ public class UserController {
         return ResponseEntity.ok("Mailinize Kod Gönderildi.");
     }
 
+
+
     // E-mail değiştirmek için validasyon
     @PostMapping("/validation/email")
-    public ResponseEntity<String> validateEmail(@RequestParam String email) {
-        userService.validationForEmail(email);
+    public ResponseEntity<String> validateEmail(@RequestBody ChangeEmailDto2 changeEmailDto2) {
+        userService.validationForEmail(changeEmailDto2);
         return ResponseEntity.ok("Mailinize Kod Gönderildi.");
+    }
+
+
+    // Kullanıcı e-posta değiştiriyoruz
+    @PostMapping("/eposta-degistir")
+    public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailDto changeEmailDto) {
+
+        userService.changeUserEmail(changeEmailDto);
+        return ResponseEntity.ok("E-posta başarıyla güncellendi.");
     }
 
     private ProfilResmiGuncelleDto convertToDto(MultipartFile profilResmi) {

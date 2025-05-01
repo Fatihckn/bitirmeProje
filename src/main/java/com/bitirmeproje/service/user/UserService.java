@@ -246,11 +246,17 @@ public class UserService implements IUserService {
         userRepository.save(user);
     }
 
+
+
     // Kullanıcı e-posta değiştiriyoruz
+    // form verisini ilk olarak buraya gondereceğim.
     public void changeUserEmail(ChangeEmailDto changeEmailDto) {
         User user = getUserByToken.getUser();
 
-        otpStorage.validateOtp(changeEmailDto.getYeniEposta(), changeEmailDto.getOtp());
+        String otp = OtpGenerator.generateOtp();
+
+        otpStorage.putOtp(changeEmailDto.getYeniEposta(), otp);
+
 
         // Eski e-posta eşleşiyor mu kontrol et
         if (!user.getePosta().equals(changeEmailDto.getEskiEposta())) {
@@ -267,9 +273,9 @@ public class UserService implements IUserService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Bu e-posta adresi zaten kullanımda!");
         }
 
-        // Yeni e-postayı kaydet
-        user.setePosta(changeEmailDto.getYeniEposta());
-        userRepository.save(user);
+        emailServiceDeleteAccount.sendOtpEmail(changeEmailDto.getYeniEposta(), otp);
+
+
     }
 
     @Transactional
@@ -294,12 +300,16 @@ public class UserService implements IUserService {
     }
 
     // E-mail değiştirmek için validasyon
-    public void validationForEmail(String email){
-        String otp = OtpGenerator.generateOtp();
+    public void validationForEmail(ChangeEmailDto2 changeEmailDto2){
 
-        otpStorage.putOtp(email, otp);
+        otpStorage.validateOtp(changeEmailDto2.getYeniEposta(), changeEmailDto2.getOtp());
 
-        emailServiceDeleteAccount.sendOtpEmail(email, otp);
+
+        User user = getUserByToken.getUser();
+        user.setePosta(changeEmailDto2.getYeniEposta());
+        userRepository.save(user);
+
+
     }
 
     private void putOtpWithExpiry(String email, String otp) {

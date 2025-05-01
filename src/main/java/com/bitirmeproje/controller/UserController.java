@@ -91,9 +91,6 @@ public class UserController {
         return ResponseEntity.ok(currentUser);
     }
 
-
-
-
     // Hesap silme
     @DeleteMapping("/delete-account")
     public ResponseEntity<String> deleteAccount(@RequestParam String otp) {
@@ -108,22 +105,19 @@ public class UserController {
         return ResponseEntity.ok("Mailinize Kod Gönderildi.");
     }
 
-
-
     // E-mail değiştirmek için validasyon
     @PostMapping("/validation/email")
     public ResponseEntity<String> validateEmail(@RequestBody ChangeEmailDto2 changeEmailDto2) {
         userService.validationForEmail(changeEmailDto2);
-        return ResponseEntity.ok("Mailinize Kod Gönderildi.");
+        return ResponseEntity.ok("E-posta başarıyla güncellendi.");
     }
-
 
     // Kullanıcı e-posta değiştiriyoruz
     @PostMapping("/eposta-degistir")
     public ResponseEntity<String> changeEmail(@RequestBody ChangeEmailDto changeEmailDto) {
 
         userService.changeUserEmail(changeEmailDto);
-        return ResponseEntity.ok("E-posta başarıyla güncellendi.");
+        return ResponseEntity.ok("Mailinize Kod Gönderildi.");
     }
 
     private ProfilResmiGuncelleDto convertToDto(MultipartFile profilResmi) {

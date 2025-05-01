@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class OtpStorage {
     private final ConcurrentHashMap<String, OtpEntry> otpMap = new ConcurrentHashMap<>();
-    private static final long OTP_VALIDITY_DURATION = 2*60 * 1000; // 1 dakika (milisaniye cinsinden)
+    private static final long OTP_VALIDITY_DURATION = 2 * 60 * 1000; // 2 dakika (milisaniye cinsinden)
 
     // OTP'yi ekle
     public void putOtp(String email, String otp) {

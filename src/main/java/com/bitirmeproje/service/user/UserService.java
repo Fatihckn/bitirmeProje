@@ -246,8 +246,6 @@ public class UserService implements IUserService {
         userRepository.save(user);
     }
 
-
-
     // Kullanıcı e-posta değiştiriyoruz
     // form verisini ilk olarak buraya gondereceğim.
     public void changeUserEmail(ChangeEmailDto changeEmailDto) {
@@ -256,7 +254,6 @@ public class UserService implements IUserService {
         String otp = OtpGenerator.generateOtp();
 
         otpStorage.putOtp(changeEmailDto.getYeniEposta(), otp);
-
 
         // Eski e-posta eşleşiyor mu kontrol et
         if (!user.getePosta().equals(changeEmailDto.getEskiEposta())) {
@@ -274,8 +271,6 @@ public class UserService implements IUserService {
         }
 
         emailServiceDeleteAccount.sendOtpEmail(changeEmailDto.getYeniEposta(), otp);
-
-
     }
 
     @Transactional
@@ -301,15 +296,12 @@ public class UserService implements IUserService {
 
     // E-mail değiştirmek için validasyon
     public void validationForEmail(ChangeEmailDto2 changeEmailDto2){
+        User user = getUserByToken.getUser();
 
         otpStorage.validateOtp(changeEmailDto2.getYeniEposta(), changeEmailDto2.getOtp());
 
-
-        User user = getUserByToken.getUser();
         user.setePosta(changeEmailDto2.getYeniEposta());
         userRepository.save(user);
-
-
     }
 
     private void putOtpWithExpiry(String email, String otp) {

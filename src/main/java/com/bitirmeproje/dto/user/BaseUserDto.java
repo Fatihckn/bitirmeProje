@@ -11,10 +11,14 @@ public abstract class BaseUserDto {
     protected String kullaniciTelefonNo;
     protected LocalDate kullaniciDogumTarihi;
     protected LocalDate kullaniciUyeOlmaTarihi;
+    protected String kullaniciCinsiyet;
+    protected String kullaniciUyeUlkesi;
 
     public BaseUserDto() {}
 
-    public BaseUserDto(int kullaniciId, String kullaniciTakmaAd, String ePosta, String kullaniciBio, String kullaniciProfilResmi, String kullaniciTelefonNo, LocalDate kullaniciDogumTarihi, LocalDate kullaniciUyeOlmaTarihi) {
+    public BaseUserDto(int kullaniciId, String kullaniciTakmaAd, String ePosta, String kullaniciBio, String kullaniciProfilResmi,
+                       String kullaniciTelefonNo, LocalDate kullaniciDogumTarihi, LocalDate kullaniciUyeOlmaTarihi,
+                       String kullaniciCinsiyet, String kullaniciUyeUlkesi) {
         this.kullaniciId = kullaniciId;
         this.kullaniciTakmaAd = kullaniciTakmaAd;
         this.ePosta = ePosta;
@@ -23,6 +27,8 @@ public abstract class BaseUserDto {
         this.kullaniciTelefonNo = kullaniciTelefonNo;
         this.kullaniciDogumTarihi = kullaniciDogumTarihi;
         this.kullaniciUyeOlmaTarihi = kullaniciUyeOlmaTarihi;
+        this.kullaniciCinsiyet = kullaniciCinsiyet;
+        this.kullaniciUyeUlkesi = kullaniciUyeUlkesi;
     }
 
     // Getter ve Setter'lar
@@ -90,5 +96,21 @@ public abstract class BaseUserDto {
 
     public void setKullaniciUyeOlmaTarihi(LocalDate kullaniciUyeOlmaTarihi) {
         this.kullaniciUyeOlmaTarihi = kullaniciUyeOlmaTarihi;
+    }
+
+    public String getKullaniciCinsiyet() {
+        return kullaniciCinsiyet;
+    }
+
+    public void setKullaniciCinsiyet(String kullaniciCinsiyet) {
+        this.kullaniciCinsiyet = kullaniciCinsiyet;
+    }
+
+    public String getKullaniciUyeUlkesi() {
+        return kullaniciUyeUlkesi;
+    }
+
+    public void setKullaniciUyeUlkesi(String kullaniciUyeUlkesi) {
+        this.kullaniciUyeUlkesi = kullaniciUyeUlkesi;
     }
 }

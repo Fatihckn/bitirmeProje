@@ -18,7 +18,9 @@ public class UserAllDtoConverter implements IEntityDtoConverter<User, UserAllDto
                 user.getKullaniciTelefonNo(),
                 user.getKullaniciDogumTarihi(),
                 user.getKullaniciUyeOlmaTarihi(),
-                user.getKullaniciRole()
+                user.getKullaniciRole(),
+                user.getKullaniciCinsiyet(),
+                user.getKullaniciUyeUlkesi()
         );
     }
 }

@@ -48,7 +48,7 @@ public class UserService implements IUserService {
 
     UserService(UserRepository userRepository, PasswordHasher passwordHasher,
                 GetUserByToken getUserByToken,
-                @Qualifier("userConverterer") IEntityDtoConverter<User, UserDto> entityDtoConvert,
+                @Qualifier("userConverter") IEntityDtoConverter<User, UserDto> entityDtoConvert,
                 @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
                 FindUser<String> findUser, OtpStorage otpStorage,
                 R2StorageService r2StorageService, GonderilerRepository gonderilerRepository,
@@ -189,6 +189,12 @@ public class UserService implements IUserService {
             if (userDto.getKullaniciDogumTarihi() != null) {
                 user.setKullaniciDogumTarihi(userDto.getKullaniciDogumTarihi());
             }
+            if (userDto.getKullaniciCinsiyet() != null && !userDto.getKullaniciCinsiyet().isEmpty()) {
+                user.setKullaniciCinsiyet(userDto.getKullaniciCinsiyet());
+            }
+            if (userDto.getKullaniciUyeUlkesi() != null && !userDto.getKullaniciUyeUlkesi().isEmpty()) {
+                user.setKullaniciUyeUlkesi(userDto.getKullaniciUyeUlkesi());
+            }
 
             userRepository.save(user);
         }catch (DataIntegrityViolationException e) {
@@ -237,6 +243,8 @@ public class UserService implements IUserService {
         userDto.setKullaniciUyeOlmaTarihi(users.getKullaniciUyeOlmaTarihi());
         userDto.setePosta(users.getePosta());
         userDto.setKullaniciDogumTarihi(users.getKullaniciDogumTarihi());
+        userDto.setKullaniciCinsiyet(users.getKullaniciCinsiyet());
+        userDto.setKullaniciUyeUlkesi(users.getKullaniciUyeUlkesi());
         return userDto;
     }
 

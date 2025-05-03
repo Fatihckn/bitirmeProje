@@ -10,8 +10,11 @@ public class UserAllDto extends BaseUserDto {
 
     public UserAllDto(int kullaniciId, String kullaniciTakmaAd, String ePosta, String kullaniciBio,
                       String kullaniciProfilResmi, String kullaniciTelefonNo, LocalDate kullaniciDogumTarihi,
-                      LocalDate kullaniciUyeOlmaTarihi, Role kullaniciRol) {
-        super(kullaniciId, kullaniciTakmaAd, ePosta, kullaniciBio, kullaniciProfilResmi, kullaniciTelefonNo, kullaniciDogumTarihi, kullaniciUyeOlmaTarihi);
+                      LocalDate kullaniciUyeOlmaTarihi, Role kullaniciRol, String kullaniciCinsiyet,
+                      String kullaniciUyeUlkesi) {
+        super(kullaniciId, kullaniciTakmaAd, ePosta, kullaniciBio, kullaniciProfilResmi,
+                kullaniciTelefonNo, kullaniciDogumTarihi, kullaniciUyeOlmaTarihi, kullaniciCinsiyet,
+                kullaniciUyeUlkesi);
         this.kullaniciRol = kullaniciRol;
     }
 

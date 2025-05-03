@@ -5,7 +5,7 @@ import com.bitirmeproje.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserConverterer implements IEntityDtoConverter<User,UserDto> {
+public class UserConverter implements IEntityDtoConverter<User,UserDto> {
 
     @Override
     public UserDto convertToDTO(User user) {
@@ -17,7 +17,9 @@ public class UserConverterer implements IEntityDtoConverter<User,UserDto> {
                 user.getKullaniciProfilResmi() != null ? user.getKullaniciProfilResmi() : null,
                 user.getKullaniciTelefonNo(),
                 user.getKullaniciDogumTarihi(),
-                user.getKullaniciUyeOlmaTarihi()
+                user.getKullaniciUyeOlmaTarihi(),
+                user.getKullaniciCinsiyet(),
+                user.getKullaniciUyeUlkesi()
         );
     }
 }

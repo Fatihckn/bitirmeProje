@@ -43,6 +43,12 @@ public class User{
     @Column(name = "kullanici_rol")
     private Role kullaniciRole;
 
+    @Column(name = "kullanici_cinsiyet")
+    private String kullaniciCinsiyet;
+
+    @Column(name = "kullanici_uye_ulkesi")
+    private String kullaniciUyeUlkesi;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Gonderiler> gonderiler; // Kullanıcının gönderileri
@@ -230,6 +236,22 @@ public class User{
 
     public void setMesajGonderenKullaniciId(List<Mesaj> mesajGonderenKullaniciId) {
         this.mesajGonderenKullaniciId = mesajGonderenKullaniciId;
+    }
+
+    public String getKullaniciCinsiyet() {
+        return kullaniciCinsiyet;
+    }
+
+    public void setKullaniciCinsiyet(String kullaniciCinsiyet) {
+        this.kullaniciCinsiyet = kullaniciCinsiyet;
+    }
+
+    public String getKullaniciUyeUlkesi() {
+        return kullaniciUyeUlkesi;
+    }
+
+    public void setKullaniciUyeUlkesi(String kullaniciUyeUlkesi) {
+        this.kullaniciUyeUlkesi = kullaniciUyeUlkesi;
     }
 
     @PrePersist

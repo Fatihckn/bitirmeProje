@@ -100,7 +100,7 @@ public class UserController {
 
     // Genel validasyon(sadece login olan kullanıcının emailine)
     @PostMapping("/validation")
-    public ResponseEntity<String> validateEmail() {
+    public ResponseEntity<String> validation() {
         userService.validation();
         return ResponseEntity.ok("Mailinize Kod Gönderildi.");
     }

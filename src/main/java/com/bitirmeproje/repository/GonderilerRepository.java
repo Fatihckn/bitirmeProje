@@ -81,4 +81,23 @@ public interface GonderilerRepository extends JpaRepository<Gonderiler, Integer>
     @Transactional
     @Query("UPDATE Gonderiler g SET g.gonderiBegeniSayisi = g.gonderiBegeniSayisi - 1 WHERE g.gonderiId = :gonderiId")
     void decreaseBegeniSayisi(@Param("gonderiId") int gonderiId);
+
+    @Query("""
+    SELECT new com.bitirmeproje.dto.gonderiler.GonderiDto(
+        g.gonderiId,
+        g.gonderiIcerigi,
+        g.gonderiTarihi,
+        COALESCE(g.gonderiBegeniSayisi, 0),
+        g.kullaniciId.kullaniciTakmaAd,
+        g.gonderiMedyaUrl,
+        CASE WHEN bg IS NOT NULL THEN TRUE ELSE FALSE END
+    )
+    FROM Gonderiler g
+    LEFT JOIN BegenilenGonderiler bg\s
+        ON g.gonderiId = bg.gonderiId.gonderiId\s
+        AND bg.kullaniciId.kullaniciId = :girenKullanici
+    WHERE g.gonderiId = :gonderiId
+""")
+    GonderiDto findByGonderiIdWithBegenildiMi(@Param("gonderiId") int gonderiId,
+                                              @Param("girenKullanici") int kullaniciId);
 }

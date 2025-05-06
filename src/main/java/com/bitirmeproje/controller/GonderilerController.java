@@ -42,5 +42,10 @@ public class GonderilerController {
         List<GonderiDto> populerGonderiler = gonderilerService.populerGonderileriGetir();
         return ResponseEntity.ok(populerGonderiler);
     }
+
+    @GetMapping("/aranan-gonderi/{gonderiId}")
+    public ResponseEntity<GonderiDto> arananGonderiGetir(@PathVariable int gonderiId) {
+        return ResponseEntity.ok(gonderilerService.getArananGonderi(gonderiId));
+    }
 }
 

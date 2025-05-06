@@ -109,6 +109,19 @@ public class GonderilerService implements IGonderilerService {
         gonderilerRepository.deleteById(gonderi.getGonderiId());
     }
 
+    public GonderiDto getArananGonderi(int gonderiId) {
+        User user = getUserByToken.getUser();
+
+        GonderiDto gonderi = gonderilerRepository.findByGonderiIdWithBegenildiMi(gonderiId, user.getKullaniciId());
+
+        if(gonderi == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST,"Gonderi Bulunamadi");
+        }
+
+        gonderi.setKullaniciFoto(user.getKullaniciProfilResmi());
+        return gonderi;
+    }
+
     private Gonderiler findGonderi(int gonderiId) {
         return gonderilerRepository.findById(gonderiId)
                 .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "Gönderi bulunamadı!"));

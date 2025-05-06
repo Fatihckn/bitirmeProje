@@ -14,4 +14,6 @@ public interface IGonderilerService {
     List<GonderiDto> populerGonderileriGetir();
 
     void gonderiSil(int gonderiId);
+
+    GonderiDto getArananGonderi(int gonderiId);
 }

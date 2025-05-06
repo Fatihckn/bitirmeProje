@@ -64,7 +64,7 @@ public class YeniYorumService implements IYeniYorumService{
     }
 
     public List<YeniYorumDto> getYorumlarByGonderiId(int gonderiId) {
-        List<YeniYorum> yorumlar = yeniYorumRepository.findByGonderiId_GonderiId(gonderiId);
+        List<YeniYorum> yorumlar = yeniYorumRepository.findByGonderiId_GonderiIdOrderByYeniYorumOlusturulmaTarihiDesc(gonderiId);
         return yorumlar.stream().map(iEntityDtoConverter::convertToDTO).collect(Collectors.toList());
     }
 

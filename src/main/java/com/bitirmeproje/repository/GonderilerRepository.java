@@ -24,32 +24,45 @@ public interface GonderilerRepository extends JpaRepository<Gonderiler, Integer>
         COALESCE(g.gonderiBegeniSayisi, 0),
         g.kullaniciId.kullaniciTakmaAd,
         g.gonderiMedyaUrl,
-        CASE WHEN bg IS NOT NULL THEN TRUE ELSE FALSE END
-    )
-    FROM Gonderiler g
-    LEFT JOIN BegenilenGonderiler bg ON g.gonderiId = bg.gonderiId.gonderiId AND bg.kullaniciId.kullaniciId = :kullaniciId
-    WHERE g.kullaniciId.kullaniciId = :kullaniciId
-    ORDER BY g.gonderiTarihi DESC
-    """)
-    List<GonderiDto> findByKullaniciId_KullaniciIdOrderByGonderiTarihiDesc(int kullaniciId);
-
-    @Query("""
-    SELECT new com.bitirmeproje.dto.gonderiler.GonderiDto(
-        g.gonderiId,
-        g.gonderiIcerigi,
-        g.gonderiTarihi,
-        COALESCE(g.gonderiBegeniSayisi, 0),
-        g.kullaniciId.kullaniciTakmaAd,
-        g.gonderiMedyaUrl,
-        CASE WHEN bg IS NOT NULL THEN TRUE ELSE FALSE END
+        CASE WHEN bg IS NOT NULL THEN TRUE ELSE FALSE END,
+        COUNT(y.yorumId)   \s
     )
     FROM Gonderiler g
     LEFT JOIN BegenilenGonderiler bg\s
-        ON g.gonderiId = bg.gonderiId.gonderiId\s
-        AND bg.kullaniciId.kullaniciId = :girenKullanici
-    WHERE g.kullaniciId.kullaniciId = :girilenKullanici
+        ON g.gonderiId = bg.gonderiId.gonderiId AND bg.kullaniciId.kullaniciId = :kullaniciId
+    LEFT JOIN YeniYorum y
+        ON y.gonderiId.gonderiId = g.gonderiId   \s
+    WHERE g.kullaniciId.kullaniciId = :kullaniciId
+    GROUP BY g.gonderiId, g.gonderiIcerigi, g.gonderiTarihi,
+         g.gonderiBegeniSayisi, g.kullaniciId.kullaniciTakmaAd,
+         g.gonderiMedyaUrl, bg   \s
     ORDER BY g.gonderiTarihi DESC
-""")
+   \s""")
+    List<GonderiDto> findByKullaniciId_KullaniciIdOrderByGonderiTarihiDesc(int kullaniciId);
+
+    @Query("""
+                SELECT new com.bitirmeproje.dto.gonderiler.GonderiDto(
+                    g.gonderiId,
+                    g.gonderiIcerigi,
+                    g.gonderiTarihi,
+                    COALESCE(g.gonderiBegeniSayisi, 0),
+                    g.kullaniciId.kullaniciTakmaAd,
+                    g.gonderiMedyaUrl,
+                    CASE WHEN bg IS NOT NULL THEN TRUE ELSE FALSE END,
+                    COUNT(y.yorumId)
+                )
+                FROM Gonderiler g
+                LEFT JOIN BegenilenGonderiler bg\s
+                    ON g.gonderiId = bg.gonderiId.gonderiId\s
+                    AND bg.kullaniciId.kullaniciId = :girenKullanici
+                LEFT JOIN YeniYorum y
+                    ON y.gonderiId.gonderiId = g.gonderiId   \s
+                WHERE g.kullaniciId.kullaniciId = :girilenKullanici
+                GROUP BY g.gonderiId, g.gonderiIcerigi, g.gonderiTarihi,
+                             g.gonderiBegeniSayisi, g.kullaniciId.kullaniciTakmaAd,
+                             g.gonderiMedyaUrl, bg          \s
+                ORDER BY g.gonderiTarihi DESC
+           \s""")
     List<GonderiDto> findProfilGonderileriWithBegeniDurumu(
             @Param("girilenKullanici") int girilenKullanici,
             @Param("girenKullanici") int girenKullanici

@@ -3,15 +3,14 @@ package com.bitirmeproje.dto.gonderiler;
 import java.time.LocalDateTime;
 
 public class GonderiDto {
-    private int gonderiId;
-    private String gonderiIcerigi;
-    private LocalDateTime gonderiTarihi;
-    private int gonderiBegeniSayisi;
-    private String kullaniciTakmaAd;
-    private Boolean begenildiMi;
-    private String gonderiMedyaUrl;
-    private String kullaniciFoto;
-    private String gonderiAtanKullaniciFoto;
+    protected int gonderiId;
+    protected String gonderiIcerigi;
+    protected LocalDateTime gonderiTarihi;
+    protected int gonderiBegeniSayisi;
+    protected String kullaniciTakmaAd;
+    protected Boolean begenildiMi;
+    protected String gonderiMedyaUrl;
+    protected long gonderiYorumSayisi;
 
     public GonderiDto() {}
 
@@ -27,17 +26,8 @@ public class GonderiDto {
     }
 
     public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDateTime gonderiTarihi,
-                      Number gonderiBegeniSayisi, String kullaniciTakmaAd) {
-        this.gonderiId = gonderiId;
-        this.gonderiIcerigi = gonderiIcerigi;
-        this.gonderiTarihi = gonderiTarihi;
-        this.gonderiBegeniSayisi = gonderiBegeniSayisi != null ? gonderiBegeniSayisi.intValue() : 0;
-        this.kullaniciTakmaAd = kullaniciTakmaAd;
-    }
-
-    public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDateTime gonderiTarihi,
                       Number gonderiBegeniSayisi, String kullaniciTakmaAd, String gonderiMedyaUrl, Boolean begenildiMi,
-                      String kullaniciFoto, String gonderiAtanKullaniciFoto) {
+                      long gonderiYorumSayisi) {
         this.gonderiId = gonderiId;
         this.gonderiIcerigi = gonderiIcerigi;
         this.gonderiTarihi = gonderiTarihi;
@@ -45,8 +35,16 @@ public class GonderiDto {
         this.kullaniciTakmaAd = kullaniciTakmaAd;
         this.begenildiMi = begenildiMi;
         this.gonderiMedyaUrl = gonderiMedyaUrl;
-        this.kullaniciFoto = kullaniciFoto;
-        this.gonderiAtanKullaniciFoto = gonderiAtanKullaniciFoto;
+        this.gonderiYorumSayisi = gonderiYorumSayisi;
+    }
+
+    public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDateTime gonderiTarihi,
+                      Number gonderiBegeniSayisi, String kullaniciTakmaAd) {
+        this.gonderiId = gonderiId;
+        this.gonderiIcerigi = gonderiIcerigi;
+        this.gonderiTarihi = gonderiTarihi;
+        this.gonderiBegeniSayisi = gonderiBegeniSayisi != null ? gonderiBegeniSayisi.intValue() : 0;
+        this.kullaniciTakmaAd = kullaniciTakmaAd;
     }
 
     // Getter ve Setter metotları...
@@ -106,19 +104,11 @@ public class GonderiDto {
         this.gonderiMedyaUrl = gonderiMedyaUrl;
     }
 
-    public String getKullaniciFoto() {
-        return kullaniciFoto;
+    public long getGonderiYorumSayisi() {
+        return gonderiYorumSayisi;
     }
 
-    public void setKullaniciFoto(String kullaniciFoto) {
-        this.kullaniciFoto = kullaniciFoto;
-    }
-
-    public String getGonderiAtanKullaniciFoto() {
-        return gonderiAtanKullaniciFoto;
-    }
-
-    public void setGonderiAtanKullaniciFoto(String gonderiAtanKullaniciFoto) {
-        this.gonderiAtanKullaniciFoto = gonderiAtanKullaniciFoto;
+    public void setGonderiYorumSayisi(long gonderiYorumSayisi) {
+        this.gonderiYorumSayisi = gonderiYorumSayisi;
     }
 }

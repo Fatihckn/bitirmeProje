@@ -10,7 +10,7 @@ import java.util.List;
 public interface YeniYorumRepository extends JpaRepository<YeniYorum, Integer> {
 
     // Belirli bir gönderiye ait yorumları getir
-    List<YeniYorum> findByGonderiId_GonderiId(int gonderiId);
+    List<YeniYorum> findByGonderiId_GonderiIdOrderByYeniYorumOlusturulmaTarihiDesc(int gonderiId);
 
     // Belirli bir üst yoruma ait alt yorumları getir
     List<YeniYorum> findByParentYorum_YorumId(int parentYorumId);

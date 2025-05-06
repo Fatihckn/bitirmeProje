@@ -2,13 +2,16 @@ package com.bitirmeproje.service.gonderiler;
 
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderiEkleDto;
+import com.bitirmeproje.dto.gonderiler.GonderiYorumlarDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.MedyaTuru;
 import com.bitirmeproje.model.User;
+import com.bitirmeproje.model.YeniYorum;
 import com.bitirmeproje.repository.GonderilerRepository;
+import com.bitirmeproje.repository.YeniYorumRepository;
 import com.bitirmeproje.service.r2storage.R2StorageService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -27,15 +30,18 @@ public class GonderilerService implements IGonderilerService {
     private final GetUserByToken getUserByToken;
     private final R2StorageService r2StorageService;
     private final FindUser<String> findUser;
+    private final YeniYorumRepository yeniYorumRepository;
 
     private final static String r2PublicBaseUrl = "https://media.bitirmeproje.xyz";
 
     public GonderilerService(GonderilerRepository gonderilerRepository, GetUserByToken getUserByToken,
-                             R2StorageService r2StorageService,@Qualifier("findUserByTakmaAd") FindUser<String> findUser) {
+                             R2StorageService r2StorageService,@Qualifier("findUserByTakmaAd") FindUser<String> findUser,
+                             YeniYorumRepository yeniYorumRepository) {
         this.gonderilerRepository = gonderilerRepository;
         this.getUserByToken = getUserByToken;
         this.r2StorageService = r2StorageService;
         this.findUser = findUser;
+        this.yeniYorumRepository = yeniYorumRepository;
     }
 
     // Belirli bir kullanıcının tüm gönderilerini getir
@@ -113,7 +119,7 @@ public class GonderilerService implements IGonderilerService {
         gonderilerRepository.deleteById(gonderi.getGonderiId());
     }
 
-    public GonderiDto getArananGonderi(int gonderiId) {
+    public GonderiYorumlarDto getArananGonderi(int gonderiId) {
         User user = getUserByToken.getUser();
 
         GonderiDto gonderi = gonderilerRepository.findByGonderiIdWithBegenildiMi(gonderiId, user.getKullaniciId());
@@ -122,15 +128,27 @@ public class GonderilerService implements IGonderilerService {
             throw new CustomException(HttpStatus.BAD_REQUEST,"Gonderi Bulunamadi");
         }
 
+        GonderiYorumlarDto gonderiYorumlarDto = new GonderiYorumlarDto();
+        gonderiYorumlarDto.setGonderiId(gonderiId);
+        gonderiYorumlarDto.setGonderiIcerigi(gonderi.getGonderiIcerigi());
+        gonderiYorumlarDto.setGonderiTarihi(gonderi.getGonderiTarihi());
+        gonderiYorumlarDto.setGonderiMedyaUrl(gonderi.getGonderiMedyaUrl());
+        gonderiYorumlarDto.setBegenildiMi(gonderi.getBegenildiMi());
+        gonderiYorumlarDto.setKullaniciTakmaAd(gonderi.getKullaniciTakmaAd());
+        gonderiYorumlarDto.setGonderiBegeniSayisi(gonderi.getGonderiBegeniSayisi());
+
+        List<YeniYorum> yorumlar = yeniYorumRepository.findByGonderiId_GonderiIdOrderByYeniYorumOlusturulmaTarihiDesc(gonderiId);
+        gonderiYorumlarDto.setYorumlar(yorumlar);
+
         // Login olan kişi
-        gonderi.setKullaniciFoto(user.getKullaniciProfilResmi());
+        gonderiYorumlarDto.setKullaniciFoto(user.getKullaniciProfilResmi());
 
         // Gonderiyi atan kişi
         findUser.findUser(gonderi.getKullaniciTakmaAd());
         User gonderiAtan = findUser.findUser(gonderi.getKullaniciTakmaAd());
-        gonderi.setGonderiAtanKullaniciFoto(gonderiAtan.getKullaniciProfilResmi());
+        gonderiYorumlarDto.setGonderiAtanKullaniciFoto(gonderiAtan.getKullaniciProfilResmi());
 
-        return gonderi;
+        return gonderiYorumlarDto;
     }
 
     private Gonderiler findGonderi(int gonderiId) {

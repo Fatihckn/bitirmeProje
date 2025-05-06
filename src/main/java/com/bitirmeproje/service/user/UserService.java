@@ -50,7 +50,7 @@ public class UserService implements IUserService {
                 GetUserByToken getUserByToken,
                 @Qualifier("userConverter") IEntityDtoConverter<User, UserDto> entityDtoConvert,
                 @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
-                FindUser<String> findUser, OtpStorage otpStorage,
+                @Qualifier("findUserByEmail") FindUser<String> findUser, OtpStorage otpStorage,
                 R2StorageService r2StorageService, GonderilerRepository gonderilerRepository,
                 FollowsRepository followsRepository, @Qualifier("sendEmailForDeleteAccount") SendEmailForDeleteAccount emailServiceDeleteAccount) {
         this.userRepository = userRepository;

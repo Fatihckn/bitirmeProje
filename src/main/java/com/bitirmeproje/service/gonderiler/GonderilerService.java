@@ -3,12 +3,14 @@ package com.bitirmeproje.service.gonderiler;
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderiEkleDto;
 import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.MedyaTuru;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.GonderilerRepository;
 import com.bitirmeproje.service.r2storage.R2StorageService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,14 +26,16 @@ public class GonderilerService implements IGonderilerService {
     private final GonderilerRepository gonderilerRepository;
     private final GetUserByToken getUserByToken;
     private final R2StorageService r2StorageService;
+    private final FindUser<String> findUser;
 
     private final static String r2PublicBaseUrl = "https://media.bitirmeproje.xyz";
 
     public GonderilerService(GonderilerRepository gonderilerRepository, GetUserByToken getUserByToken,
-                             R2StorageService r2StorageService) {
+                             R2StorageService r2StorageService,@Qualifier("findUserByTakmaAd") FindUser<String> findUser) {
         this.gonderilerRepository = gonderilerRepository;
         this.getUserByToken = getUserByToken;
         this.r2StorageService = r2StorageService;
+        this.findUser = findUser;
     }
 
     // Belirli bir kullanıcının tüm gönderilerini getir
@@ -118,7 +122,14 @@ public class GonderilerService implements IGonderilerService {
             throw new CustomException(HttpStatus.BAD_REQUEST,"Gonderi Bulunamadi");
         }
 
+        // Login olan kişi
         gonderi.setKullaniciFoto(user.getKullaniciProfilResmi());
+
+        // Gonderiyi atan kişi
+        findUser.findUser(gonderi.getKullaniciTakmaAd());
+        User gonderiAtan = findUser.findUser(gonderi.getKullaniciTakmaAd());
+        gonderi.setGonderiAtanKullaniciFoto(gonderiAtan.getKullaniciProfilResmi());
+
         return gonderi;
     }
 

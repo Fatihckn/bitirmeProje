@@ -11,6 +11,7 @@ public class GonderiDto {
     private Boolean begenildiMi;
     private String gonderiMedyaUrl;
     private String kullaniciFoto;
+    private String gonderiAtanKullaniciFoto;
 
     public GonderiDto() {}
 
@@ -36,7 +37,7 @@ public class GonderiDto {
 
     public GonderiDto(int gonderiId, String gonderiIcerigi, LocalDateTime gonderiTarihi,
                       Number gonderiBegeniSayisi, String kullaniciTakmaAd, String gonderiMedyaUrl, Boolean begenildiMi,
-                      String kullaniciFoto) {
+                      String kullaniciFoto, String gonderiAtanKullaniciFoto) {
         this.gonderiId = gonderiId;
         this.gonderiIcerigi = gonderiIcerigi;
         this.gonderiTarihi = gonderiTarihi;
@@ -45,6 +46,7 @@ public class GonderiDto {
         this.begenildiMi = begenildiMi;
         this.gonderiMedyaUrl = gonderiMedyaUrl;
         this.kullaniciFoto = kullaniciFoto;
+        this.gonderiAtanKullaniciFoto = gonderiAtanKullaniciFoto;
     }
 
     // Getter ve Setter metotları...
@@ -110,5 +112,13 @@ public class GonderiDto {
 
     public void setKullaniciFoto(String kullaniciFoto) {
         this.kullaniciFoto = kullaniciFoto;
+    }
+
+    public String getGonderiAtanKullaniciFoto() {
+        return gonderiAtanKullaniciFoto;
+    }
+
+    public void setGonderiAtanKullaniciFoto(String gonderiAtanKullaniciFoto) {
+        this.gonderiAtanKullaniciFoto = gonderiAtanKullaniciFoto;
     }
 }

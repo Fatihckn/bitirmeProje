@@ -3,13 +3,13 @@ package com.bitirmeproje.service.gonderiler;
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderiEkleDto;
 import com.bitirmeproje.dto.gonderiler.GonderiYorumlarDto;
+import com.bitirmeproje.dto.yeniyorum.YeniYorumDtoWithBegenildiMi;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.MedyaTuru;
 import com.bitirmeproje.model.User;
-import com.bitirmeproje.model.YeniYorum;
 import com.bitirmeproje.repository.GonderilerRepository;
 import com.bitirmeproje.repository.YeniYorumRepository;
 import com.bitirmeproje.service.r2storage.R2StorageService;
@@ -137,7 +137,14 @@ public class GonderilerService implements IGonderilerService {
         gonderiYorumlarDto.setKullaniciTakmaAd(gonderi.getKullaniciTakmaAd());
         gonderiYorumlarDto.setGonderiBegeniSayisi(gonderi.getGonderiBegeniSayisi());
 
-        List<YeniYorum> yorumlar = yeniYorumRepository.findByGonderiId_GonderiIdOrderByYeniYorumOlusturulmaTarihiDesc(gonderiId);
+        List<YeniYorumDtoWithBegenildiMi> yorumlar = yeniYorumRepository.findByGonderiIdWithBegenildiMi(gonderiId, user.getKullaniciId());
+
+        for (YeniYorumDtoWithBegenildiMi yorumDto : yorumlar) {
+            yorumDto.setAltYorumlar(
+                    getAltYorumlariRecursive(yorumDto.getYorumId(), user.getKullaniciId())
+            );
+        }
+
         gonderiYorumlarDto.setYorumlar(yorumlar);
 
         // Login olan kişi
@@ -147,8 +154,22 @@ public class GonderilerService implements IGonderilerService {
         findUser.findUser(gonderi.getKullaniciTakmaAd());
         User gonderiAtan = findUser.findUser(gonderi.getKullaniciTakmaAd());
         gonderiYorumlarDto.setGonderiAtanKullaniciFoto(gonderiAtan.getKullaniciProfilResmi());
+        gonderiYorumlarDto.setKullaniciId(gonderiAtan.getKullaniciId());
 
         return gonderiYorumlarDto;
+    }
+
+    // Her alt yorumu getirmek için kullanıyoruz çünkü kendi dto'muz cinsinden dönüyor.
+    private List<YeniYorumDtoWithBegenildiMi> getAltYorumlariRecursive(int parentYorumId, int kullaniciId) {
+        List<YeniYorumDtoWithBegenildiMi> altYorumlar = yeniYorumRepository
+                .findAltYorumlarDtoByParentYorumId(parentYorumId, kullaniciId);
+
+        for (YeniYorumDtoWithBegenildiMi altYorum : altYorumlar) {
+            // Her alt yorumun da alt yorumlarını recursive olarak getir
+            altYorum.setAltYorumlar(getAltYorumlariRecursive(altYorum.getYorumId(), kullaniciId));
+        }
+
+        return altYorumlar;
     }
 
     private Gonderiler findGonderi(int gonderiId) {

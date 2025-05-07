@@ -41,7 +41,7 @@ public class YeniYorum {
     @OneToMany(mappedBy = "parentYorum", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<YeniYorum> altYorumlar;
 
-    @OneToMany(mappedBy = "yeniYorum", cascade = CascadeType.ALL, orphanRemoval = true) // *yeniYorumId değil yeniYorum olacak*
+    @OneToMany(mappedBy = "yeniYorum", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<YeniYorumBegeniler> yeniYorumBegeniler;
 

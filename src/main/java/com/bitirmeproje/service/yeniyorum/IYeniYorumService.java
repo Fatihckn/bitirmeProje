@@ -15,7 +15,7 @@ public interface IYeniYorumService {
 
     void yorumuSil(int yorumId);
 
-    void yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto);
+    YeniYorum yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto);
 
     List<YeniYorumDto> getYanitlarByYorumId(int yorumId);
 

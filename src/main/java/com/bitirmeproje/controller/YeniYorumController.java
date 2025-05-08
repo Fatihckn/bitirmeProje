@@ -44,10 +44,9 @@ public class YeniYorumController {
     }
 
     @PostMapping("/{id}/yanit-ekle")
-    public ResponseEntity<String> yorumaYanitEkle(@PathVariable("id") int yorumId,
+    public ResponseEntity<YeniYorum> yorumaYanitEkle(@PathVariable("id") int yorumId,
                                                   @RequestBody YeniYorumDto yeniYorumDto) {
-        yeniYorumService.yorumaYanitEkle(yorumId, yeniYorumDto);
-        return ResponseEntity.ok("Yanıt başarıyla eklendi.");
+        return ResponseEntity.ok(yeniYorumService.yorumaYanitEkle(yorumId, yeniYorumDto));
     }
     @GetMapping("/{id}/yanitlar")
     public List<YeniYorumDto> getYanitlarByYorumId(@PathVariable int id) {

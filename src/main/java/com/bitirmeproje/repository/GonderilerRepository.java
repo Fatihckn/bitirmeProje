@@ -61,7 +61,7 @@ public interface GonderilerRepository extends JpaRepository<Gonderiler, Integer>
                 GROUP BY g.gonderiId, g.gonderiIcerigi, g.gonderiTarihi,
                              g.gonderiBegeniSayisi, g.kullaniciId.kullaniciTakmaAd,
                              g.gonderiMedyaUrl, bg          \s
-                ORDER BY g.gonderiTarihi DESC
+                ORDER BY g.gonderiTarihi DESC\s
            \s""")
     List<GonderiDto> findProfilGonderileriWithBegeniDurumu(
             @Param("girilenKullanici") int girilenKullanici,

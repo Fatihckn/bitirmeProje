@@ -28,7 +28,7 @@ public interface YeniYorumRepository extends JpaRepository<YeniYorum, Integer> {
     LEFT JOIN YeniYorumBegeniler yb\s
         ON y.yorumId = yb.yeniYorum.yorumId AND yb.kullanici.kullaniciId = :kullaniciId
     WHERE y.gonderiId.gonderiId = :gonderiId AND y.parentYorum IS NULL
-    ORDER BY y.yeniYorumOlusturulmaTarihi DESC
+    ORDER BY y.yeniYorumOlusturulmaTarihi ASC\s
 """)
     List<YeniYorumDtoWithBegenildiMi> findByGonderiIdWithBegenildiMi(
             @Param("gonderiId") int gonderiId,
@@ -48,7 +48,7 @@ public interface YeniYorumRepository extends JpaRepository<YeniYorum, Integer> {
     LEFT JOIN YeniYorumBegeniler yb\s
         ON y.yorumId = yb.yeniYorum.yorumId AND yb.kullanici.kullaniciId = :kullaniciId
     WHERE y.parentYorum.yorumId = :parentYorumId
-    ORDER BY y.yeniYorumOlusturulmaTarihi DESC
+    ORDER BY y.yeniYorumOlusturulmaTarihi ASC\s
 """)
     List<YeniYorumDtoWithBegenildiMi> findAltYorumlarDtoByParentYorumId(
             @Param("parentYorumId") int parentYorumId,

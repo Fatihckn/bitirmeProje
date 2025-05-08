@@ -88,14 +88,14 @@ public class YeniYorumService implements IYeniYorumService{
         yeniYorumRepository.deleteById(yorumId);
     }
 
-    public void yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto) {
+    public YeniYorum yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto) {
         User user = getUserByToken.getUser();
 
         YeniYorum parentYorum = getYeniYorum(yorumId);
 
         YeniYorum yeniYorum = yeniYorumConverter.convertToEntity(yeniYorumDto, user, parentYorum);
 
-        yeniYorumRepository.save(yeniYorum);
+        return yeniYorumRepository.save(yeniYorum);
     }
 
     public List<YeniYorumDto> getYanitlarByYorumId(int yorumId) {

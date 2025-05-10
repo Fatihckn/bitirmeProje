@@ -7,6 +7,17 @@ public class YeniYorumDto {
     protected String yorumIcerigi;
     protected Integer parentYorumId; // Alt yorumsa parent yorum ID
 
+    public YeniYorumDto() {}
+
+    public YeniYorumDto(int yeniYorumId, int kullaniciId, int gonderiId,
+                        String yorumIcerigi, Integer parentYorumId) {
+        this.yeniYorumId = yeniYorumId;
+        this.kullaniciId = kullaniciId;
+        this.gonderiId = gonderiId;
+        this.yorumIcerigi = yorumIcerigi;
+        this.parentYorumId = parentYorumId;
+    }
+
     public int getKullaniciId() {
         return kullaniciId;
     }

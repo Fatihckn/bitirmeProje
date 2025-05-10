@@ -1,6 +1,8 @@
 package com.bitirmeproje.service.yeniyorum;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
+import com.bitirmeproje.dto.yeniyorum.YeniYorumDtoWithBegenildiMi;
+import com.bitirmeproje.dto.yeniyorum.YeniYorumDtoWithTakmaAdPhoto;
 import com.bitirmeproje.model.YeniYorum;
 
 import java.util.List;
@@ -15,9 +17,7 @@ public interface IYeniYorumService {
 
     void yorumuSil(int yorumId);
 
-    YeniYorum yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto);
+    YeniYorumDtoWithBegenildiMi yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto);
 
-    List<YeniYorumDto> getYanitlarByYorumId(int yorumId);
-
-
+    List<YeniYorumDtoWithTakmaAdPhoto> getYanitlarByYorumId(int yorumId);
 }

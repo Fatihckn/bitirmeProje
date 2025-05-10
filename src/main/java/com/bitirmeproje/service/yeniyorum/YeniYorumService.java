@@ -1,9 +1,12 @@
 package com.bitirmeproje.service.yeniyorum;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
+import com.bitirmeproje.dto.yeniyorum.YeniYorumDtoWithBegenildiMi;
+import com.bitirmeproje.dto.yeniyorum.YeniYorumDtoWithTakmaAdPhoto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.dto.YeniYorumConverter;
+import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import com.bitirmeproje.model.User;
@@ -18,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 public class YeniYorumService implements IYeniYorumService{
 
@@ -26,17 +30,20 @@ public class YeniYorumService implements IYeniYorumService{
     private final IEntityDtoConverter<YeniYorum,YeniYorumDto> iEntityDtoConverter;
     private final GetUserByToken getUserByToken;
     private final YeniYorumConverter yeniYorumConverter;
+    private final FindUser<String> findUser;
 
 
     public YeniYorumService(YeniYorumRepository yeniYorumRepository,
                             GonderilerRepository gonderilerRepository,
                             @Qualifier("yeniYorumConverter") IEntityDtoConverter<YeniYorum, YeniYorumDto> iEntityDtoConverter,
-                            GetUserByToken getUserByToken, YeniYorumConverter yeniYorumConverter) {
+                            GetUserByToken getUserByToken, YeniYorumConverter yeniYorumConverter,
+                            @Qualifier("findUserByEmail") FindUser<String> findUser) {
         this.yeniYorumRepository = yeniYorumRepository;
         this.gonderilerRepository = gonderilerRepository;
         this.iEntityDtoConverter = iEntityDtoConverter;
         this.getUserByToken = getUserByToken;
         this.yeniYorumConverter = yeniYorumConverter;
+        this.findUser = findUser;
     }
 
     public YeniYorum yeniYorumEkle(YeniYorumDto yeniYorumDto) {
@@ -88,21 +95,41 @@ public class YeniYorumService implements IYeniYorumService{
         yeniYorumRepository.deleteById(yorumId);
     }
 
-    public YeniYorum yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto) {
+    public YeniYorumDtoWithBegenildiMi yorumaYanitEkle(int yorumId, YeniYorumDto yeniYorumDto) {
         User user = getUserByToken.getUser();
 
         YeniYorum parentYorum = getYeniYorum(yorumId);
 
         YeniYorum yeniYorum = yeniYorumConverter.convertToEntity(yeniYorumDto, user, parentYorum);
 
-        return yeniYorumRepository.save(yeniYorum);
+        YeniYorum yeniYorumYanit =  yeniYorumRepository.save(yeniYorum);
+
+        YeniYorumDtoWithBegenildiMi yeniYorumDtoWithBegenildiMi = new YeniYorumDtoWithBegenildiMi();
+        yeniYorumDtoWithBegenildiMi.setYorumId(yeniYorumYanit.getYorumId());
+        yeniYorumDtoWithBegenildiMi.setYorumYapanResim(user.getKullaniciProfilResmi());
+        yeniYorumDtoWithBegenildiMi.setYorumYapanTakmaAd(user.getKullaniciTakmaAd());
+        yeniYorumDtoWithBegenildiMi.setYeniYorumIcerigi(yeniYorumYanit.getYeniYorumIcerigi());
+        yeniYorumDtoWithBegenildiMi.setYeniYorumBegeniSayisi(yeniYorumYanit.getYeniYorumBegeniSayisi());
+        yeniYorumDtoWithBegenildiMi.setYeniYorumOlusturulmaTarihi(yeniYorumYanit.getYeniYorumOlusturulmaTarihi());
+        yeniYorumDtoWithBegenildiMi.setYorumuBegendimMi(false);
+        return yeniYorumDtoWithBegenildiMi;
     }
 
-    public List<YeniYorumDto> getYanitlarByYorumId(int yorumId) {
+    public List<YeniYorumDtoWithTakmaAdPhoto> getYanitlarByYorumId(int yorumId) {
         List<YeniYorum> yanitlar = yeniYorumRepository.findByParentYorum_YorumId(yorumId);
 
         return yanitlar.stream()
-                .map(iEntityDtoConverter::convertToDTO)
+                .map(y -> {
+                    YeniYorumDtoWithTakmaAdPhoto dto = new YeniYorumDtoWithTakmaAdPhoto();
+                    dto.setYeniYorumId(y.getYorumId());
+                    dto.setYorumIcerigi(y.getYeniYorumIcerigi());
+                    dto.setParentYorumId(y.getParentYorum().getYorumId());
+                    dto.setGonderiId(y.getGonderiId().getGonderiId());
+                    dto.setKullaniciFoto(findUser.findUser(y.getKullaniciId().getePosta()).getKullaniciProfilResmi());
+                    dto.setKullaniciId(y.getKullaniciId().getKullaniciId());
+                    dto.setKullaniciTakmaAd(findUser.findUser(y.getKullaniciId().getePosta()).getKullaniciTakmaAd());
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 

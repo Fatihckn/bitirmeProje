@@ -10,16 +10,21 @@ public class YeniYorumDtoWithBegenildiMi {
     private int yeniYorumBegeniSayisi;
     private List<YeniYorumDtoWithBegenildiMi> altYorumlar;
     private Boolean yorumuBegendimMi;
+    private String yorumYapanTakmaAd;
+    private String yorumYapanResim;
 
     public YeniYorumDtoWithBegenildiMi() {}
 
     public YeniYorumDtoWithBegenildiMi(int yorumId, String yeniYorumIcerigi, LocalDateTime yeniYorumOlusturulmaTarihi,
-                                       int yeniYorumBegeniSayisi, Boolean yorumuBegendimMi) {
+                                       int yeniYorumBegeniSayisi, Boolean yorumuBegendimMi, String yorumYapanResim,
+                                       String yorumYapanTakmaAd) {
         this.yorumId = yorumId;
         this.yeniYorumIcerigi = yeniYorumIcerigi;
         this.yeniYorumOlusturulmaTarihi = yeniYorumOlusturulmaTarihi;
         this.yeniYorumBegeniSayisi = yeniYorumBegeniSayisi;
         this.yorumuBegendimMi = yorumuBegendimMi;
+        this.yorumYapanResim = yorumYapanResim;
+        this.yorumYapanTakmaAd = yorumYapanTakmaAd;
     }
 
     public int getYorumId() {
@@ -68,5 +73,21 @@ public class YeniYorumDtoWithBegenildiMi {
 
     public void setYorumuBegendimMi(Boolean yorumuBegendimMi) {
         this.yorumuBegendimMi = yorumuBegendimMi;
+    }
+
+    public String getYorumYapanTakmaAd() {
+        return yorumYapanTakmaAd;
+    }
+
+    public void setYorumYapanTakmaAd(String yorumYapanTakmaAd) {
+        this.yorumYapanTakmaAd = yorumYapanTakmaAd;
+    }
+
+    public String getYorumYapanResim() {
+        return yorumYapanResim;
+    }
+
+    public void setYorumYapanResim(String yorumYapanResim) {
+        this.yorumYapanResim = yorumYapanResim;
     }
 }

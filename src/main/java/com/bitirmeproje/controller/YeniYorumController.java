@@ -1,6 +1,8 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDto;
+import com.bitirmeproje.dto.yeniyorum.YeniYorumDtoWithBegenildiMi;
+import com.bitirmeproje.dto.yeniyorum.YeniYorumDtoWithTakmaAdPhoto;
 import com.bitirmeproje.model.YeniYorum;
 import com.bitirmeproje.service.yeniyorum.IYeniYorumService;
 import org.springframework.http.HttpStatus;
@@ -44,12 +46,13 @@ public class YeniYorumController {
     }
 
     @PostMapping("/{id}/yanit-ekle")
-    public ResponseEntity<YeniYorum> yorumaYanitEkle(@PathVariable("id") int yorumId,
-                                                  @RequestBody YeniYorumDto yeniYorumDto) {
+    public ResponseEntity<YeniYorumDtoWithBegenildiMi> yorumaYanitEkle(@PathVariable("id") int yorumId,
+                                                                       @RequestBody YeniYorumDto yeniYorumDto) {
         return ResponseEntity.ok(yeniYorumService.yorumaYanitEkle(yorumId, yeniYorumDto));
     }
+
     @GetMapping("/{id}/yanitlar")
-    public List<YeniYorumDto> getYanitlarByYorumId(@PathVariable int id) {
+    public List<YeniYorumDtoWithTakmaAdPhoto> getYanitlarByYorumId(@PathVariable int id) {
         return yeniYorumService.getYanitlarByYorumId(id);
     }
 }

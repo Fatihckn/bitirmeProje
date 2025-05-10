@@ -22,7 +22,9 @@ public interface YeniYorumRepository extends JpaRepository<YeniYorum, Integer> {
         y.yeniYorumIcerigi,
         y.yeniYorumOlusturulmaTarihi,
         y.yeniYorumBegeniSayisi,
-        CASE WHEN yb.kullanici.kullaniciId IS NOT NULL THEN TRUE ELSE FALSE END
+        CASE WHEN yb.kullanici.kullaniciId IS NOT NULL THEN TRUE ELSE FALSE END,
+        y.kullaniciId.kullaniciProfilResmi,
+        y.kullaniciId.kullaniciTakmaAd
     )
     FROM YeniYorum y
     LEFT JOIN YeniYorumBegeniler yb\s
@@ -42,7 +44,9 @@ public interface YeniYorumRepository extends JpaRepository<YeniYorum, Integer> {
         y.yeniYorumIcerigi,
         y.yeniYorumOlusturulmaTarihi,
         y.yeniYorumBegeniSayisi,
-        CASE WHEN yb.kullanici.kullaniciId IS NOT NULL THEN TRUE ELSE FALSE END
+        CASE WHEN yb.kullanici.kullaniciId IS NOT NULL THEN TRUE ELSE FALSE END,
+        y.kullaniciId.kullaniciProfilResmi,
+        y.kullaniciId.kullaniciTakmaAd
     )
     FROM YeniYorum y
     LEFT JOIN YeniYorumBegeniler yb\s

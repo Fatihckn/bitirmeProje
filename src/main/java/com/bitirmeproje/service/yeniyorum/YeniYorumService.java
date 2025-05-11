@@ -116,7 +116,7 @@ public class YeniYorumService implements IYeniYorumService{
     }
 
     public List<YeniYorumDtoWithTakmaAdPhoto> getYanitlarByYorumId(int yorumId) {
-        List<YeniYorum> yanitlar = yeniYorumRepository.findByParentYorum_YorumId(yorumId);
+        List<YeniYorum> yanitlar = yeniYorumRepository.findByParentYorum_YorumIdOrderByYeniYorumOlusturulmaTarihiAsc(yorumId);
 
         return yanitlar.stream()
                 .map(y -> {
@@ -128,6 +128,7 @@ public class YeniYorumService implements IYeniYorumService{
                     dto.setKullaniciFoto(findUser.findUser(y.getKullaniciId().getePosta()).getKullaniciProfilResmi());
                     dto.setKullaniciId(y.getKullaniciId().getKullaniciId());
                     dto.setKullaniciTakmaAd(findUser.findUser(y.getKullaniciId().getePosta()).getKullaniciTakmaAd());
+                    dto.setYeniYorumTarihi(y.getYeniYorumOlusturulmaTarihi());
                     return dto;
                 })
                 .collect(Collectors.toList());

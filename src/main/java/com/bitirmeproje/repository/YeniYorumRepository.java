@@ -61,7 +61,7 @@ public interface YeniYorumRepository extends JpaRepository<YeniYorum, Integer> {
 
 
     // Belirli bir üst yoruma ait alt yorumları getir
-    List<YeniYorum> findByParentYorum_YorumId(int parentYorumId);
+    List<YeniYorum> findByParentYorum_YorumIdOrderByYeniYorumOlusturulmaTarihiAsc(int parentYorumId);
 
     List<YeniYorum> findByKullaniciId_KullaniciId(int kullaniciId);
 

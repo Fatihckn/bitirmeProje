@@ -1,5 +1,8 @@
 package com.bitirmeproje.dto.yeniyorum;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class YeniYorumDtoWithTakmaAdPhoto {
     private int yeniYorumId;
     private int kullaniciId;
@@ -8,11 +11,12 @@ public class YeniYorumDtoWithTakmaAdPhoto {
     private Integer parentYorumId;
     private String kullaniciTakmaAd;
     private String kullaniciFoto;
+    private LocalDateTime yeniYorumTarihi;
 
     public YeniYorumDtoWithTakmaAdPhoto() {}
 
     public YeniYorumDtoWithTakmaAdPhoto(int yeniYorumId, int kullaniciId, int gonderiId, String yorumIcerigi, Integer parentYorumId,
-                                        String kullaniciTakmaAd, String kullaniciFoto) {
+                                        String kullaniciTakmaAd, String kullaniciFoto, LocalDateTime yeniYorumTarihi) {
         this.yeniYorumId = yeniYorumId;
         this.kullaniciId = kullaniciId;
         this.gonderiId = gonderiId;
@@ -20,6 +24,7 @@ public class YeniYorumDtoWithTakmaAdPhoto {
         this.parentYorumId = parentYorumId;
         this.kullaniciTakmaAd = kullaniciTakmaAd;
         this.kullaniciFoto = kullaniciFoto;
+        this.yeniYorumTarihi = yeniYorumTarihi;
     }
 
     public String getKullaniciTakmaAd() {
@@ -76,5 +81,13 @@ public class YeniYorumDtoWithTakmaAdPhoto {
 
     public void setParentYorumId(Integer parentYorumId) {
         this.parentYorumId = parentYorumId;
+    }
+
+    public LocalDateTime getYeniYorumTarihi() {
+        return yeniYorumTarihi;
+    }
+
+    public void setYeniYorumTarihi(LocalDateTime yeniYorumTarihi) {
+        this.yeniYorumTarihi = yeniYorumTarihi;
     }
 }

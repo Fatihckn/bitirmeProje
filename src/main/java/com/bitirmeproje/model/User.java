@@ -77,6 +77,14 @@ public class User{
     @OneToMany(mappedBy = "mesajGonderenKullaniciId",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Mesaj> mesajGonderenKullaniciId;
 
+    @OneToMany(mappedBy = "kullaniciId",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Cevaplar> kullaniciIdCevaplar;
+
+    @OneToMany(mappedBy = "kullanici",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Anketler> kullaniciAnketler;
+
     public User() {}
 
     public User(int kullaniciId) {
@@ -252,6 +260,14 @@ public class User{
 
     public void setKullaniciUyeUlkesi(String kullaniciUyeUlkesi) {
         this.kullaniciUyeUlkesi = kullaniciUyeUlkesi;
+    }
+
+    public List<Cevaplar> getKullaniciIdCevaplar() {
+        return kullaniciIdCevaplar;
+    }
+
+    public void setKullaniciIdCevaplar(List<Cevaplar> kullaniciIdCevaplar) {
+        this.kullaniciIdCevaplar = kullaniciIdCevaplar;
     }
 
     @PrePersist

@@ -27,4 +27,10 @@ public class AnketlerController {
     public ResponseEntity<List<GirisYapanKullaniciAnketDto>> getKullaniciAnketlerGetir() {
         return ResponseEntity.ok(anketlerService.getKullaniciAnketler());
     }
+
+    @DeleteMapping("/delete/{anketId}")
+    public ResponseEntity<String> deleteAnket(@PathVariable int anketId) {
+        anketlerService.deleteAnket(anketId);
+        return ResponseEntity.ok("Anket Başariyla Silindi");
+    }
 }

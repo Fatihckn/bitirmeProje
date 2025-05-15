@@ -1,9 +1,9 @@
 package com.bitirmeproje.service.anketler;
 
-import
-        com.bitirmeproje.dto.anketler.AnketlerSaveDto;
+import com.bitirmeproje.dto.anketler.AnketlerSaveDto;
 import com.bitirmeproje.dto.anketler.GirisYapanKullaniciAnketDto;
 import com.bitirmeproje.dto.secenekler.SeceneklerDtoWithCevapSayisi;
+import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Anketler;
@@ -12,7 +12,9 @@ import com.bitirmeproje.model.User;
 import com.bitirmeproje.repository.AnketlerRepository;
 import com.bitirmeproje.repository.SeceneklerRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -51,6 +53,19 @@ public class AnketlerService implements IAnketlerService {
                     return girisYapanKullaniciAnketDtoMapper(anketler, seceneklerDtoWithCevapSayisiList);
                 })
                 .toList();
+    }
+
+    @Transactional
+    public void deleteAnket(int anketId) {
+        User user = getUserByToken.getUser();
+
+        Anketler kullanicininAnketi = anketlerRepository.findAnketByAnketId(anketId);
+
+        if(kullanicininAnketi.getKullanici().getKullaniciId() != user.getKullaniciId()){
+            throw new CustomException(HttpStatus.NOT_FOUND,"Anket Bulunamadi");
+        }
+
+        anketlerRepository.delete(kullanicininAnketi);
     }
 
     private void saveSoruSecenekleri(List<String> soruSecenekleri, Anketler anketler) {

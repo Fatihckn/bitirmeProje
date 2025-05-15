@@ -11,4 +11,6 @@ public interface IAnketlerService {
     Anketler anketlerSave(AnketlerSaveDto anketlerDto);
 
     List<GirisYapanKullaniciAnketDto> getKullaniciAnketler();
+
+    void deleteAnket(int anketId);
 }

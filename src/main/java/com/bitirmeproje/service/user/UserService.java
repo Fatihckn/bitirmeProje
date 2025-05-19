@@ -7,8 +7,6 @@ import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.email.otp.OtpGenerator;
 import com.bitirmeproje.helper.email.otp.OtpStorage;
 import com.bitirmeproje.helper.email.sendemail.SendEmail;
-import com.bitirmeproje.helper.email.sendemail.SendEmailForDeleteAccount;
-import com.bitirmeproje.helper.email.sendemail.SendEmailForPasswordChange;
 import com.bitirmeproje.helper.password.PasswordHasher;
 import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
@@ -35,7 +33,6 @@ public class UserService implements IUserService {
     private final GetUserByToken getUserByToken;
     private final IEntityDtoConverter<User, UserDto> entityDtoConvert;
     private final FindUser<String> findUser;
-    private final SendEmail emailServiceDeleteAccount;
     private final SendEmail emailService;
     private final OtpStorage otpStorage;
     private final R2StorageService r2StorageService;
@@ -48,11 +45,11 @@ public class UserService implements IUserService {
 
     UserService(UserRepository userRepository, PasswordHasher passwordHasher,
                 GetUserByToken getUserByToken,
+                SendEmail emailService,
                 @Qualifier("userConverter") IEntityDtoConverter<User, UserDto> entityDtoConvert,
-                @Qualifier("sendEmailForPasswordChange") SendEmailForPasswordChange emailService,
                 @Qualifier("findUserByEmail") FindUser<String> findUser, OtpStorage otpStorage,
                 R2StorageService r2StorageService, GonderilerRepository gonderilerRepository,
-                FollowsRepository followsRepository, @Qualifier("sendEmailForDeleteAccount") SendEmailForDeleteAccount emailServiceDeleteAccount) {
+                FollowsRepository followsRepository) {
         this.userRepository = userRepository;
         this.passwordHasher = passwordHasher;
         this.getUserByToken = getUserByToken;
@@ -63,7 +60,6 @@ public class UserService implements IUserService {
         this.r2StorageService = r2StorageService;
         this.gonderilerRepository = gonderilerRepository;
         this.followsRepository = followsRepository;
-        this.emailServiceDeleteAccount = emailServiceDeleteAccount;
     }
 
     // Kullanıcnın şifresini değiştiriyoruz(Şifremi unuttum değil)
@@ -278,7 +274,7 @@ public class UserService implements IUserService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Bu e-posta adresi zaten kullanımda!");
         }
 
-        emailServiceDeleteAccount.sendOtpEmail(changeEmailDto.getYeniEposta(), otp);
+        emailService.sendOtpEmail(changeEmailDto.getYeniEposta(), otp);
     }
 
     @Transactional
@@ -299,7 +295,7 @@ public class UserService implements IUserService {
 
         otpStorage.putOtp(user.getePosta(), otp);
 
-        emailServiceDeleteAccount.sendOtpEmail(user.getePosta(), otp);
+        emailService.sendOtpEmail(user.getePosta(), otp);
     }
 
     // E-mail değiştirmek için validasyon

@@ -38,7 +38,7 @@ public class AuthService implements IAuthService {
 
     AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                 JwtUtil jwtUtil,@Qualifier("findUserByEmail") FindUser<String> findUser,
-                OtpStorage otpStorage,@Qualifier("sendEmailForRegister") SendEmail sendEmail,
+                OtpStorage otpStorage, SendEmail sendEmail,
                 HttpServletRequest request, TokenBlacklistService tokenBlacklistService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;

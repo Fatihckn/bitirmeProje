@@ -1,6 +1,7 @@
 package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.auth.LoginDto;
+import com.bitirmeproje.dto.user.RegisterDto;
 import com.bitirmeproje.model.User;
 import com.bitirmeproje.service.auth.IAuthService;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,7 @@ public class AuthController {
 
     //Kullanıcıyı kaydediyoruz
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
+    public ResponseEntity<String> registerUser(@RequestBody RegisterDto user) {
         authService.registerUser(user);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -28,10 +29,10 @@ public class AuthController {
 
     @PostMapping("/verify-otp")
     public ResponseEntity<String> verifyOtp(@RequestParam String email, @RequestParam String otp) {
-         authService.verifyOtpAndRegister(email, otp);
-         return ResponseEntity
-                 .status(HttpStatus.CREATED)
-                 .body("Kayıt Başarılı");
+        authService.verifyOtpAndRegister(email, otp);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body("Kayıt Başarılı");
     }
 
     @PostMapping("/login")

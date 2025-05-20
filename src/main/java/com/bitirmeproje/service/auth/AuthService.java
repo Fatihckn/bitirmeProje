@@ -1,6 +1,7 @@
 package com.bitirmeproje.service.auth;
 
 import com.bitirmeproje.dto.auth.LoginDto;
+import com.bitirmeproje.dto.user.RegisterDto;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.email.sendemail.SendEmail;
 import com.bitirmeproje.helper.email.otp.OtpGenerator;
@@ -30,7 +31,7 @@ public class AuthService implements IAuthService {
     private final FindUser<String> findUser;
     private final OtpStorage otpStorage;
     private final SendEmail sendEmail;
-    private final Map<String, User> pendingUsers = new ConcurrentHashMap<>();
+    private final Map<String, RegisterDto> pendingUsers = new ConcurrentHashMap<>();
     private final HttpServletRequest request;
     private final TokenBlacklistService tokenBlacklistService;
 
@@ -38,7 +39,7 @@ public class AuthService implements IAuthService {
 
     AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
                 JwtUtil jwtUtil,@Qualifier("findUserByEmail") FindUser<String> findUser,
-                OtpStorage otpStorage, SendEmail sendEmail,
+                OtpStorage otpStorage,SendEmail sendEmail,
                 HttpServletRequest request, TokenBlacklistService tokenBlacklistService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -51,7 +52,7 @@ public class AuthService implements IAuthService {
     }
 
     // Kullanıcı kayıt servisi
-    public void registerUser(User user) {
+    public void registerUser(RegisterDto user) {
         if(userRepository.findByEPosta(user.getePosta()).isPresent() || userRepository.findByKullaniciTakmaAd(user.getKullaniciTakmaAd()).isPresent()) {
             throw new CustomException(HttpStatus.BAD_REQUEST,"Bu e-posta veya kullanıcı adı zaten kullanılıyor!");
         }
@@ -71,7 +72,7 @@ public class AuthService implements IAuthService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Geçersiz veya süresi dolmuş OTP!");
         }
 
-        User user = pendingUsers.remove(email); // Kullanıcıyı geçici listeden çıkar
+        RegisterDto user = pendingUsers.remove(email); // Kullanıcıyı geçici listeden çıkar
 
         if (user == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Kayıt bilgileri bulunamadı!");
@@ -83,16 +84,25 @@ public class AuthService implements IAuthService {
 //            user.setKullaniciRole(Role.USER);
 //        }
 
-        user.setKullaniciRole(Role.USER);
+        User registerUser = new User();
+
+        registerUser.setKullaniciCinsiyet(user.getKullaniciCinsiyet());
+        registerUser.setePosta(user.getePosta());
+        registerUser.setKullaniciDogumTarihi(user.getKullaniciDogumTarihi());
+        registerUser.setKullaniciRole(Role.USER);
+        registerUser.setKullaniciTakmaAd(user.getKullaniciTakmaAd());
+        registerUser.setKullaniciCinsiyet(user.getKullaniciCinsiyet());
+        registerUser.setKullaniciTelefonNo(user.getKullaniciTelefonNo());
+        registerUser.setKullaniciUyeUlkesi(user.getKullaniciUyeUlkesi());
 
         // Varsayılan profil resmi ata
-        user.setKullaniciProfilResmi(r2PublicBaseUrl + "/profile-pics/empty.png");
+        registerUser.setKullaniciProfilResmi(r2PublicBaseUrl + "/profile-pics/empty.png");
 
         // Şifreyi hashle
-        user.setSifre(passwordEncoder.encode(user.getSifre()));
+        registerUser.setSifre(passwordEncoder.encode(user.getSifre()));
 
         // Kullanıcıyı kaydet
-        userRepository.save(user);
+        userRepository.save(registerUser);
     }
 
     public String login(LoginDto loginDto) {

@@ -2,7 +2,6 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.auth.LoginDto;
 import com.bitirmeproje.dto.user.RegisterDto;
-import com.bitirmeproje.model.User;
 import com.bitirmeproje.service.auth.IAuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

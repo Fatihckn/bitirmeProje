@@ -33,4 +33,9 @@ public class AnketlerController {
         anketlerService.deleteAnket(anketId);
         return ResponseEntity.ok("Anket Başariyla Silindi");
     }
+
+    @GetMapping("/anket-oneri")
+    public ResponseEntity<List<GirisYapanKullaniciAnketDto>> anketOneri(){
+        return ResponseEntity.ok(anketlerService.kullaniciAnketOneri());
+    }
 }

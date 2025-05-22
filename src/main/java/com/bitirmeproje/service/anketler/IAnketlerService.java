@@ -13,4 +13,6 @@ public interface IAnketlerService {
     List<GirisYapanKullaniciAnketDto> getKullaniciAnketler();
 
     void deleteAnket(int anketId);
+
+    List<GirisYapanKullaniciAnketDto> kullaniciAnketOneri();
 }

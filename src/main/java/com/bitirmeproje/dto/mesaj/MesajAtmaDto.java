@@ -7,12 +7,19 @@ public class MesajAtmaDto extends BaseMesajDto {
 
     private String mesajAtanKullaniciTakmaAdi;
 
+    private String mesajAtilanKullaniciFoto;
+
+    private String mesajAtilanKullaniciTakmaAdi;
+
     public MesajAtmaDto(){}
 
-    public MesajAtmaDto(Mesaj mesaj, String mesajAtanKullaniciFoto, String mesajAtanKullaniciTakmaAdi){
+    public MesajAtmaDto(Mesaj mesaj, String mesajAtanKullaniciFoto, String mesajAtanKullaniciTakmaAdi,
+                        String mesajAtilanKullaniciFoto, String mesajAtilanKullaniciTakmaAdi){
         super(mesaj);
         this.mesajAtanKullaniciFoto = mesajAtanKullaniciFoto;
         this.mesajAtanKullaniciTakmaAdi = mesajAtanKullaniciTakmaAdi;
+        this.mesajAtilanKullaniciFoto = mesajAtilanKullaniciFoto;
+        this.mesajAtilanKullaniciTakmaAdi = mesajAtilanKullaniciTakmaAdi;
     }
 
     public String getMesajAtanKullaniciFoto() {
@@ -29,5 +36,21 @@ public class MesajAtmaDto extends BaseMesajDto {
 
     public void setMesajAtanKullaniciTakmaAdi(String mesajAtanKullaniciTakmaAdi) {
         this.mesajAtanKullaniciTakmaAdi = mesajAtanKullaniciTakmaAdi;
+    }
+
+    public String getMesajAtilanKullaniciFoto() {
+        return mesajAtilanKullaniciFoto;
+    }
+
+    public void setMesajAtilanKullaniciFoto(String mesajAtilanKullaniciFoto) {
+        this.mesajAtilanKullaniciFoto = mesajAtilanKullaniciFoto;
+    }
+
+    public String getMesajAtilanKullaniciTakmaAdi() {
+        return mesajAtilanKullaniciTakmaAdi;
+    }
+
+    public void setMesajAtilanKullaniciTakmaAdi(String mesajAtilanKullaniciTakmaAdi) {
+        this.mesajAtilanKullaniciTakmaAdi = mesajAtilanKullaniciTakmaAdi;
     }
 }

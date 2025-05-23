@@ -50,7 +50,8 @@ public class MesajService implements IMesajService {
 
         mesajRepository.save(mesaj);
 
-        MesajAtmaDto mesajAtmaDto = new MesajAtmaDto(mesaj, gonderen.getKullaniciProfilResmi(), gonderen.getKullaniciTakmaAd());
+        MesajAtmaDto mesajAtmaDto = new MesajAtmaDto(mesaj, gonderen.getKullaniciProfilResmi(), gonderen.getKullaniciTakmaAd(),
+                alici.getKullaniciProfilResmi(), alici.getKullaniciTakmaAd());
 
         // ✨ WebSocket ile sadece alıcıya mesaj gönder
         messagingTemplate.convertAndSendToUser(
@@ -114,7 +115,8 @@ public class MesajService implements IMesajService {
                         mesaj,
                         kullanici2.getKullaniciTakmaAd(),
                         kullanici2.getKullaniciProfilResmi(),
-                        kullanici1.getKullaniciTakmaAd()
+                        kullanici1.getKullaniciTakmaAd(),
+                        kullanici1.getKullaniciProfilResmi()
                 ))
                 .collect(Collectors.toList());
     }

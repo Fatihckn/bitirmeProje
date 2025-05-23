@@ -9,11 +9,15 @@ public class MesajSohbetGecmisiGetirDto extends BaseMesajDto {
 
     private String mesajGonderenKullaniciAdi;
 
-    public MesajSohbetGecmisiGetirDto(Mesaj mesaj, String mesajGonderilenKullaniciAdi, String mesajGonderilenKullaniciId, String mesajGonderenKullaniciAdi) {
+    private String mesajGonderenKullaniciResmi;
+
+    public MesajSohbetGecmisiGetirDto(Mesaj mesaj, String mesajGonderilenKullaniciAdi, String mesajGonderilenKullaniciId, String mesajGonderenKullaniciAdi,
+                                      String mesajGonderenKullaniciResmi) {
         super(mesaj);
         this.mesajGonderilenKullaniciAdi = mesajGonderilenKullaniciAdi;
         this.mesajGonderilenKullaniciResmi = mesajGonderilenKullaniciId;
         this.mesajGonderenKullaniciAdi = mesajGonderenKullaniciAdi;
+        this.mesajGonderenKullaniciResmi = mesajGonderenKullaniciResmi;
     }
 
     public String getMesajGonderilenKullaniciResmi() {
@@ -38,5 +42,13 @@ public class MesajSohbetGecmisiGetirDto extends BaseMesajDto {
 
     public void setMesajGonderenKullaniciAdi(String mesajGonderenKullaniciAdi) {
         this.mesajGonderenKullaniciAdi = mesajGonderenKullaniciAdi;
+    }
+
+    public String getMesajGonderenKullaniciResmi() {
+        return mesajGonderenKullaniciResmi;
+    }
+
+    public void setMesajGonderenKullaniciResmi(String mesajGonderenKullaniciResmi) {
+        this.mesajGonderenKullaniciResmi = mesajGonderenKullaniciResmi;
     }
 }

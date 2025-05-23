@@ -1,9 +1,6 @@
 package com.bitirmeproje.service.mesaj;
 
-import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
-import com.bitirmeproje.dto.mesaj.MesajCreateDto;
-import com.bitirmeproje.dto.mesaj.MesajDto;
-import com.bitirmeproje.dto.mesaj.MesajSohbetGecmisiGetirDto;
+import com.bitirmeproje.dto.mesaj.*;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
@@ -40,7 +37,7 @@ public class MesajService implements IMesajService {
 
     // Yeni mesaj gönderme
     @Override
-    public MesajDto mesajGonder(MesajCreateDto mesajCreateDto) {
+    public MesajAtmaDto mesajGonder(MesajCreateDto mesajCreateDto) {
         User gonderen = getUserByToken.getUser();
 
         User alici = findUser.findUser(mesajCreateDto.getMesajGonderilenKullaniciId());
@@ -53,18 +50,18 @@ public class MesajService implements IMesajService {
 
         mesajRepository.save(mesaj);
 
-        MesajDto mesajDto = new MesajDto(mesaj);
+        MesajAtmaDto mesajAtmaDto = new MesajAtmaDto(mesaj, gonderen.getKullaniciProfilResmi(), gonderen.getKullaniciTakmaAd());
 
         // ✨ WebSocket ile sadece alıcıya mesaj gönder
         messagingTemplate.convertAndSendToUser(
                 alici.getKullaniciTakmaAd(),   // User destination key (ID'yi string yapıyoruz)
                 "/queue/mesajlar",                   // Kendi kuyruğu
-                mesajDto
+                mesajAtmaDto
         );
 
         System.out.println("✅ Mesaj " + alici.getKullaniciTakmaAd() + " kullanıcısına gönderildi.");
 
-        return mesajDto;
+        return mesajAtmaDto;
     }
 
     // Kullanıcının gelen mesajlarını listele
@@ -178,4 +175,5 @@ public class MesajService implements IMesajService {
         }
         return mesaj;
     }
+
 }

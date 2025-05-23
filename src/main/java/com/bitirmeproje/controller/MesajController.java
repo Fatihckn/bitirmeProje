@@ -1,9 +1,6 @@
 package com.bitirmeproje.controller;
 
-import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
-import com.bitirmeproje.dto.mesaj.MesajCreateDto;
-import com.bitirmeproje.dto.mesaj.MesajDto;
-import com.bitirmeproje.dto.mesaj.MesajSohbetGecmisiGetirDto;
+import com.bitirmeproje.dto.mesaj.*;
 import com.bitirmeproje.service.mesaj.IMesajService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +20,8 @@ public class MesajController {
 
     // Yeni mesaj gönderme
     @PostMapping("/gönder")
-    public ResponseEntity<MesajDto> mesajGonder(@RequestBody MesajCreateDto mesajCreateDto) {
-        MesajDto mesajDto = mesajService.mesajGonder(mesajCreateDto);
+    public ResponseEntity<MesajAtmaDto> mesajGonder(@RequestBody MesajCreateDto mesajCreateDto) {
+        MesajAtmaDto mesajDto = mesajService.mesajGonder(mesajCreateDto);
         return ResponseEntity.ok(mesajDto);
     }
 

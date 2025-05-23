@@ -1,9 +1,6 @@
 package com.bitirmeproje.service.mesaj;
 
-import com.bitirmeproje.dto.mesaj.KullanicininSonGelenMesajlari;
-import com.bitirmeproje.dto.mesaj.MesajCreateDto;
-import com.bitirmeproje.dto.mesaj.MesajDto;
-import com.bitirmeproje.dto.mesaj.MesajSohbetGecmisiGetirDto;
+import com.bitirmeproje.dto.mesaj.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +8,7 @@ import java.util.Optional;
 public interface IMesajService {
 
     // Yeni mesaj gönderme
-    MesajDto mesajGonder(MesajCreateDto mesajCreateDto);
+    MesajAtmaDto mesajGonder(MesajCreateDto mesajCreateDto);
 
     // Kullanıcının gelen mesajlarını listele
     List<MesajDto> gelenMesajlariListele();

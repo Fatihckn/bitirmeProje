@@ -20,7 +20,8 @@ public interface AramaGecmisiRepository extends JpaRepository<AramaGecmisi, Inte
 
     AramaGecmisi findAramaGecmisiByAramaGecmisiId(int id);
 
-    @Query(value = "SELECT COUNT(*) FROM arama_gecmisi WHERE aranan_kullanici_id = :aranan_kullanici_id", nativeQuery = true)
-    int arananKullaniciIdVarMi(@Param("aranan_kullanici_id") int kullaniciId);
-
+    @Query(value = "SELECT COUNT(*)" +
+            " FROM arama_gecmisi" +
+            " WHERE aranan_kullanici_id = :aranan_kullanici_id AND kullanici_id = :arayan_kullanici_id ", nativeQuery = true)
+    int arananKullaniciIdVarMi(@Param("aranan_kullanici_id") int kullaniciId,@Param("arayan_kullanici_id") int girisYapanKullaniciId);
 }

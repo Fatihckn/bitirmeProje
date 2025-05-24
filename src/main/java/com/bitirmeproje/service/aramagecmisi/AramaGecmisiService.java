@@ -35,7 +35,7 @@ public class AramaGecmisiService implements IAramaGecmisiService {
 
         findUser.findUser(aramaGecmisiDto.arananKullaniciId());
 
-        if(aramaGecmisiRepository.arananKullaniciIdVarMi(aramaGecmisiDto.arananKullaniciId()) == 0){
+        if(aramaGecmisiRepository.arananKullaniciIdVarMi(aramaGecmisiDto.arananKullaniciId(), kullanici.getKullaniciId()) == 0){
             AramaGecmisi yeniArama = new AramaGecmisi();
             yeniArama.setArananKullaniciId(aramaGecmisiDto.arananKullaniciId());
             yeniArama.setAramaZamani(LocalDateTime.now()); // Arama zamanını sistem zamanı olarak al

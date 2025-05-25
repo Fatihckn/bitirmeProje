@@ -6,21 +6,20 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class GirisYapanKullaniciAnketDto {
-    private int anketId;
+    protected int anketId;
 
-    private String anketSorusu;
+    protected String anketSorusu;
 
-    private LocalDateTime anketOlusturulmaTarihi;
+    protected LocalDateTime anketOlusturulmaTarihi;
 
-    private List<SeceneklerDtoWithCevapSayisi> secenekler;
+    protected List<SeceneklerDtoWithCevapSayisi> secenekler;
 
     public GirisYapanKullaniciAnketDto() {}
 
-    public GirisYapanKullaniciAnketDto(int anketId, String anketSorusu, LocalDateTime anketOlusturulmaTarihi, List<SeceneklerDtoWithCevapSayisi> secenekler) {
+    public GirisYapanKullaniciAnketDto(int anketId, String anketSorusu, LocalDateTime anketOlusturulmaTarihi) {
         this.anketId = anketId;
         this.anketSorusu = anketSorusu;
         this.anketOlusturulmaTarihi = anketOlusturulmaTarihi;
-        this.secenekler = secenekler;
     }
 
     public int getAnketId() {

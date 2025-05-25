@@ -1,9 +1,11 @@
 package com.bitirmeproje.controller;
 
+import com.bitirmeproje.dto.anketler.AnketOneriDto;
 import com.bitirmeproje.dto.anketler.AnketlerSaveDto;
 import com.bitirmeproje.dto.anketler.GirisYapanKullaniciAnketDto;
 import com.bitirmeproje.model.Anketler;
 import com.bitirmeproje.service.anketler.AnketlerService;
+import com.bitirmeproje.service.anketler.IAnketlerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/anketler")
 public class AnketlerController {
-    private final AnketlerService anketlerService;
+    private final IAnketlerService anketlerService;
 
     public AnketlerController(AnketlerService anketlerService) {
         this.anketlerService = anketlerService;
@@ -35,7 +37,7 @@ public class AnketlerController {
     }
 
     @GetMapping("/anket-oneri")
-    public ResponseEntity<List<GirisYapanKullaniciAnketDto>> anketOneri(){
+    public ResponseEntity<List<AnketOneriDto>> anketOneri(){
         return ResponseEntity.ok(anketlerService.kullaniciAnketOneri());
     }
 }

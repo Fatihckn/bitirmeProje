@@ -1,5 +1,6 @@
 package com.bitirmeproje.service.anketler;
 
+import com.bitirmeproje.dto.anketler.AnketOneriDto;
 import com.bitirmeproje.dto.anketler.AnketlerSaveDto;
 import com.bitirmeproje.dto.anketler.GirisYapanKullaniciAnketDto;
 import com.bitirmeproje.dto.secenekler.SeceneklerDtoWithCevapSayisi;
@@ -74,18 +75,18 @@ public class AnketlerService implements IAnketlerService {
         anketlerRepository.delete(kullanicininAnketi);
     }
 
-    public List<GirisYapanKullaniciAnketDto> kullaniciAnketOneri() {
+    public List<AnketOneriDto> kullaniciAnketOneri() {
         User user = getUserByToken.getUser();
 
         List<Integer> anketler = pythonApiService.getAnketOnerileri(user.getKullaniciId());
 
         return anketler.stream()
-                .map(anketlerRepository::findAnketByAnketId)
+                .map(anketlerRepository::findAnketByAnketIdWithKullaniciCevapVerdiMi)
                 .filter(Objects::nonNull)
                 .map(anket -> {
                     List<SeceneklerDtoWithCevapSayisi> secenekler =
                             seceneklerRepository.getSeceneklerByAnketId(anket.getAnketId());
-                    return girisYapanKullaniciAnketDtoMapper(anket, secenekler);
+                    return anketOneriDtoMapper(anket, secenekler);
                 })
                 .collect(Collectors.toList());
     }
@@ -103,6 +104,16 @@ public class AnketlerService implements IAnketlerService {
                 .toList();
 
         anketler.setSecenekler(seceneklerList);
+    }
+
+    private AnketOneriDto anketOneriDtoMapper(AnketOneriDto anketler, List<SeceneklerDtoWithCevapSayisi> seceneklerDtoWithCevapSayisiList){
+        AnketOneriDto girisYapanKullaniciAnketDto = new AnketOneriDto();
+        girisYapanKullaniciAnketDto.setAnketId(anketler.getAnketId());
+        girisYapanKullaniciAnketDto.setAnketSorusu(anketler.getAnketSorusu());
+        girisYapanKullaniciAnketDto.setAnketOlusturulmaTarihi(anketler.getAnketOlusturulmaTarihi());
+        girisYapanKullaniciAnketDto.setSecenekler(seceneklerDtoWithCevapSayisiList);
+        girisYapanKullaniciAnketDto.setKullaniciCevapVarMi(anketler.getKullaniciCevapVarMi());
+        return girisYapanKullaniciAnketDto;
     }
 
     private GirisYapanKullaniciAnketDto girisYapanKullaniciAnketDtoMapper(Anketler anketler, List<SeceneklerDtoWithCevapSayisi> seceneklerDtoWithCevapSayisiList){

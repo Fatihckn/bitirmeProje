@@ -1,5 +1,6 @@
 package com.bitirmeproje.service.anketler;
 
+import com.bitirmeproje.dto.anketler.AnketOneriDto;
 import com.bitirmeproje.dto.anketler.AnketlerSaveDto;
 import com.bitirmeproje.dto.anketler.GirisYapanKullaniciAnketDto;
 import com.bitirmeproje.model.Anketler;
@@ -14,5 +15,5 @@ public interface IAnketlerService {
 
     void deleteAnket(int anketId);
 
-    List<GirisYapanKullaniciAnketDto> kullaniciAnketOneri();
+    List<AnketOneriDto> kullaniciAnketOneri();
 }

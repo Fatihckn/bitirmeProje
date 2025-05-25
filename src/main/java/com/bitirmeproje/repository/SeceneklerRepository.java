@@ -24,4 +24,6 @@ public interface SeceneklerRepository extends JpaRepository<Secenekler, Integer>
     GROUP BY s.secenekId, s.anketId.anketId, s.secenekMetni
 """)
     List<SeceneklerDtoWithCevapSayisi> getSeceneklerByAnketId(int anketId);
+
+    Secenekler findSeceneklerBySecenekId(int secenekId);
 }

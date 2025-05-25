@@ -81,7 +81,7 @@ public class AnketlerService implements IAnketlerService {
         List<Integer> anketler = pythonApiService.getAnketOnerileri(user.getKullaniciId());
 
         return anketler.stream()
-                .map(anketlerRepository::findAnketByAnketIdWithKullaniciCevapVerdiMi)
+                .map(anket -> anketlerRepository.findAnketByAnketIdWithKullaniciCevapVerdiMi(anket, user.getKullaniciId()))
                 .filter(Objects::nonNull)
                 .map(anket -> {
                     List<SeceneklerDtoWithCevapSayisi> secenekler =

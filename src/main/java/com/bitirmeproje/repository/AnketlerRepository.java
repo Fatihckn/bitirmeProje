@@ -30,8 +30,8 @@ public interface AnketlerRepository extends JpaRepository<Anketler, Integer> {
     CASE WHEN c.cevapId IS NOT NULL THEN TRUE ELSE FALSE END \s
      )
     FROM Anketler a
-    LEFT JOIN Cevaplar c ON c.anketId.anketId = a.anketId
+    LEFT JOIN Cevaplar c ON c.anketId.anketId = a.anketId AND c.kullaniciId.kullaniciId = :kullaniciId
     WHERE a.anketId =:anketId
 """)
-    AnketOneriDto findAnketByAnketIdWithKullaniciCevapVerdiMi(int anketId);
+    AnketOneriDto findAnketByAnketIdWithKullaniciCevapVerdiMi(int anketId, int kullaniciId);
 }

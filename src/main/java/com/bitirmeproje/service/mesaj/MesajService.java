@@ -157,7 +157,12 @@ public class MesajService implements IMesajService {
 
         User kullanici2 = findUser.findUser(kullaniciId);
 
-        mesajRepository.deleteByMesajGonderenKullaniciIdOrMesajGonderilenKullaniciId(kullanici1, kullanici2);
+        Mesaj mesajKontrol = mesajRepository.findKullanicilarArasindakiMesaj(kullanici1.getKullaniciId(), kullanici2.getKullaniciId());
+
+        if(mesajKontrol.isAliciSildiMi()){
+            mesajRepository.deleteByMesajGonderenKullaniciIdOrMesajGonderilenKullaniciId(kullanici1, kullanici2);
+        }
+        mesajRepository.updateAliciSilindiMi(kullanici2.getKullaniciId(),kullanici1.getKullaniciId());
     }
 
     public List<KullanicininSonGelenMesajlari> getKullanicininSonGelenMesajlari() {

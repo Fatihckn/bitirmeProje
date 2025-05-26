@@ -83,4 +83,19 @@ public interface MesajRepository extends JpaRepository<Mesaj, Integer> {
 """)
         // Mesaj okundu mu bilgisini true yap
     void updateOkunduByGonderenAndAlici(@Param("gonderen") User gonderen, @Param("alici") User alici);
+
+    @Query(value = """
+    SELECT *
+    FROM mesaj m
+    WHERE m.mesaj_gonderen_kullanici_id = :mesajGonderenKullanici AND m.mesaj_gonderilen_kullanici_id = :mesajAtilanKullanici
+    LIMIT 1
+""", nativeQuery = true)
+    Mesaj findKullanicilarArasindakiMesaj(int mesajGonderenKullanici, int mesajAtilanKullanici);
+
+    @Modifying
+    @Query(value = """
+    UPDATE Mesaj m SET m.aliciSildiMi = TRUE
+    WHERE m.mesajGonderenKullaniciId.kullaniciId = :mesajGonderenKullanici AND m.mesajGonderilenKullaniciId.kullaniciId = :mesajAtilanKullanici
+""")
+    void updateAliciSilindiMi(int mesajGonderenKullanici, int mesajAtilanKullanici);
 }

@@ -30,6 +30,12 @@ public class Mesaj {
     @Column(name = "mesaj_okundu_mu")
     private boolean mesajOkunduMu = false;
 
+    @Column(name = "gonderen_sildi_mi")
+    private boolean gonderenSildiMi = false;
+
+    @Column(name = "alici_sildi_mi")
+    private boolean aliciSildiMi = false;
+
     public int getMesajId() {
         return mesajId;
     }
@@ -76,5 +82,21 @@ public class Mesaj {
 
     public void setMesajOkunduMu(boolean mesajOkunduMu) {
         this.mesajOkunduMu = mesajOkunduMu;
+    }
+
+    public boolean isGonderenSildiMi() {
+        return gonderenSildiMi;
+    }
+
+    public void setGonderenSildiMi(boolean gonderenSildiMi) {
+        this.gonderenSildiMi = gonderenSildiMi;
+    }
+
+    public boolean isAliciSildiMi() {
+        return aliciSildiMi;
+    }
+
+    public void setAliciSildiMi(boolean aliciSildiMi) {
+        this.aliciSildiMi = aliciSildiMi;
     }
 }

@@ -3,11 +3,14 @@ package com.bitirmeproje.dto.gonderiler;
 import org.springframework.web.multipart.MultipartFile;
 
 public class GonderiEkleDto {
-    private String gonderiIcerigi;
+    protected String gonderiIcerigi;
     private MultipartFile gonderiMedyaUrl;
-    private String gonderiMedyaTuru;
+    protected String gonderiMedyaTuru;
 
-    public GonderiEkleDto(String gonderiIcerigi, MultipartFile gonderiMedyaUrl, String gonderiMedyaTuru) {
+    public GonderiEkleDto() {}
+
+    public GonderiEkleDto(String gonderiIcerigi, MultipartFile gonderiMedyaUrl,
+                          String gonderiMedyaTuru) {
         this.gonderiIcerigi = gonderiIcerigi;
         this.gonderiMedyaUrl = gonderiMedyaUrl;
         this.gonderiMedyaTuru = gonderiMedyaTuru;

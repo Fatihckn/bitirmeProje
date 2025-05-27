@@ -1,6 +1,7 @@
-package com.bitirmeproje.helper.dto;
+package com.bitirmeproje.helper.dto.gonderi;
 
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
+import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
 import org.springframework.stereotype.Component;

@@ -2,6 +2,7 @@ package com.bitirmeproje.service.gonderiler;
 
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderiEkleDto;
+import com.bitirmeproje.dto.gonderiler.YapayZekaResimEkleDto;
 
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface IGonderilerService {
     void gonderiSil(int gonderiId);
 
     GonderiDto getArananGonderi(int gonderiId);
+
+    void yapayZekaResimOlusturma(YapayZekaResimEkleDto gonderiEkle);
 }

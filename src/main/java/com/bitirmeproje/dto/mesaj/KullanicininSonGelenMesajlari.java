@@ -16,7 +16,8 @@ public class KullanicininSonGelenMesajlari {
 
     int karsiTarafId;
 
-    public KullanicininSonGelenMesajlari(int mesajId, String mesajIcerigi, LocalDateTime mesajGonderilmeZamani, String karsiTarafAdi, String karsiTarafProfilResmi, int karsiTarafId) {
+    public KullanicininSonGelenMesajlari(int mesajId, String mesajIcerigi, LocalDateTime mesajGonderilmeZamani,
+                                         String karsiTarafAdi, String karsiTarafProfilResmi, int karsiTarafId) {
         this.mesajId = mesajId;
         this.mesajIcerigi = mesajIcerigi;
         this.mesajGonderilmeZamani = mesajGonderilmeZamani;

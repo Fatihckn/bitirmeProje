@@ -2,6 +2,7 @@ package com.bitirmeproje.controller;
 
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderiEkleDto;
+import com.bitirmeproje.dto.gonderiler.YapayZekaResimEkleDto;
 import com.bitirmeproje.service.gonderiler.IGonderilerService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,12 @@ public class GonderilerController {
     @GetMapping("/aranan-gonderi/{gonderiId}")
     public ResponseEntity<GonderiDto> arananGonderiGetir(@PathVariable int gonderiId) {
         return ResponseEntity.ok(gonderilerService.getArananGonderi(gonderiId));
+    }
+
+    @PostMapping("/resim-olusturma")
+    public ResponseEntity<String> resimOlustur(@RequestBody YapayZekaResimEkleDto resimEkleDto) {
+        gonderilerService.yapayZekaResimOlusturma(resimEkleDto);
+        return ResponseEntity.ok("Gonderi Olusturuldu");
     }
 }
 

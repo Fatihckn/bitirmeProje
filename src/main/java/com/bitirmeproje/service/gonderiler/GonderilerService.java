@@ -3,8 +3,10 @@ package com.bitirmeproje.service.gonderiler;
 import com.bitirmeproje.dto.gonderiler.GonderiDto;
 import com.bitirmeproje.dto.gonderiler.GonderiEkleDto;
 import com.bitirmeproje.dto.gonderiler.GonderiYorumlarDto;
+import com.bitirmeproje.dto.gonderiler.YapayZekaResimEkleDto;
 import com.bitirmeproje.dto.yeniyorum.YeniYorumDtoWithBegenildiMi;
 import com.bitirmeproje.exception.CustomException;
+import com.bitirmeproje.helper.dto.IEntityDtoConverter;
 import com.bitirmeproje.helper.user.FindUser;
 import com.bitirmeproje.helper.user.GetUserByToken;
 import com.bitirmeproje.model.Gonderiler;
@@ -31,17 +33,20 @@ public class GonderilerService implements IGonderilerService {
     private final R2StorageService r2StorageService;
     private final FindUser<String> findUser;
     private final YeniYorumRepository yeniYorumRepository;
+    private final IEntityDtoConverter<Gonderiler, YapayZekaResimEkleDto> yapayZekaResimEkleDtoIEntityDtoConverter;
 
     private final static String r2PublicBaseUrl = "https://media.bitirmeproje.xyz";
 
     public GonderilerService(GonderilerRepository gonderilerRepository, GetUserByToken getUserByToken,
                              R2StorageService r2StorageService,@Qualifier("findUserByTakmaAd") FindUser<String> findUser,
-                             YeniYorumRepository yeniYorumRepository) {
+                             YeniYorumRepository yeniYorumRepository,
+                             @Qualifier("gonderiConverterYapayZekaResimEkleDto") IEntityDtoConverter<Gonderiler, YapayZekaResimEkleDto> yapayZekaResimEkleDtoIEntityDtoConverter) {
         this.gonderilerRepository = gonderilerRepository;
         this.getUserByToken = getUserByToken;
         this.r2StorageService = r2StorageService;
         this.findUser = findUser;
         this.yeniYorumRepository = yeniYorumRepository;
+        this.yapayZekaResimEkleDtoIEntityDtoConverter = yapayZekaResimEkleDtoIEntityDtoConverter;
     }
 
     // Belirli bir kullanıcının tüm gönderilerini getir
@@ -157,6 +162,12 @@ public class GonderilerService implements IGonderilerService {
         gonderiYorumlarDto.setKullaniciId(gonderiAtan.getKullaniciId());
 
         return gonderiYorumlarDto;
+    }
+
+    public void yapayZekaResimOlusturma(YapayZekaResimEkleDto gonderiEkle) {
+        Gonderiler gonderi = yapayZekaResimEkleDtoIEntityDtoConverter.convertToEntity(gonderiEkle);
+
+        gonderilerRepository.save(gonderi);
     }
 
     // Her alt yorumu getirmek için kullanıyoruz çünkü kendi dto'muz cinsinden dönüyor.

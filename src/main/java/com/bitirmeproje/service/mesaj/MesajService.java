@@ -162,7 +162,8 @@ public class MesajService implements IMesajService {
         if(mesajKontrol.isAliciSildiMi()){
             mesajRepository.deleteByMesajGonderenKullaniciIdOrMesajGonderilenKullaniciId(kullanici1, kullanici2);
         }
-        mesajRepository.updateAliciSilindiMi(kullanici2.getKullaniciId(),kullanici1.getKullaniciId());
+        mesajRepository.updateAliciSilindiMi(kullanici2.getKullaniciId(), kullanici1.getKullaniciId());
+        mesajRepository.updateGonderenSilindiMi(kullanici1.getKullaniciId(), kullanici2.getKullaniciId());
     }
 
     public List<KullanicininSonGelenMesajlari> getKullanicininSonGelenMesajlari() {

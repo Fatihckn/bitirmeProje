@@ -40,15 +40,15 @@ public interface MesajRepository extends JpaRepository<Mesaj, Integer> {
         m.mesajId,
         m.mesajIcerigi,
         m.mesajGonderilmeZamani,
-        CASE 
+        CASE\s
             WHEN m.mesajGonderenKullaniciId.kullaniciId = :currentUserId THEN m.mesajGonderilenKullaniciId.kullaniciTakmaAd
             ELSE m.mesajGonderenKullaniciId.kullaniciTakmaAd
         END,
-        CASE 
+        CASE\s
             WHEN m.mesajGonderenKullaniciId.kullaniciId = :currentUserId THEN m.mesajGonderilenKullaniciId.kullaniciProfilResmi
             ELSE m.mesajGonderenKullaniciId.kullaniciProfilResmi
         END,
-        CASE 
+        CASE\s
             WHEN m.mesajGonderenKullaniciId.kullaniciId = :currentUserId THEN m.mesajGonderilenKullaniciId.kullaniciId
             ELSE m.mesajGonderenKullaniciId.kullaniciId
         END
@@ -57,16 +57,15 @@ public interface MesajRepository extends JpaRepository<Mesaj, Integer> {
     WHERE m.mesajId IN (
         SELECT MAX(m2.mesajId)
         FROM Mesaj m2
-        WHERE m2.mesajGonderenKullaniciId.kullaniciId = :currentUserId 
-           OR m2.mesajGonderilenKullaniciId.kullaniciId = :currentUserId
-        GROUP BY 
-            CASE WHEN m2.mesajGonderenKullaniciId.kullaniciId < m2.mesajGonderilenKullaniciId.kullaniciId 
-                 THEN m2.mesajGonderenKullaniciId.kullaniciId 
-                 ELSE m2.mesajGonderilenKullaniciId.kullaniciId 
+        WHERE (m2.mesajGonderenKullaniciId.kullaniciId = :currentUserId AND m2.gonderenSildiMi = false)
+        GROUP BY\s
+            CASE WHEN m2.mesajGonderenKullaniciId.kullaniciId < m2.mesajGonderilenKullaniciId.kullaniciId\s
+                 THEN m2.mesajGonderenKullaniciId.kullaniciId\s
+                 ELSE m2.mesajGonderilenKullaniciId.kullaniciId\s
             END,
-            CASE WHEN m2.mesajGonderenKullaniciId.kullaniciId > m2.mesajGonderilenKullaniciId.kullaniciId 
-                 THEN m2.mesajGonderenKullaniciId.kullaniciId 
-                 ELSE m2.mesajGonderilenKullaniciId.kullaniciId 
+            CASE WHEN m2.mesajGonderenKullaniciId.kullaniciId > m2.mesajGonderilenKullaniciId.kullaniciId\s
+                 THEN m2.mesajGonderenKullaniciId.kullaniciId\s
+                 ELSE m2.mesajGonderilenKullaniciId.kullaniciId\s
             END
     )
     ORDER BY m.mesajGonderilmeZamani DESC
@@ -98,4 +97,11 @@ public interface MesajRepository extends JpaRepository<Mesaj, Integer> {
     WHERE m.mesajGonderenKullaniciId.kullaniciId = :mesajGonderenKullanici AND m.mesajGonderilenKullaniciId.kullaniciId = :mesajAtilanKullanici
 """)
     void updateAliciSilindiMi(int mesajGonderenKullanici, int mesajAtilanKullanici);
+
+    @Modifying
+    @Query(value = """
+    UPDATE Mesaj m SET m.gonderenSildiMi = TRUE
+    WHERE m.mesajGonderenKullaniciId.kullaniciId = :mesajGonderenKullanici AND m.mesajGonderilenKullaniciId.kullaniciId = :mesajAtilanKullanici
+""")
+    void updateGonderenSilindiMi(int mesajGonderenKullanici, int mesajAtilanKullanici);
 }

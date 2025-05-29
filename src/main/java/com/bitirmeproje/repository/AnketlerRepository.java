@@ -1,6 +1,7 @@
 package com.bitirmeproje.repository;
 
 import com.bitirmeproje.dto.anketler.AnketOneriDto;
+import com.bitirmeproje.dto.anketler.KullaniciCevapladigiAnketlerDto;
 import com.bitirmeproje.model.Anketler;
 import com.bitirmeproje.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,7 +32,20 @@ public interface AnketlerRepository extends JpaRepository<Anketler, Integer> {
      )
     FROM Anketler a
     LEFT JOIN Cevaplar c ON c.anketId.anketId = a.anketId AND c.kullaniciId.kullaniciId = :kullaniciId
-    WHERE a.anketId =:anketId AND a.kullanici.kullaniciId != :kullaniciId
+    WHERE a.anketId =:anketId
 """)
     AnketOneriDto findAnketByAnketIdWithKullaniciCevapVerdiMi(int anketId, int kullaniciId);
+
+    @Query("""
+    SELECT new com.bitirmeproje.dto.anketler.KullaniciCevapladigiAnketlerDto(
+    a.anketId,
+    a.anketSorusu,
+    a.olusturulmaTarihi,
+    c.secenekId.secenekId
+    )
+    FROM Anketler a
+    INNER JOIN Cevaplar c ON a.anketId = c.anketId.anketId\s
+    WHERE c.kullaniciId.kullaniciId = :kullaniciId
+""")
+    List<KullaniciCevapladigiAnketlerDto> findKullaniciCevapladigiAnketlerDtoByKullaniciId(int kullaniciId);
 }

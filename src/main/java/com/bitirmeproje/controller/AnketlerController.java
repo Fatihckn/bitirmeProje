@@ -3,6 +3,7 @@ package com.bitirmeproje.controller;
 import com.bitirmeproje.dto.anketler.AnketOneriDto;
 import com.bitirmeproje.dto.anketler.AnketlerSaveDto;
 import com.bitirmeproje.dto.anketler.GirisYapanKullaniciAnketDto;
+import com.bitirmeproje.dto.anketler.KullaniciCevapladigiAnketlerDto;
 import com.bitirmeproje.model.Anketler;
 import com.bitirmeproje.service.anketler.AnketlerService;
 import com.bitirmeproje.service.anketler.IAnketlerService;
@@ -39,5 +40,10 @@ public class AnketlerController {
     @GetMapping("/anket-oneri")
     public ResponseEntity<List<AnketOneriDto>> anketOneri(){
         return ResponseEntity.ok(anketlerService.kullaniciAnketOneri());
+    }
+
+    @GetMapping("/cevaplanan/anketler")
+    public ResponseEntity<List<KullaniciCevapladigiAnketlerDto>> cevaplananAnketler(){
+        return ResponseEntity.ok(anketlerService.getKullaniciCevapladigiAnketler());
     }
 }

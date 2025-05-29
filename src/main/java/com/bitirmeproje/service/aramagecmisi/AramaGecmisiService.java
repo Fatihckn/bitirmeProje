@@ -36,8 +36,10 @@ public class AramaGecmisiService implements IAramaGecmisiService {
         findUser.findUser(aramaGecmisiDto.arananKullaniciId());
 
         if(aramaGecmisiRepository.arananKullaniciIdVarMi(aramaGecmisiDto.arananKullaniciId(), kullanici.getKullaniciId()) == 0){
+            User arananKullanici = findUser.findUser(aramaGecmisiDto.arananKullaniciId());
+
             AramaGecmisi yeniArama = new AramaGecmisi();
-            yeniArama.setArananKullaniciId(aramaGecmisiDto.arananKullaniciId());
+            yeniArama.setArananKullaniciId(arananKullanici);
             yeniArama.setAramaZamani(LocalDateTime.now()); // Arama zamanını sistem zamanı olarak al
             yeniArama.setKullaniciId(kullanici); // ManyToOne ilişkisini set ettik
 
@@ -59,8 +61,8 @@ public class AramaGecmisiService implements IAramaGecmisiService {
                         arama.getAramaGecmisiId(), // Arama geçmişi ID
                         arama.getKullaniciId().getKullaniciId(), // Arama içeriği
                         arama.getAramaZamani(), // Arama zamanı
-                        findUser.findUser(arama.getArananKullaniciId()).getKullaniciProfilResmi(),
-                        findUser.findUser(arama.getArananKullaniciId()).getKullaniciTakmaAd()
+                        findUser.findUser(arama.getArananKullaniciId().getKullaniciId()).getKullaniciProfilResmi(),
+                        findUser.findUser(arama.getArananKullaniciId().getKullaniciId()).getKullaniciTakmaAd()
                 ))
                 .collect(Collectors.toList());
     }

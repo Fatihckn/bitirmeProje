@@ -65,6 +65,9 @@ public class User{
     @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AramaGecmisi> aramaGecmisi;
 
+    @OneToMany(mappedBy = "arananKullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AramaGecmisi> arananKullaniciIdAramaGecmisi;
+
     @OneToMany(mappedBy = "kullaniciId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BegenilenGonderiler> begenilenGonderiler;
 

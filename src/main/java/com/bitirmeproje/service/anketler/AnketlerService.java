@@ -3,6 +3,7 @@ package com.bitirmeproje.service.anketler;
 import com.bitirmeproje.dto.anketler.AnketOneriDto;
 import com.bitirmeproje.dto.anketler.AnketlerSaveDto;
 import com.bitirmeproje.dto.anketler.GirisYapanKullaniciAnketDto;
+import com.bitirmeproje.dto.anketler.KullaniciCevapladigiAnketlerDto;
 import com.bitirmeproje.dto.secenekler.SeceneklerDtoWithCevapSayisi;
 import com.bitirmeproje.exception.CustomException;
 import com.bitirmeproje.helper.dto.IEntityDtoConverter;
@@ -31,7 +32,7 @@ public class AnketlerService implements IAnketlerService {
     private final PythonApiService pythonApiService;
 
     public AnketlerService(AnketlerRepository anketlerRepository,@Qualifier("anketlerConverter") IEntityDtoConverter<Anketler,
-            AnketlerSaveDto> entityDtoConverter, GetUserByToken getUserByToken, SeceneklerRepository seceneklerRepository,
+                                   AnketlerSaveDto> entityDtoConverter, GetUserByToken getUserByToken, SeceneklerRepository seceneklerRepository,
                            PythonApiService pythonApiService) {
         this.anketlerRepository = anketlerRepository;
         this.entityDtoConverter = entityDtoConverter;
@@ -91,6 +92,18 @@ public class AnketlerService implements IAnketlerService {
                 .collect(Collectors.toList());
     }
 
+    public List<KullaniciCevapladigiAnketlerDto> getKullaniciCevapladigiAnketler(){
+        User user = getUserByToken.getUser();
+
+        List<KullaniciCevapladigiAnketlerDto> kullaniciCevapladigiAnketler = anketlerRepository.findKullaniciCevapladigiAnketlerDtoByKullaniciId(user.getKullaniciId());
+        return kullaniciCevapladigiAnketler.stream()
+                .map(anketler -> {
+                    List<SeceneklerDtoWithCevapSayisi> seceneklerDtoWithCevapSayisiList = seceneklerRepository.getSeceneklerByAnketId(anketler.getAnketId());
+                    return kullaniciCevapladigiAnketlerDto(anketler, seceneklerDtoWithCevapSayisiList);
+                })
+                .collect(Collectors.toList());
+    }
+
     private void saveSoruSecenekleri(List<String> soruSecenekleri, Anketler anketler) {
         // Stringleri Secenekler nesnesine çeviriyoruz
         List<Secenekler> seceneklerList = soruSecenekleri
@@ -123,5 +136,15 @@ public class AnketlerService implements IAnketlerService {
         girisYapanKullaniciAnketDto.setAnketOlusturulmaTarihi(anketler.getOlusturulmaTarihi());
         girisYapanKullaniciAnketDto.setSecenekler(seceneklerDtoWithCevapSayisiList);
         return girisYapanKullaniciAnketDto;
+    }
+
+    private KullaniciCevapladigiAnketlerDto kullaniciCevapladigiAnketlerDto(KullaniciCevapladigiAnketlerDto anketler, List<SeceneklerDtoWithCevapSayisi> seceneklerDtoWithCevapSayisiList){
+        KullaniciCevapladigiAnketlerDto kullaniciCevapladigiAnketlerDto = new KullaniciCevapladigiAnketlerDto();
+        kullaniciCevapladigiAnketlerDto.setAnketId(anketler.getAnketId());
+        kullaniciCevapladigiAnketlerDto.setAnketSorusu(anketler.getAnketSorusu());
+        kullaniciCevapladigiAnketlerDto.setAnketOlusturulmaTarihi(anketler.getAnketOlusturulmaTarihi());
+        kullaniciCevapladigiAnketlerDto.setKullaniciCevapSecenekId(anketler.getKullaniciCevapSecenekId());
+        kullaniciCevapladigiAnketlerDto.setSecenekler(seceneklerDtoWithCevapSayisiList);
+        return kullaniciCevapladigiAnketlerDto;
     }
 }

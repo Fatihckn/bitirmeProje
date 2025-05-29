@@ -13,11 +13,12 @@ public class AramaGecmisi {
     @Column(name = "arama_gecmisi_id")
     private int aramaGecmisiId;
 
-    @Column(name = "aranan_kullanici_id")
-    private int arananKullaniciId;
-
     @Column(name = "arama_zamani")
     private LocalDateTime aramaZamani;
+
+    @ManyToOne
+    @JoinColumn(name = "aranan_kullanici_id")
+    private User arananKullaniciId;
 
     @ManyToOne
     @JoinColumn(name = "kullanici_id")
@@ -31,11 +32,11 @@ public class AramaGecmisi {
         this.aramaGecmisiId = aramaGecmisiId;
     }
 
-    public int getArananKullaniciId() {
+    public User getArananKullaniciId() {
         return arananKullaniciId;
     }
 
-    public void setArananKullaniciId(int arananKullaniciId) {
+    public void setArananKullaniciId(User arananKullaniciId) {
         this.arananKullaniciId = arananKullaniciId;
     }
 

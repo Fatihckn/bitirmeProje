@@ -159,6 +159,10 @@ public class MesajService implements IMesajService {
 
         Mesaj mesajKontrol = mesajRepository.findKullanicilarArasindakiMesaj(kullanici1.getKullaniciId(), kullanici2.getKullaniciId());
 
+        if(mesajKontrol == null){
+            throw new CustomException(HttpStatus.NOT_FOUND, "Mesaj Bulunamadi");
+        }
+
         if(mesajKontrol.isAliciSildiMi()){
             mesajRepository.deleteByMesajGonderenKullaniciIdOrMesajGonderilenKullaniciId(kullanici1, kullanici2);
         }

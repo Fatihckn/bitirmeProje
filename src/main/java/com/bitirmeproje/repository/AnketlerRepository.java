@@ -31,7 +31,7 @@ public interface AnketlerRepository extends JpaRepository<Anketler, Integer> {
      )
     FROM Anketler a
     LEFT JOIN Cevaplar c ON c.anketId.anketId = a.anketId AND c.kullaniciId.kullaniciId = :kullaniciId
-    WHERE a.anketId =:anketId
+    WHERE a.anketId =:anketId AND a.kullanici.kullaniciId != :kullaniciId
 """)
     AnketOneriDto findAnketByAnketIdWithKullaniciCevapVerdiMi(int anketId, int kullaniciId);
 }

@@ -57,7 +57,9 @@ public interface MesajRepository extends JpaRepository<Mesaj, Integer> {
     WHERE m.mesajId IN (
         SELECT MAX(m2.mesajId)
         FROM Mesaj m2
-        WHERE (m2.mesajGonderenKullaniciId.kullaniciId = :currentUserId AND m2.gonderenSildiMi = false)
+        WHERE (m2.mesajGonderenKullaniciId.kullaniciId = :currentUserId OR m2.mesajGonderilenKullaniciId.kullaniciId = :currentUserId)
+              AND (m2.mesajGonderenKullaniciId.kullaniciId = :currentUserId AND m2.gonderenSildiMi = false
+              OR m2.mesajGonderilenKullaniciId.kullaniciId = :currentUserId AND m2.aliciSildiMi = false)
         GROUP BY\s
             CASE WHEN m2.mesajGonderenKullaniciId.kullaniciId < m2.mesajGonderilenKullaniciId.kullaniciId\s
                  THEN m2.mesajGonderenKullaniciId.kullaniciId\s

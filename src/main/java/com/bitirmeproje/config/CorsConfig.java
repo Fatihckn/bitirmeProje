@@ -13,7 +13,7 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Tüm endpointler için geçerli
-                        .allowedOriginPatterns("https://localhost:5173") // Sadece bu kaynağa izin ver
+                        .allowedOriginPatterns("*") // Sadece bu kaynağa izin ver
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Tüm HTTP metodlarına izin ver
                         .allowedHeaders("*") // Tüm başlıklara izin ver
                         .allowCredentials(true); // Kimlik doğrulama bilgilerine (cookies, authorization headers) izin ver
